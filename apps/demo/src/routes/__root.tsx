@@ -1,5 +1,5 @@
 import { createRootRoute, HeadContent, Link, Outlet, Scripts } from '@tanstack/react-router'
-import '@zixiao-labs/react/styles.css'
+import '@zixiao-labs/ui-kits-react/styles.css'
 import '../styles.css'
 
 export const Route = createRootRoute({
@@ -7,10 +7,11 @@ export const Route = createRootRoute({
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'Zixiao UI — 多一种表达' },
+      { title: 'Zixiao Laboratories UI Kits — 多风格 React 组件库' },
       {
         name: 'description',
-        content: '@zixiao-labs 多风格 React 组件实验室。一套组件 API，多种设计表达。',
+        content:
+          'Zixiao Laboratories UI Kits：一套 React 组件 API，多种设计表达。从 Clean 开始，探索 Minimal、Soft 与 Brutalist。',
       },
     ],
   }),
@@ -35,32 +36,30 @@ function Root() {
           跳转到内容
         </a>
         <header className="site-header">
-          <Link className="brand" to="/" aria-label="Zixiao UI 首页">
+          <Link className="brand" to="/" aria-label="Zixiao Laboratories UI Kits 首页">
             <span className="brand-mark" aria-hidden="true">
-              z.
+              z
             </span>
-            <span>
-              ZIXIAO<span className="brand-divider"> / </span>UI LAB
+            <span className="brand-name">
+              Zixiao Laboratories<small>UI Kits</small>
             </span>
           </Link>
           <nav aria-label="主导航">
             <Link to="/" activeOptions={{ exact: true }} activeProps={{ className: 'is-active' }}>
-              组件实验室
+              组件
             </Link>
             <Link to="/about" activeProps={{ className: 'is-active' }}>
               设计原则
             </Link>
           </nav>
-          <span className="version-tag">
-            v0.0.0 <span> / STARTER</span>
-          </span>
+          <span className="version-tag">v0.0.0</span>
         </header>
         <div id="main-content" tabIndex={-1}>
           <Outlet />
         </div>
         <footer className="site-footer">
-          <span>@zixiao-labs / 用一致的基础，创造不同的表达。</span>
-          <span>React 19 · Nasti · Oxc</span>
+          <span>Zixiao Laboratories UI Kits</span>
+          <span>一套行为，多种表达。 / React · TypeScript</span>
         </footer>
         <Scripts />
       </body>

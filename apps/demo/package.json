@@ -1,7 +1,8 @@
 {
-  "name": "@zixiao-labs/demo",
+  "name": "@zixiao-labs/ui-kits-demo",
   "version": "0.0.0",
   "private": true,
+  "description": "Zixiao Laboratories UI Kits — interactive multi-style component playground.",
   "type": "module",
   "scripts": {
     "dev": "nasti dev",
@@ -12,12 +13,11 @@
   "dependencies": {
     "@tanstack/react-router": "1.170.46",
     "@tanstack/react-start": "1.169.4",
-    "@zixiao-labs/react": "workspace:*",
+    "@zixiao-labs/ui-kits-react": "workspace:*",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
-    "@lightning-js/lightning": "^3.1.2",
     "@nasti-toolchain/nasti": "^2.9.0",
     "@tanstack/router-generator": "1.167.46",
     "@tanstack/start-plugin-core": "1.171.55",

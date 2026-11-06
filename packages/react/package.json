@@ -1,7 +1,8 @@
 {
-  "name": "@zixiao-labs/react",
+  "name": "@zixiao-labs/ui-kits-react",
   "version": "0.0.0",
   "private": true,
+  "description": "Zixiao Laboratories UI Kits — shared React components with scoped, interchangeable styles.",
   "type": "module",
   "sideEffects": [
     "**/*.css"
@@ -15,7 +16,9 @@
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "react": "^19.2.8",
+    "react-dom": "^19.2.8",
     "typescript": "^7.0.2"
   },
   "peerDependencies": {

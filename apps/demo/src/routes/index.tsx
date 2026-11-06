@@ -1,21 +1,24 @@
 import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { Button } from '@zixiao-labs/react'
-import type { ButtonSize, ButtonVariant } from '@zixiao-labs/react'
+import { Button } from '@zixiao-labs/ui-kits-react'
+import type { ButtonSize, ButtonVariant } from '@zixiao-labs/ui-kits-react'
 
 export const Route = createFileRoute('/')({
   component: Home,
 })
 
 const styles = [
-  { id: 'minimal', name: 'Minimal', description: '清晰、克制，让内容成为焦点。', number: '01' },
-  { id: 'soft', name: 'Soft', description: '柔和的色彩，轻盈而亲近的触感。', number: '02' },
-  {
-    id: 'brutalist',
-    name: 'Brutalist',
-    description: '鲜明的边界，直接而有力的表达。',
-    number: '03',
-  },
+  { id: 'clean', name: 'Clean', description: '清晰的层次，刚好的表达。' },
+  { id: 'minimal', name: 'Minimal', description: '去掉多余修饰，让内容成为焦点。' },
+  { id: 'soft', name: 'Soft', description: '柔和的色彩，轻盈而亲近的触感。' },
+  { id: 'brutalist', name: 'Brutalist', description: '鲜明的边界，直接而有力的表达。' },
+] as const
+
+const variants = [
+  { id: 'solid', name: 'Filled', description: '主要操作' },
+  { id: 'tonal', name: 'Tonal', description: '次要操作' },
+  { id: 'outline', name: 'Outlined', description: '中等强调' },
+  { id: 'ghost', name: 'Text', description: '低强调' },
 ] as const
 
 function Home() {
@@ -26,138 +29,72 @@ function Home() {
   const [loading, setLoading] = useState(false)
   const [disabled, setDisabled] = useState(false)
   const [count, setCount] = useState(0)
-  const example = `import { Button } from '@zixiao-labs/react'
-import '@zixiao-labs/react/styles.css'
+  const [copyResult, setCopyResult] = useState<{
+    code: string
+    state: 'copied' | 'error'
+  } | null>(null)
+  const example = `import { Button } from '@zixiao-labs/ui-kits-react'
+import '@zixiao-labs/ui-kits-react/styles.css'
 
-<div data-zx-style="${style.id}"
-     data-zx-color-mode="${dark ? 'dark' : 'light'}">
+<div data-zx-style="${style.id}" data-zx-color-mode="${dark ? 'dark' : 'light'}">
   <Button variant="${variant}" size="${size}"${loading ? ' loading' : ''}${disabled ? ' disabled' : ''}>
     开始创造
   </Button>
 </div>`
+  const copyState = copyResult?.code === example ? copyResult.state : 'idle'
+
+  async function copyCode() {
+    try {
+      await navigator.clipboard.writeText(example)
+      setCopyResult({ code: example, state: 'copied' })
+    } catch {
+      setCopyResult({ code: example, state: 'error' })
+    }
+  }
 
   return (
-    <main>
-      <section className="hero" aria-labelledby="hero-title">
-        <div>
-          <p className="eyebrow">
-            <span className="status-dot" /> ZIXIAO DESIGN EXPERIMENT / 001
-          </p>
-          <h1 id="hero-title">
-            同一套组件，
-            <br />
-            <span>不止一种表达。</span>
-          </h1>
-          <p className="hero-description">
-            把交互留给组件，把个性交给设计。
-            <br />
-            一个从零开始的多风格 React 组件实验室。
-          </p>
-        </div>
-        <div className="hero-note">
-          <span className="note-cross" aria-hidden="true">
-            ＋
+    <main className="catalog">
+      <aside className="catalog-nav" aria-label="组件目录">
+        <div className="catalog-nav-heading">
+          <span className="catalog-symbol" aria-hidden="true">
+            ◧
           </span>
-          <p>
-            One foundation.
-            <br />
-            Many expressions.
-          </p>
-          <span>BEHAVIOR × TOKENS × STYLE</span>
+          设计语言
         </div>
-      </section>
+        <a className="catalog-current" href="#button" aria-current="location">
+          <span>Button</span>
+          <span className="nav-count">01</span>
+        </a>
+        <a href="#variants">按钮层级</a>
+        <a href="#colors">色彩与主题</a>
+        <div className="catalog-nav-note">
+          <span className="status-dot" />
+          <span>一套行为，多种表达</span>
+        </div>
+      </aside>
 
-      <section className="lab-section" aria-labelledby="playground-title">
-        <div className="section-heading">
+      <div className="catalog-content">
+        <div className="page-intro">
           <div>
-            <span className="section-number">01 / PLAYGROUND</span>
-            <h2 id="playground-title">从一个 Button 开始</h2>
+            <p className="eyebrow">设计风格 / 01</p>
+            <h1>
+              Clean<span className="title-period">.</span>
+            </h1>
+            <p className="intro-description">克制的色彩，清晰的层次。让组件回到内容与交互本身。</p>
           </div>
-          <span className="section-caption">切换风格，组件行为保持一致 ↙</span>
+          <span className="style-badge">Material-inspired</span>
         </div>
 
-        <div className="lab">
-          <aside className="lab-controls" aria-label="组件配置">
-            <fieldset className="style-picker">
-              <legend>
-                设计语言 <span>STYLE</span>
-              </legend>
-              {styles.map((item) => (
-                <label className="style-option" key={item.id}>
-                  <input
-                    type="radio"
-                    name="style"
-                    value={item.id}
-                    checked={style.id === item.id}
-                    onChange={() => setStyle(item)}
-                  />
-                  <span className={`style-swatch swatch-${item.id}`} aria-hidden="true">
-                    Aa
-                  </span>
-                  <span className="style-name">
-                    {item.name}
-                    <small>EXPRESSION {item.number}</small>
-                  </span>
-                  <span className="radio-indicator" aria-hidden="true" />
-                </label>
-              ))}
-            </fieldset>
-
-            <div className="control-divider" />
-            <div className="select-grid">
-              <label htmlFor="variant">
-                变体 <span>VARIANT</span>
-                <select
-                  id="variant"
-                  value={variant}
-                  onChange={(event) => setVariant(event.target.value as ButtonVariant)}
-                >
-                  <option value="solid">Solid</option>
-                  <option value="outline">Outline</option>
-                  <option value="ghost">Ghost</option>
-                </select>
-              </label>
-              <label htmlFor="size">
-                尺寸 <span>SIZE</span>
-                <select
-                  id="size"
-                  value={size}
-                  onChange={(event) => setSize(event.target.value as ButtonSize)}
-                >
-                  <option value="sm">Small</option>
-                  <option value="md">Medium</option>
-                  <option value="lg">Large</option>
-                </select>
-              </label>
+        <section id="button" className="component-section" aria-labelledby="button-title">
+          <div className="section-heading">
+            <div className="section-title">
+              <h2 id="button-title">Button</h2>
+              <span className="component-kind">操作组件</span>
             </div>
-            <label className="checkbox-control">
-              <span>
-                加载状态 <small>Loading</small>
-              </span>
-              <input
-                type="checkbox"
-                checked={loading}
-                onChange={(event) => setLoading(event.target.checked)}
-              />
-            </label>
-            <label className="checkbox-control">
-              <span>
-                禁用状态 <small>Disabled</small>
-              </span>
-              <input
-                type="checkbox"
-                checked={disabled}
-                onChange={(event) => setDisabled(event.target.checked)}
-              />
-            </label>
-            <p className="controls-footnote">
-              一个 API，三种表达。
-              <br />
-              风格仅改变外观，不改变语义。
-            </p>
-          </aside>
+            <span className="section-caption">原生语义 · 键盘可用</span>
+          </div>
 
-          <div className="lab-workspace">
+          <div className="playground">
             <div
               className="preview"
               data-testid="preview"
@@ -165,8 +102,9 @@ import '@zixiao-labs/react/styles.css'
               data-zx-color-mode={dark ? 'dark' : 'light'}
             >
               <div className="preview-toolbar">
-                <span>
-                  <span className="preview-dot" /> LIVE PREVIEW
+                <span className="preview-label">
+                  <span className="preview-dot" />
+                  实时预览
                 </span>
                 <button
                   className="mode-toggle"
@@ -175,16 +113,15 @@ import '@zixiao-labs/react/styles.css'
                   aria-pressed={dark}
                   onClick={() => setDark(!dark)}
                 >
-                  <span aria-hidden="true">{dark ? '◐' : '◑'}</span> {dark ? 'Dark' : 'Light'}
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M20.8 13A9 9 0 0 1 11 3.2 9 9 0 1 0 20.8 13Z" />
+                  </svg>
+                  {dark ? '深色' : '浅色'}
                 </button>
               </div>
               <div className="preview-stage">
-                <span className="preview-style-index">EXPRESSION / {style.number}</span>
-                <h3>
-                  {style.name}
-                  <span>.</span>
-                </h3>
-                <p>{style.description}</p>
+                <span className="preview-style-label">{style.name} / Button</span>
+                <h3>{style.description}</h3>
                 <div className="preview-actions">
                   <Button
                     variant={variant}
@@ -193,7 +130,10 @@ import '@zixiao-labs/react/styles.css'
                     disabled={disabled}
                     onClick={() => setCount((value) => value + 1)}
                   >
-                    开始创造 <span aria-hidden="true">↗</span>
+                    开始创造
+                    <svg className="action-icon" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M5 12h14m-6-6 6 6-6 6" />
+                    </svg>
                   </Button>
                   <Button variant="ghost" size={size} onClick={() => setCount(0)}>
                     重置计数
@@ -204,64 +144,187 @@ import '@zixiao-labs/react/styles.css'
                 </output>
               </div>
               <div className="preview-bottom">
-                <span>SCOPED CSS VARIABLES</span>
+                <span>外观自由切换，行为始终一致。</span>
                 <div className="token-swatches" aria-label="当前主题色板">
-                  <span className="token-accent" title="Accent" />
-                  <span className="token-text" title="Text" />
-                  <span className="token-muted" title="Muted" />
+                  <span className="token-accent" title="Primary" />
+                  <span className="token-tonal" title="Secondary container" />
+                  <span className="token-text" title="On surface" />
                   <span className="token-surface" title="Surface" />
                 </div>
               </div>
             </div>
-            <div className="code-panel">
-              <div className="code-heading">
-                <span>使用示例</span>
-                <span>TSX / WORKSPACE PACKAGE</span>
+
+            <aside className="lab-controls" aria-label="组件配置">
+              <div className="controls-heading">
+                <h3>配置</h3>
+                <span>PROPERTIES</span>
               </div>
-              <pre tabIndex={0} aria-label="当前组件代码">
-                <code>{example}</code>
-              </pre>
+              <label className="select-control" htmlFor="style">
+                <span>设计风格</span>
+                <select
+                  id="style"
+                  value={style.id}
+                  onChange={(event) => {
+                    const selected = styles.find((item) => item.id === event.target.value)
+                    if (selected) setStyle(selected)
+                  }}
+                >
+                  {styles.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="select-control" htmlFor="variant">
+                <span>
+                  变体 <small>variant</small>
+                </span>
+                <select
+                  id="variant"
+                  value={variant}
+                  onChange={(event) => setVariant(event.target.value as ButtonVariant)}
+                >
+                  {variants.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <fieldset className="size-control">
+                <legend>
+                  尺寸 <small>size</small>
+                </legend>
+                <div className="segmented-control">
+                  <span className="segment-indicator" data-size={size} aria-hidden="true" />
+                  {(['sm', 'md', 'lg'] as const).map((item) => (
+                    <label key={item}>
+                      <input
+                        type="radio"
+                        name="size"
+                        value={item}
+                        checked={size === item}
+                        onChange={() => setSize(item)}
+                      />
+                      <span>{{ sm: '小', md: '中', lg: '大' }[item]}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <div className="state-controls">
+                <label className="switch-control">
+                  <span>
+                    加载状态 <small>loading</small>
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={loading}
+                    onChange={(event) => setLoading(event.target.checked)}
+                  />
+                  <span className="switch-track" aria-hidden="true" />
+                </label>
+                <label className="switch-control">
+                  <span>
+                    禁用状态 <small>disabled</small>
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={disabled}
+                    onChange={(event) => setDisabled(event.target.checked)}
+                  />
+                  <span className="switch-track" aria-hidden="true" />
+                </label>
+              </div>
+            </aside>
+          </div>
+
+          <div className="code-panel">
+            <div className="code-heading">
+              <div>
+                <span className="code-tab">使用代码</span>
+                <span className="code-language">React / TSX</span>
+              </div>
+              <button className="copy-button" type="button" onClick={copyCode}>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M9 5V3h11v14h-2M4 7h11v14H4Z" />
+                </svg>
+                复制代码
+              </button>
+            </div>
+            <pre tabIndex={0} aria-label="当前组件代码">
+              <code>{example}</code>
+            </pre>
+            {copyState !== 'idle' && (
+              <output className="copy-feedback">
+                {copyState === 'copied'
+                  ? '已复制当前代码。'
+                  : '无法访问剪贴板，请选中代码手动复制。'}
+              </output>
+            )}
+          </div>
+        </section>
+
+        <section id="variants" className="variants-section" aria-labelledby="variants-title">
+          <div className="section-heading">
+            <h2 id="variants-title">恰到好处的强调</h2>
+            <span className="section-caption">四种层级，同一套 API</span>
+          </div>
+          <div className="variant-grid" data-zx-style="clean">
+            {variants.map((item) => (
+              <div className="variant-example" key={item.id}>
+                <Button variant={item.id} onClick={() => setVariant(item.id)}>
+                  预览 {item.name}
+                </Button>
+                <span>
+                  {item.name}
+                  <small>{item.description}</small>
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section id="colors" className="colors-section" aria-labelledby="colors-title">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">FOUNDATIONS</p>
+              <h2 id="colors-title">少一点颜色，多一点秩序。</h2>
+            </div>
+            <span className="section-caption">语义色彩 · 局部作用域 · 明暗配对</span>
+          </div>
+          <div className="color-grid" data-zx-style="clean">
+            <div className="color-sample color-primary">
+              <span>Aa</span>
+              <span>
+                Primary<small>关键操作</small>
+              </span>
+            </div>
+            <div className="color-sample color-secondary">
+              <span>Aa</span>
+              <span>
+                Secondary container<small>柔和强调</small>
+              </span>
+            </div>
+            <div className="color-sample color-surface">
+              <span>Aa</span>
+              <span>
+                Surface<small>内容表面</small>
+              </span>
+            </div>
+            <div className="color-sample color-container">
+              <span>Aa</span>
+              <span>
+                Surface container<small>色调层次</small>
+              </span>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section className="foundation-section" aria-labelledby="foundation-title">
-        <div>
-          <span className="section-number">02 / FOUNDATION</span>
-          <h2 id="foundation-title">先让基础，足够扎实。</h2>
-          <p>不急着堆满组件。先把包边界、设计变量和开发体验连接起来。</p>
-        </div>
-        <div className="foundation-grid">
-          <div>
-            <span>01</span>
-            <h3>共享行为</h3>
-            <p>
-              React 19 + TypeScript
-              <br />
-              保留原生 button 属性与 ref
-            </p>
-          </div>
-          <div>
-            <span>02</span>
-            <h3>独立表达</h3>
-            <p>
-              局部主题 + 明暗模式
-              <br />
-              CSS tokens 驱动视觉变化
-            </p>
-          </div>
-          <div>
-            <span>03</span>
-            <h3>轻量工具链</h3>
-            <p>
-              pnpm workspace + Nasti
-              <br />
-              Oxlint 检查，Oxfmt 格式化
-            </p>
-          </div>
-        </div>
-      </section>
+          <p className="foundation-note">
+            Clean 是第一套完善的风格。Minimal、Soft 与 Brutalist
+            仍可在上方预览中切换，组件行为与属性保持一致。
+          </p>
+        </section>
+      </div>
     </main>
   )
 }
