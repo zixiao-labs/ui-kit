@@ -1,0 +1,195 @@
+/* Every scope resets its tokens, allowing independent themes on the same page. */
+:root,
+[data-zx-style] {
+  color-scheme: light;
+  --zx-surface: #ffffff;
+  --zx-surface-subtle: #f5f5f3;
+  --zx-text: #232725;
+  --zx-muted: #69716b;
+  --zx-border: #d9ded9;
+  --zx-accent: #25563f;
+  --zx-accent-hover: #19452f;
+  --zx-on-accent: #ffffff;
+  --zx-focus: #2c7552;
+  --zx-radius: 6px;
+  --zx-border-width: 1px;
+  --zx-solid-border: transparent;
+  --zx-shadow: none;
+  --zx-font: 'Avenir Next', 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+[data-zx-color-mode='dark'] {
+  color-scheme: dark;
+  --zx-surface: #1a211d;
+  --zx-surface-subtle: #242e27;
+  --zx-text: #edf2ed;
+  --zx-muted: #a5b5a8;
+  --zx-border: #48564b;
+  --zx-accent: #a7d8b8;
+  --zx-accent-hover: #c0e9cd;
+  --zx-on-accent: #193124;
+  --zx-focus: #b6e8c8;
+}
+
+[data-zx-style='soft'] {
+  --zx-surface: #faf7ff;
+  --zx-surface-subtle: #efe8f8;
+  --zx-text: #37284a;
+  --zx-muted: #766482;
+  --zx-border: #dfd2ed;
+  --zx-accent: #71509a;
+  --zx-accent-hover: #5e3c86;
+  --zx-on-accent: #ffffff;
+  --zx-focus: #8762b4;
+  --zx-radius: 999px;
+  --zx-shadow: 0 4px 12px rgb(88 52 123 / 12%);
+}
+
+[data-zx-style='soft'][data-zx-color-mode='dark'] {
+  --zx-surface: #251e30;
+  --zx-surface-subtle: #342940;
+  --zx-text: #f2eafa;
+  --zx-muted: #c1afd1;
+  --zx-border: #665275;
+  --zx-accent: #d6b7f4;
+  --zx-accent-hover: #e5d0fa;
+  --zx-on-accent: #342045;
+  --zx-focus: #d6b7f4;
+  --zx-shadow: 0 4px 12px rgb(0 0 0 / 14%);
+}
+
+[data-zx-style='brutalist'] {
+  --zx-surface: #faf8ef;
+  --zx-surface-subtle: #eeeadb;
+  --zx-text: #24251c;
+  --zx-muted: #66674f;
+  --zx-border: #24251c;
+  --zx-accent: #e5f36a;
+  --zx-accent-hover: #d6e457;
+  --zx-on-accent: #24251c;
+  --zx-focus: #52600c;
+  --zx-radius: 0px;
+  --zx-border-width: 2px;
+  --zx-solid-border: var(--zx-border);
+  --zx-shadow: 3px 3px 0 var(--zx-border);
+  --zx-font: 'SFMono-Regular', Consolas, 'Liberation Mono', 'PingFang SC', monospace;
+}
+
+[data-zx-style='brutalist'][data-zx-color-mode='dark'] {
+  --zx-surface: #24251e;
+  --zx-surface-subtle: #303226;
+  --zx-text: #f2f3e7;
+  --zx-muted: #b8bba5;
+  --zx-border: #c3c6ab;
+  --zx-accent: #e5f36a;
+  --zx-accent-hover: #f0fa9d;
+  --zx-on-accent: #24251c;
+  --zx-focus: #e5f36a;
+}
+
+.zx-button {
+  display: inline-flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 22px;
+  border: var(--zx-border-width) solid var(--zx-solid-border);
+  border-radius: var(--zx-radius);
+  background: var(--zx-accent);
+  color: var(--zx-on-accent);
+  font-family: var(--zx-font);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-decoration: none;
+  box-shadow: var(--zx-shadow);
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.zx-button[data-size='sm'] {
+  min-height: 44px;
+  padding-inline: 14px;
+  font-size: 13px;
+}
+
+.zx-button[data-size='lg'] {
+  min-height: 52px;
+  padding-inline: 28px;
+  font-size: 16px;
+}
+
+.zx-button[data-variant='outline'] {
+  border-color: var(--zx-border);
+  background: transparent;
+  color: var(--zx-text);
+  box-shadow: none;
+}
+
+.zx-button[data-variant='ghost'] {
+  border-color: transparent;
+  background: transparent;
+  color: var(--zx-text);
+  box-shadow: none;
+}
+
+.zx-button:not(:disabled):hover {
+  background: var(--zx-accent-hover);
+  transform: translateY(-1px);
+}
+
+.zx-button[data-variant='outline']:not(:disabled):hover,
+.zx-button[data-variant='ghost']:not(:disabled):hover {
+  background: var(--zx-surface-subtle);
+}
+
+.zx-button:not(:disabled):active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+.zx-button:focus-visible {
+  outline: 2px solid var(--zx-focus);
+  outline-offset: 4px;
+}
+
+.zx-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.zx-button[aria-busy='true'] {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.zx-button__spinner {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: zx-spin 700ms linear infinite;
+}
+
+@keyframes zx-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zx-button {
+    transition: none;
+  }
+  .zx-button__spinner {
+    animation: none;
+  }
+}
