@@ -10,7 +10,7 @@ function About() {
       <p className="eyebrow">THE FOUNDATION</p>
       <h1>先统一行为，再表达风格。</h1>
       <p>
-        这是 @zixiao-labs 多风格 React 组件库的起点。组件负责语义、交互与无障碍， CSS tokens
+        Zixiao Laboratories UI Kits 是多风格 React 组件库。组件负责语义、交互与无障碍，CSS tokens
         负责色彩、形状与质感，demo 负责验证它们能否一起工作。
       </p>
       <div className="principle-grid">
@@ -22,7 +22,10 @@ function About() {
         <section>
           <span className="section-number">02 / EXPRESSION</span>
           <h2>局部样式作用域</h2>
-          <p>用 data-zx-style 和 data-zx-color-mode 切换外观，同一页面可以并存多个风格。</p>
+          <p>
+            Clean、Minimal、Soft 与 Brutalist 共享行为。用 data-zx-style 和 data-zx-color-mode
+            切换外观，同一页面可以并存多个风格。
+          </p>
         </section>
         <section>
           <span className="section-number">03 / GROWTH</span>

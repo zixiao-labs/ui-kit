@@ -1,0 +1,14 @@
+[data-zx-style='minimal'] {
+  --zx-accent: #25563f;
+  --zx-accent-hover: #19452f;
+  --zx-focus: #2c7552;
+}
+
+[data-zx-style='minimal'][data-zx-color-mode='dark'] {
+  --zx-surface: #1a211d;
+  --zx-surface-subtle: #242e27;
+  --zx-accent: #a7d8b8;
+  --zx-accent-hover: #c0e9cd;
+  --zx-on-accent: #193124;
+  --zx-focus: #b6e8c8;
+}

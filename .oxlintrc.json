@@ -21,6 +21,8 @@
     "**/routeTree.gen.ts",
     "**/playwright-report/**",
     "**/test-results/**",
+    ".oil-ui/**",
+    ".claude/**",
     ".agents/**"
   ]
 }

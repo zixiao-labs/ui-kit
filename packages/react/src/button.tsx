@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'react'
 
-export type ButtonVariant = 'solid' | 'outline' | 'ghost'
+export type ButtonVariant = 'solid' | 'tonal' | 'outline' | 'ghost'
 export type ButtonSize = 'sm' | 'md' | 'lg'
 
 export interface ButtonProps extends ComponentProps<'button'> {

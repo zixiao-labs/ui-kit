@@ -3,5 +3,5 @@
   "compilerOptions": {
     "types": ["node"]
   },
-  "include": ["playwright.config.ts", "tests"]
+  "include": ["lightning*.config.ts", "tests"]
 }
