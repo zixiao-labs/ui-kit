@@ -65,7 +65,14 @@ export function Example() {
 - `base.css`：设计语言无关的 `--zx-*` 默认值、作用域重置和共享组件规则。组件只读取这个中性契约，不读取任何设计语言的专属 tokens。
 - `themes/*.css`：各风格的独立适配层。只有 `themes/clean.css` 定义和映射 `--md-sys-*`；Minimal、Soft、Brutalist 直接实现 `--zx-*`。
 
-`styles.css` 是包含全部现有风格的便捷入口，默认选择 Clean。它不是必须使用的全局设计系统。由于当前 Nasti 开发模式不展开相对 CSS `@import`，该入口由基础层和适配层自动拼接为扁平 CSS；修改源样式后运行 `pnpm --filter @zixiao-labs/ui-kits-react styles:generate`。测试会检查入口与源文件同步，不手工维护两份样式。
+`styles.css` 是包含全部现有风格的便捷入口，默认选择 Clean。它不是必须使用的全局设计系统。由于当前 Nasti 开发模式不展开相对 CSS `@import`，基础入口与完整入口均生成为扁平 CSS：
+
+- `foundation.css`：中性 token 默认值与 Button。
+- `display.css`、`forms.css`、`navigation.css`、`pickers.css`：共享组件样式。
+- `base.css`：以上源文件生成的无设计语言依赖入口。
+- `styles.css`：`base.css` 与各独立主题适配层的完整入口。
+
+修改源样式后运行 `pnpm --filter @zixiao-labs/ui-kits-react styles:generate`。测试会检查两个入口与源文件同步，不直接编辑生成文件。
 
 只需要某种风格时，先加载基础层，再加载所选适配层：
 
@@ -97,7 +104,49 @@ export function SoftExample() {
 
 每个作用域都从中性默认值开始，避免继承父作用域的语言特征。适配层可以直接赋值，也可映射自己的 token 命名；不需要修改 Button 或增加 `if (style)`。
 
-Clean 是受 Material 3 启发的 Web 实现，不是 Google 官方组件，也没有引入维护模式的 `@material/web`。它目前使用静态明暗配色，尚未实现动态种子色、高对比等级或完整 Material 3 组件集。这些限制不约束其他设计语言。
+Clean 是受 Material 3 启发的 Web 实现，不是 Google 官方组件，也没有引入维护模式的 `@material/web`。它使用静态明暗配色，尚未实现动态种子色、高对比等级或 Compose Expressive 同等能力。这些限制不约束其他设计语言。
+
+### 组件目录
+
+以 [HeroUI 3.2.7 All Components](https://www.heroui.com/docs/components) 的条目作为规模基准，**不复制或兼容 HeroUI 的 API**：
+
+| 分类       | 组件                                                                                                                                                                                 |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 按钮       | Button、ButtonGroup、CloseButton、ToggleButton、ToggleButtonGroup                                                                                                                    |
+| 集合       | Dropdown、ListBox、TagGroup                                                                                                                                                          |
+| 颜色       | ColorArea、ColorField、ColorPicker、ColorSlider、ColorSwatch、ColorSwatchPicker                                                                                                      |
+| 控件       | Slider、Switch                                                                                                                                                                       |
+| 数据       | Badge、Chip、Table                                                                                                                                                                   |
+| 日期时间   | Calendar、DateField、DatePicker、DateRangePicker、RangeCalendar、TimeField                                                                                                           |
+| 反馈       | Alert、Meter、ProgressBar、ProgressCircle、Skeleton、Spinner                                                                                                                         |
+| 表单       | Checkbox、CheckboxGroup、Description、ErrorMessage、FieldError、Fieldset、Form、Input、InputGroup、InputOTP、Label、NumberField、RadioGroup、Radio、SearchField、TextField、TextArea |
+| 布局       | Card、Separator、Surface、Toolbar                                                                                                                                                    |
+| 媒体       | Avatar、AvatarGroup                                                                                                                                                                  |
+| 导航       | Accordion、Breadcrumbs、Disclosure、DisclosureGroup、Link、Pagination、Tabs                                                                                                          |
+| 浮层       | AlertDialog、Drawer、Modal、Popover、Toast、Tooltip、Sheet                                                                                                                           |
+| 选择器     | Autocomplete、ComboBox、Select                                                                                                                                                       |
+| 排版与工具 | Kbd、Typography、ScrollShadow                                                                                                                                                        |
+
+Demo 的目录支持检索、组件深链接（`/?component=DatePicker`）、手机选择器、深色样本和可复制 TSX。每个条目包含实际可操作用法；Button 保留四主题调参台。新组件首先针对 Clean 打磨，其他适配层能读取中性合同，但不代表已逐个完成其他风格的视觉验收。
+
+复杂交互复用 `react-aria-components`，支持受控与非受控状态、键盘导航和辅助技术语义。表单/选择类遵循 React Aria 的 `isDisabled`、`isRequired`、`isInvalid` 命名；原 `Button` 继续保留原生 `disabled` 和 `onClick`。日期值使用 `@internationalized/date`，颜色值使用 React Aria Color。具体 Props 类型由入口导出，可结合 Demo 查看完整组合。
+
+图标统一使用 `@gravity-ui/icons`，直接渲染 SVG 并继承文字颜色：
+
+```tsx
+import { Plus } from '@gravity-ui/icons'
+import { Button, TextField } from '@zixiao-labs/ui-kits-react'
+
+<Button><Plus aria-hidden="true" />创建项目</Button>
+<Button variant="outline" aria-label="添加成员"><Plus aria-hidden="true" /></Button>
+<TextField label="项目名称" defaultValue="北岸设计" />
+```
+
+图标按钮必须提供可访问名称；不要给 Gravity 图标的所有 path 强加 `fill: none` 或额外 stroke。浮层使用 React Aria 自身的 body portal 生命周期，将原作用域的有效主题、中性 token 与 color-scheme 直接应用到真实浮层表面。不会创建可能被父模态框误设为 inert 的空 portal 容器。
+
+这是源码 workspace，不是已发布的完整产品系统。组件条目覆盖不等于 HeroUI 的全部子组件、所有变体与高级能力：没有虚拟化、跨行单元格编辑、远程搜索服务、文件上传服务或完整多历法/多语言验收。Demo 数据为前端交互内容，不连接业务后端，也不会宣称已保存到远程服务。
+
+`InputOTP` 的未受控值不做运行时长度迁移；切换 `length` 时请同步受控 `value`，或通过新的 `key` 重新挂载。普通输入、粘贴、退格与表单使用不受此限制。
 
 ### Button API
 
@@ -142,18 +191,22 @@ pnpm test:e2e
 UI_KITS_SCREENSHOT_DIR=test-results/screenshots pnpm test:e2e
 ```
 
+OTP 的跨浏览器裁切回归可单独运行：先执行 `pnpm exec playwright install webkit`，再执行 `UI_KITS_TEST_WEBKIT=1 pnpm exec lightning run --config lightning.e2e.config.ts tests/input-otp.e2e.test.ts`。默认回归仍只要求 Chromium。
+
 开发服务验证不等于生产构建验证；部署前仍需单独执行 `pnpm build` 和生产预览检查。
 
 ## 扩展原则
 
-- 先完善 Clean 的基础组件，再扩展 Input、Checkbox 等。只列已经实现的组件，不用不可用的导航制造完整感。
+- 优先完善 Clean；只列已经实现且可操作的组件，不用不可用的导航制造完整感。
 - 风格不改变行为；无法由 tokens 表达的结构差异再考虑 skin，不在组件里堆积 `if (style)`。
-- Dialog、Select 等复杂交互优先评估成熟的无样式无障碍 primitives，不自行重造焦点管理。
+- Dialog、Select 等复杂交互使用 React Aria 无样式无障碍 primitives，不自行重造焦点管理。扩展时保留受控状态、原生表单语义与主题隔离。
 - 出现真实复用和发布需求后再拆独立 tokens/primitives 包，引入库构建、产物验证和版本发布流程。
 
 ## Nasti 注意事项
 
 保持 TanStack runtime/compiler 固定版本配套。`@tanstack/start-plugin-core@1.171.55` 是当前 Nasti 集成所需的编译协议依赖，不单独升级，也不额外添加 `tanstackRouter()`。
+
+Demo 的 `nasti.config.ts` 为 Adobe 的公开 ESM 入口设置了解析桥接：Nasti 2.9.0 默认按子路径分别预打包，会重复实例化 React Aria 的 collection/focus 等 context，导致集合 hydration 报错。桥接通过实际安装路径解析，限于 Demo，不修改上游依赖或组件 API；不能用 Start 不支持的 `bundledDev` 替代。升级 Nasti 后应重跑集合、嵌套弹层与焦点恢复回归，再评估是否删除此桥接。
 
 构建输出位于 `apps/demo/dist/client/` 和 `apps/demo/dist/server/server.mjs`。部署时仅公开 `dist/client/`，不要把整个 `dist/` 作为静态目录。服务端导出 `{ fetch(request) }`，需根据部署平台适配。
 

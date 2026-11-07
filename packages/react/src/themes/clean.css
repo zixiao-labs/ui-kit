@@ -21,6 +21,8 @@
   --md-sys-color-outline-variant: #d3d6df;
   --md-sys-color-error: #ba1a1a;
   --md-sys-color-on-error: #ffffff;
+  --md-sys-color-error-container: #ffdad6;
+  --md-sys-color-on-error-container: #410002;
   --md-sys-shape-corner-none: 0px;
   --md-sys-shape-corner-extra-small: 4px;
   --md-sys-shape-corner-small: 8px;
@@ -67,6 +69,8 @@
   --md-sys-color-outline-variant: #434751;
   --md-sys-color-error: #ffb4ab;
   --md-sys-color-on-error: #690005;
+  --md-sys-color-error-container: #93000a;
+  --md-sys-color-on-error-container: #ffdad6;
 }
 
 /* Translate Clean's vocabulary into the language-neutral zx contract. */
@@ -99,4 +103,13 @@
   --zx-button-height-lg: 56px;
   --zx-button-padding: 24px;
   --zx-button-active-transform: scale(0.97);
+  --zx-radius-sm: var(--md-sys-shape-corner-small);
+  --zx-radius-md: var(--md-sys-shape-corner-medium);
+  --zx-radius-lg: var(--md-sys-shape-corner-large);
+  --zx-radius-full: var(--md-sys-shape-corner-full);
+  --zx-surface-raised: var(--md-sys-color-surface-container-lowest);
+  --zx-error: var(--md-sys-color-error);
+  --zx-on-error: var(--md-sys-color-on-error);
+  --zx-error-container: var(--md-sys-color-error-container);
+  --zx-on-error-container: var(--md-sys-color-on-error-container);
 }

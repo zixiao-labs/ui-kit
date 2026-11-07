@@ -1,0 +1,623 @@
+.zx-field,
+.zx-form,
+.zx-fieldset {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  color: var(--zx-text);
+  font-family: var(--zx-font);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.zx-form,
+.zx-fieldset {
+  gap: 24px;
+}
+
+.zx-label,
+.zx-fieldset__legend {
+  color: var(--zx-text);
+  font-family: var(--zx-font);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.zx-description,
+.zx-error-message {
+  margin: 0;
+  color: var(--zx-muted);
+  font-family: var(--zx-font);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.zx-error-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--zx-error);
+}
+
+.zx-error-message > svg {
+  flex: none;
+  margin-block-start: 4px;
+}
+
+.zx-input,
+.zx-input-group {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  border: 1px solid var(--zx-control-border);
+  border-radius: var(--zx-radius-md);
+  background: var(--zx-surface);
+  color: var(--zx-text);
+  font-family: var(--zx-font);
+  font-size: 16px;
+  line-height: 1.5;
+  transition:
+    border-color var(--zx-motion-duration-short) var(--zx-motion-easing),
+    background-color var(--zx-motion-duration-short) var(--zx-motion-easing);
+}
+
+.zx-input {
+  padding: 8px 12px;
+}
+
+.zx-input::placeholder {
+  color: var(--zx-muted);
+  opacity: 1;
+}
+
+.zx-input[data-size='lg'],
+.zx-input-group[data-size='lg'] {
+  min-height: 48px;
+}
+
+.zx-input[data-variant='tonal'],
+.zx-input-group[data-variant='tonal'] {
+  background: var(--zx-tonal);
+  color: var(--zx-on-tonal);
+  border-color: transparent;
+}
+
+.zx-input[data-hovered]:not([data-disabled]),
+.zx-input-group[data-hovered]:not([data-disabled]) {
+  border-color: var(--zx-muted);
+}
+
+.zx-input[data-focused],
+.zx-input-group[data-focus-within] {
+  border-color: var(--zx-focus);
+}
+
+.zx-input:focus-visible,
+.zx-input[data-focus-visible],
+.zx-input-group[data-focus-visible] {
+  outline: 2px solid var(--zx-focus);
+  outline-offset: 2px;
+}
+
+.zx-input[data-invalid],
+.zx-input-group[data-invalid] {
+  border-color: var(--zx-error);
+}
+
+.zx-input[data-disabled],
+.zx-input:disabled,
+.zx-input-group[data-disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.zx-input[readonly] {
+  cursor: default;
+}
+
+.zx-textarea {
+  display: block;
+  min-height: 112px;
+  resize: vertical;
+}
+
+.zx-input-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-inline: 4px;
+}
+
+.zx-input-group > .zx-input {
+  flex: 1;
+  align-self: stretch;
+  width: 0;
+  min-height: 42px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  outline: none;
+}
+
+.zx-input-group[data-size='lg'] > .zx-input {
+  min-height: 46px;
+}
+
+.zx-input-group[data-disabled] > .zx-input {
+  opacity: 1;
+}
+
+.zx-input-group__adornment {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 8px;
+  color: var(--zx-muted);
+  font-size: 14px;
+}
+
+.zx-input-group__adornment > svg {
+  flex: none;
+}
+
+.zx-field-button {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--zx-radius-sm);
+  background: transparent;
+  color: var(--zx-text);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.zx-field-button[data-hovered]:not([data-disabled]),
+.zx-field-button[data-pressed]:not([data-disabled]) {
+  background: var(--zx-tonal);
+  color: var(--zx-on-tonal);
+}
+
+.zx-field-button[data-focus-visible] {
+  outline: 2px solid var(--zx-focus);
+  outline-offset: -4px;
+}
+
+.zx-field-button[data-disabled] {
+  color: var(--zx-muted);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.zx-search-field[data-empty] .zx-search-field__clear {
+  visibility: hidden;
+}
+
+.zx-search-field input::-webkit-search-cancel-button,
+.zx-search-field input::-webkit-search-decoration {
+  appearance: none;
+}
+
+.zx-number-field .zx-input {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.zx-choice {
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+  min-width: 44px;
+  min-height: 44px;
+  width: fit-content;
+  max-width: 100%;
+  color: var(--zx-text);
+  font-family: var(--zx-font);
+  font-size: 16px;
+  line-height: 1.5;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.zx-choice__label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.zx-checkbox__box,
+.zx-radio__circle {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--zx-control-border);
+  background: var(--zx-surface);
+  color: var(--zx-on-accent);
+  transition:
+    background-color var(--zx-motion-duration-short) var(--zx-motion-easing),
+    border-color var(--zx-motion-duration-short) var(--zx-motion-easing);
+}
+
+.zx-checkbox__box {
+  border-radius: var(--zx-radius-sm);
+}
+
+.zx-checkbox__box > svg {
+  visibility: hidden;
+}
+
+.zx-checkbox[data-selected] .zx-checkbox__box,
+.zx-checkbox[data-indeterminate] .zx-checkbox__box {
+  background: var(--zx-accent);
+  border-color: var(--zx-accent);
+}
+
+.zx-checkbox[data-selected] .zx-checkbox__box > svg,
+.zx-checkbox[data-indeterminate] .zx-checkbox__box > svg {
+  visibility: visible;
+}
+
+.zx-radio__circle,
+.zx-radio__circle > span {
+  border-radius: 50%;
+}
+
+.zx-radio__circle > span {
+  width: 12px;
+  height: 12px;
+  background: var(--zx-accent);
+  visibility: hidden;
+}
+
+.zx-radio[data-selected] .zx-radio__circle {
+  border-color: var(--zx-accent);
+}
+
+.zx-radio[data-selected] .zx-radio__circle > span {
+  visibility: visible;
+}
+
+.zx-choice[data-hovered]:not([data-disabled]) .zx-checkbox__box,
+.zx-choice[data-hovered]:not([data-disabled]) .zx-radio__circle {
+  border-color: var(--zx-accent);
+}
+
+.zx-choice[data-invalid] .zx-checkbox__box,
+.zx-choice[data-invalid] .zx-radio__circle {
+  border-color: var(--zx-error);
+}
+
+.zx-choice[data-focus-visible] .zx-checkbox__box,
+.zx-choice[data-focus-visible] .zx-radio__circle,
+.zx-choice[data-focus-visible] .zx-switch__track {
+  outline: 2px solid var(--zx-focus);
+  outline-offset: 4px;
+}
+
+.zx-choice[data-disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.zx-choice[data-readonly] {
+  cursor: default;
+}
+
+.zx-choice-group__options {
+  display: grid;
+  gap: 4px;
+}
+
+.zx-choice-group[data-orientation='horizontal'] > .zx-choice-group__options {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 24px;
+  row-gap: 4px;
+}
+
+.zx-switch__track {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  box-sizing: border-box;
+  width: 48px;
+  height: 28px;
+  padding: 4px;
+  border: 1px solid var(--zx-control-border);
+  border-radius: 999px;
+  background: var(--zx-tonal);
+  transition: background-color var(--zx-motion-duration-short) var(--zx-motion-easing);
+}
+
+.zx-switch__thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--zx-muted);
+  transition:
+    transform var(--zx-motion-duration-short) var(--zx-motion-easing),
+    background-color var(--zx-motion-duration-short) var(--zx-motion-easing);
+}
+
+.zx-switch[data-selected] .zx-switch__track {
+  background: var(--zx-accent);
+  border-color: var(--zx-accent);
+}
+
+.zx-switch[data-selected] .zx-switch__thumb {
+  background: var(--zx-on-accent);
+  transform: translateX(18px);
+}
+
+.zx-switch:dir(rtl)[data-selected] .zx-switch__thumb {
+  transform: translateX(-18px);
+}
+
+.zx-switch[data-hovered]:not([data-disabled]) .zx-switch__track {
+  border-color: var(--zx-accent);
+}
+
+.zx-slider__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.zx-slider__output {
+  margin-inline-start: auto;
+  color: var(--zx-muted);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.zx-slider__track {
+  position: relative;
+  height: 44px;
+  margin-inline: 22px;
+}
+
+.zx-slider__rail {
+  position: absolute;
+  top: 20px;
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--zx-border);
+}
+
+.zx-slider__fill {
+  position: absolute;
+  border-radius: inherit;
+  background: var(--zx-accent);
+}
+
+.zx-slider__thumb {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  top: 50%;
+  width: 44px;
+  height: 44px;
+  cursor: grab;
+}
+
+.zx-slider__thumb::before {
+  box-sizing: border-box;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--zx-accent);
+  border-radius: 50%;
+  background: var(--zx-surface);
+  content: '';
+}
+
+.zx-slider__thumb[data-hovered]::before,
+.zx-slider__thumb[data-dragging]::before {
+  background: var(--zx-tonal);
+}
+
+.zx-slider__thumb[data-focus-visible]::before {
+  outline: 2px solid var(--zx-focus);
+  outline-offset: 4px;
+}
+
+.zx-slider__thumb[data-dragging] {
+  cursor: grabbing;
+}
+
+.zx-slider[data-disabled] .zx-slider__track {
+  opacity: 0.5;
+}
+
+.zx-slider[data-disabled] .zx-slider__thumb {
+  cursor: not-allowed;
+}
+
+.zx-slider[data-orientation='vertical'] {
+  width: fit-content;
+}
+
+.zx-slider[data-orientation='vertical'] .zx-slider__track {
+  width: 44px;
+  height: 160px;
+  margin: 22px 0;
+}
+
+.zx-slider[data-orientation='vertical'] .zx-slider__rail {
+  top: 0;
+  left: 20px;
+  width: 4px;
+  height: 100%;
+}
+
+.zx-slider[data-orientation='vertical'] .zx-slider__thumb {
+  left: 50%;
+  top: auto;
+}
+
+.zx-fieldset {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 24px;
+  border: 1px solid var(--zx-border);
+  border-radius: var(--zx-radius-lg);
+}
+
+.zx-fieldset__legend {
+  padding-inline: 8px;
+}
+
+.zx-fieldset:disabled {
+  opacity: 0.5;
+}
+
+.zx-otp__viewport {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 4px;
+  margin: -4px;
+}
+
+.zx-otp__control {
+  position: relative;
+  width: max-content;
+  border-radius: var(--zx-radius-md);
+  direction: ltr;
+  /* Clip trailing input tracking without creating a scroll container that the
+     browser can shift when revealing the caret at the end of a complete code. */
+  overflow: clip;
+}
+
+.zx-otp__slots {
+  display: flex;
+  gap: 8px;
+}
+
+.zx-otp__slot {
+  box-sizing: border-box;
+  width: 44px;
+  height: 48px;
+  border: 1px solid var(--zx-control-border);
+  border-radius: var(--zx-radius-md);
+  background: var(--zx-surface);
+}
+
+.zx-otp__input {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  /* Include the last character's tracking so the native input never scrolls
+     the first digit out of its cell when a complete code is entered. */
+  width: calc(100% + 52px - 1ch);
+  min-width: 0;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: var(--zx-text);
+  caret-color: var(--zx-accent);
+  font-family: var(--zx-font);
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+  line-height: 48px;
+  letter-spacing: calc(52px - 1ch);
+  text-indent: calc((44px - 1ch) / 2);
+}
+
+.zx-otp__control:focus-within {
+  outline: 2px solid var(--zx-focus);
+  outline-offset: 2px;
+}
+
+.zx-otp__input:focus {
+  outline: none;
+}
+
+.zx-otp__control:focus-within .zx-otp__slot {
+  border-color: var(--zx-focus);
+}
+
+.zx-otp[data-invalid] .zx-otp__slot {
+  border-color: var(--zx-error);
+}
+
+.zx-otp[data-disabled] .zx-otp__control {
+  opacity: 0.5;
+}
+
+.zx-otp__input:disabled {
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zx-input,
+  .zx-input-group,
+  .zx-checkbox__box,
+  .zx-radio__circle,
+  .zx-switch__track,
+  .zx-switch__thumb {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .zx-checkbox__box,
+  .zx-switch__track,
+  .zx-switch__thumb,
+  .zx-radio__circle,
+  .zx-radio__circle > span,
+  .zx-slider__rail,
+  .zx-slider__fill,
+  .zx-slider__thumb::before {
+    forced-color-adjust: none;
+  }
+
+  .zx-checkbox__box,
+  .zx-radio__circle,
+  .zx-switch__track,
+  .zx-slider__thumb::before {
+    border-color: ButtonText;
+    background: Canvas;
+    color: HighlightText;
+  }
+
+  .zx-checkbox[data-selected] .zx-checkbox__box,
+  .zx-checkbox[data-indeterminate] .zx-checkbox__box,
+  .zx-switch[data-selected] .zx-switch__track,
+  .zx-radio[data-selected] .zx-radio__circle > span,
+  .zx-slider__fill {
+    background: Highlight;
+  }
+
+  .zx-switch__thumb {
+    background: ButtonText;
+  }
+
+  .zx-switch[data-selected] .zx-switch__thumb {
+    background: HighlightText;
+  }
+
+  .zx-slider__rail {
+    background: GrayText;
+  }
+}
