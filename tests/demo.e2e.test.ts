@@ -1,4 +1,4 @@
-import { mkdir } from 'node:fs/promises'
+import { mkdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { afterAll, afterEach, beforeAll, beforeEach, expect, test } from '@lightning-js/lightning'
 import { chromium } from 'playwright'
@@ -174,6 +174,9 @@ test('resets nested clean and legacy scopes instead of inheriting dark or brutal
         shadow: computed.boxShadow,
         border: computed.borderTopWidth,
         scheme: getComputedStyle(inner).colorScheme,
+        weight: computed.fontWeight,
+        height: computed.minHeight,
+        easing: computed.transitionTimingFunction,
       }
     }
     document.body.append(outer)
@@ -187,22 +190,132 @@ test('resets nested clean and legacy scopes instead of inheriting dark or brutal
     shadow: 'none',
     border: '1px',
     scheme: 'light',
+    weight: '500',
+    height: '48px',
+    easing: 'cubic-bezier(0.2, 0, 0, 1), cubic-bezier(0.2, 0, 0, 1), cubic-bezier(0.2, 0, 0, 1)',
   })
   expect(result.dark.surface).toBe('rgb(18, 19, 24)')
   expect(result.dark.scheme).toBe('dark')
   expect(result.minimal.surface).toBe('rgb(255, 255, 255)')
   expect(result.minimal.radius).toBe('6px')
+  expect(result.minimal.weight).toBe('600')
+  expect(result.minimal.height).toBe('44px')
+  expect(result.minimal.easing).toBe('ease, ease, ease')
+})
+
+test('renders non-Material and new design languages without loading Clean', async () => {
+  const styles = await Promise.all(
+    ['base.css', 'themes/minimal.css', 'themes/soft.css', 'themes/brutalist.css'].map((path) =>
+      readFile(`packages/react/src/${path}`, 'utf8'),
+    ),
+  )
+  const independent = await context.newPage()
+  independent.on('pageerror', (error) => errors.push(error.message))
+  try {
+    await independent.setContent(`<!doctype html>
+      <html lang="zh-CN"><head><style>
+        ${styles.join('\n')}
+        [data-zx-style='custom'] {
+          --zx-accent: #75482f;
+          --zx-on-accent: #ffffff;
+          --zx-radius: 2px;
+          --zx-label-size: 18px;
+          --zx-label-weight: 700;
+          --zx-label-line-height: 1.75;
+          --zx-motion-duration-short: 450ms;
+          --zx-motion-easing: linear;
+          --zx-button-height: 60px;
+        }
+      </style></head><body>
+        ${['minimal', 'soft', 'brutalist', 'custom']
+          .map(
+            (style) =>
+              `<div data-zx-style="${style}">
+            <button class="zx-button">${style}</button>
+          </div>`,
+          )
+          .join('')}
+        <div data-zx-style="soft" data-zx-color-mode="dark">
+          <button class="zx-button" disabled aria-busy="true">
+            <span class="zx-button__spinner"></span>正在保存
+          </button>
+        </div>
+      </body></html>`)
+    expect(
+      await independent
+        .locator('html')
+        .evaluate((root) => getComputedStyle(root).getPropertyValue('--md-sys-color-primary')),
+    ).toBe('')
+
+    for (const [style, color] of Object.entries({
+      minimal: 'rgb(37, 86, 63)',
+      soft: 'rgb(113, 80, 154)',
+      brutalist: 'rgb(229, 243, 106)',
+    })) {
+      const properties = await independent
+        .getByRole('button', { name: style, exact: true })
+        .evaluate((button) => {
+          const computed = getComputedStyle(button)
+          return {
+            color: computed.backgroundColor,
+            size: computed.fontSize,
+            weight: computed.fontWeight,
+            height: computed.minHeight,
+          }
+        })
+      expect(properties).toEqual({ color, size: '14px', weight: '600', height: '44px' })
+    }
+    const custom = await independent
+      .getByRole('button', { name: 'custom', exact: true })
+      .evaluate((button) => {
+        const computed = getComputedStyle(button)
+        return {
+          color: computed.backgroundColor,
+          radius: computed.borderRadius,
+          size: computed.fontSize,
+          weight: computed.fontWeight,
+          lineHeight: computed.lineHeight,
+          height: computed.minHeight,
+          duration: computed.transitionDuration,
+          easing: computed.transitionTimingFunction,
+        }
+      })
+    expect(custom).toEqual({
+      color: 'rgb(117, 72, 47)',
+      radius: '2px',
+      size: '18px',
+      weight: '700',
+      lineHeight: '31.5px',
+      height: '60px',
+      duration: '0.45s, 0.45s, 0.45s',
+      easing: 'linear, linear, linear',
+    })
+    expect(
+      await independent
+        .locator('.zx-button__spinner')
+        .evaluate((spinner) => getComputedStyle(spinner).borderRadius),
+    ).toBe('50%')
+    expect(
+      await independent
+        .getByRole('button', { name: '正在保存' })
+        .evaluate((button) => getComputedStyle(button).backgroundColor),
+    ).toBe('rgb(214, 183, 244)')
+  } finally {
+    await independent.close()
+  }
 })
 
 test('allows explicit legacy themes on the root element as well as nested scopes', async () => {
   const palettes = await page.evaluate(() => {
     const root = document.documentElement
+    const original = root.getAttribute('data-zx-style')
     const colors: Record<string, string> = {}
     for (const style of ['clean', 'minimal', 'soft', 'brutalist']) {
       root.dataset.zxStyle = style
       colors[style] = getComputedStyle(root).getPropertyValue('--zx-accent').trim()
     }
-    delete root.dataset.zxStyle
+    if (original === null) root.removeAttribute('data-zx-style')
+    else root.setAttribute('data-zx-style', original)
     return colors
   })
   expect(palettes).toEqual({

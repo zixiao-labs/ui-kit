@@ -1,0 +1,26 @@
+[data-zx-style='soft'] {
+  --zx-surface: #faf7ff;
+  --zx-surface-subtle: #efe8f8;
+  --zx-text: #37284a;
+  --zx-muted: #766482;
+  --zx-border: #dfd2ed;
+  --zx-accent: #71509a;
+  --zx-accent-hover: #5e3c86;
+  --zx-on-accent: #ffffff;
+  --zx-focus: #8762b4;
+  --zx-radius: 999px;
+  --zx-shadow: 0 4px 12px rgb(88 52 123 / 12%);
+}
+
+[data-zx-style='soft'][data-zx-color-mode='dark'] {
+  --zx-surface: #251e30;
+  --zx-surface-subtle: #342940;
+  --zx-text: #f2eafa;
+  --zx-muted: #c1afd1;
+  --zx-border: #665275;
+  --zx-accent: #d6b7f4;
+  --zx-accent-hover: #e5d0fa;
+  --zx-on-accent: #342045;
+  --zx-focus: #d6b7f4;
+  --zx-shadow: 0 4px 12px rgb(0 0 0 / 14%);
+}

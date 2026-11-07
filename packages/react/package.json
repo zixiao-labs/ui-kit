@@ -9,9 +9,12 @@
   ],
   "exports": {
     ".": "./src/index.ts",
-    "./styles.css": "./src/styles.css"
+    "./styles.css": "./src/styles.css",
+    "./base.css": "./src/base.css",
+    "./themes/*.css": "./src/themes/*.css"
   },
   "scripts": {
+    "styles:generate": "node scripts/generate-styles.mjs",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

@@ -1,0 +1,28 @@
+[data-zx-style='brutalist'] {
+  --zx-surface: #faf8ef;
+  --zx-surface-subtle: #eeeadb;
+  --zx-text: #24251c;
+  --zx-muted: #66674f;
+  --zx-border: #24251c;
+  --zx-accent: #e5f36a;
+  --zx-accent-hover: #d6e457;
+  --zx-on-accent: #24251c;
+  --zx-focus: #52600c;
+  --zx-radius: 0px;
+  --zx-border-width: 2px;
+  --zx-solid-border: var(--zx-border);
+  --zx-shadow: 3px 3px 0 var(--zx-border);
+  --zx-font: 'SFMono-Regular', Consolas, 'Liberation Mono', 'PingFang SC', monospace;
+}
+
+[data-zx-style='brutalist'][data-zx-color-mode='dark'] {
+  --zx-surface: #24251e;
+  --zx-surface-subtle: #303226;
+  --zx-text: #f2f3e7;
+  --zx-muted: #b8bba5;
+  --zx-border: #c3c6ab;
+  --zx-accent: #e5f36a;
+  --zx-accent-hover: #f0fa9d;
+  --zx-on-accent: #24251c;
+  --zx-focus: #e5f36a;
+}

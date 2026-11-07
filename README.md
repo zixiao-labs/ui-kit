@@ -58,9 +58,46 @@ export function Example() {
 
 四套风格均提供显式 `light` / `dark` 配色。把 `data-zx-style` 和 `data-zx-color-mode` 放在同一个作用域元素上。不同作用域可并存；嵌套的 `data-zx-style` 会重置为该风格的浅色默认值，深色需显式指定。
 
-Clean 的基础角色使用 `--md-sys-color-*`、`--md-sys-shape-*`、`--md-sys-typescale-*` 和动效变量；共享组件消费 `--zx-*` 角色，各风格映射到自己的表达。可在主题作用域的 CSS 中覆盖语义变量，不必修改组件行为。
+**设计语言不是全局前提。** Clean 借鉴 Material，其他风格以及后续设计语言不需要采用 Material 的颜色、排版、形状或动效规则，也不需要定义任何 `--md-*` 变量。
 
-这是受 Material 3 启发的 Web 实现，不是 Google 官方组件，也没有引入维护模式的 `@material/web`。目前使用静态明暗配色，尚未实现动态种子色、高对比等级或完整 Material 3 组件集。
+样式分为两层：
+
+- `base.css`：设计语言无关的 `--zx-*` 默认值、作用域重置和共享组件规则。组件只读取这个中性契约，不读取任何设计语言的专属 tokens。
+- `themes/*.css`：各风格的独立适配层。只有 `themes/clean.css` 定义和映射 `--md-sys-*`；Minimal、Soft、Brutalist 直接实现 `--zx-*`。
+
+`styles.css` 是包含全部现有风格的便捷入口，默认选择 Clean。它不是必须使用的全局设计系统。由于当前 Nasti 开发模式不展开相对 CSS `@import`，该入口由基础层和适配层自动拼接为扁平 CSS；修改源样式后运行 `pnpm --filter @zixiao-labs/ui-kits-react styles:generate`。测试会检查入口与源文件同步，不手工维护两份样式。
+
+只需要某种风格时，先加载基础层，再加载所选适配层：
+
+```tsx
+import { Button } from '@zixiao-labs/ui-kits-react'
+import '@zixiao-labs/ui-kits-react/base.css'
+import '@zixiao-labs/ui-kits-react/themes/soft.css'
+
+export function SoftExample() {
+  return (
+    <div data-zx-style="soft">
+      <Button>保存草稿</Button>
+    </div>
+  )
+}
+```
+
+此用法不会加载 Clean 或任何 Material tokens。演示站外壳显式选用 Clean，不代表组件库强制使用它。
+
+新增设计语言时，在自己的 CSS 中为 `[data-zx-style="你的风格"]` 实现 `--zx-*`，需要明暗配色时再增加同作用域的 `data-zx-color-mode` 规则：
+
+| 共享角色                                                                                         | 控制内容             |
+| ------------------------------------------------------------------------------------------------ | -------------------- |
+| `--zx-surface`、`--zx-text`、`--zx-accent`、`--zx-on-accent`、`--zx-tonal`、`--zx-on-tonal` 等   | 背景、文字与操作配色 |
+| `--zx-font`、`--zx-label-size`、`--zx-label-weight`、`--zx-label-line-height`                    | 字体与标签排版       |
+| `--zx-radius`、`--zx-border-width`、`--zx-shadow`                                                | 形状、边界与层次     |
+| `--zx-button-height`、`--zx-button-height-sm`、`--zx-button-height-lg`、`--zx-button-padding` 等 | 各尺寸档位与留白     |
+| `--zx-motion-duration-short`、`--zx-motion-easing`、`--zx-button-active-transform`               | 过渡与按压反馈       |
+
+每个作用域都从中性默认值开始，避免继承父作用域的语言特征。适配层可以直接赋值，也可映射自己的 token 命名；不需要修改 Button 或增加 `if (style)`。
+
+Clean 是受 Material 3 启发的 Web 实现，不是 Google 官方组件，也没有引入维护模式的 `@material/web`。它目前使用静态明暗配色，尚未实现动态种子色、高对比等级或完整 Material 3 组件集。这些限制不约束其他设计语言。
 
 ### Button API
 
@@ -73,7 +110,7 @@ Clean 的基础角色使用 `--md-sys-color-*`、`--md-sys-shape-*`、`--md-sys-
 | `loading`  | `boolean`                               | `false` |
 | `disabled` | 原生属性                                | `false` |
 
-工作台中的 Filled / Tonal / Outlined / Text 分别对应上述四个 variant。默认按钮 48px，高度档位为 44 / 48 / 56px。加载时保留文字与可访问名称、设置 `aria-busy` 并禁用重复交互。提供 hover、active、focus-visible、disabled、loading，尊重 `prefers-reduced-motion`。
+工作台中的 Filled / Tonal / Outlined / Text 分别对应上述四个 variant，这些是展示文案，不是对其他设计语言的命名要求。尺寸和排版由适配层决定：Clean 的 `sm / md / lg` 高度为 44 / 48 / 56px；其他三套风格保留原有的 44 / 44 / 52px，不强制跟随 Material 尺度。加载时保留文字与可访问名称、设置 `aria-busy` 并禁用重复交互。提供 hover、active、focus-visible、disabled、loading，尊重 `prefers-reduced-motion`。
 
 ## 常用命令
 

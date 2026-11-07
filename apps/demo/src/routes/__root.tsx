@@ -27,7 +27,7 @@ export const Route = createRootRoute({
 
 function Root() {
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" data-zx-style="clean">
       <head>
         <HeadContent />
       </head>
