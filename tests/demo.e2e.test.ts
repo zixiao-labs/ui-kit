@@ -32,7 +32,7 @@ beforeEach(async () => {
   page.on('pageerror', (error) => errors.push(error.message))
   await page.goto('/')
   // Wait for a real hydrated action, not for a fixed delay after navigation.
-  await page.getByRole('button', { name: '开始创造' }).click()
+  await page.getByRole('button', { name: '触发交互' }).click()
   await expect.poll(() => page.locator('output').textContent()).toBe('已触发 1 次交互')
   await page.getByRole('button', { name: '重置计数' }).click()
 })
@@ -47,13 +47,16 @@ afterEach(async () => {
 
 test('keeps component behavior across all four expressions', async () => {
   expect(await page.title()).toContain('Zixiao Laboratories UI Kits')
-  expect(await page.getByRole('heading', { level: 1 }).textContent()).toBe('Clean.')
-  const action = page.getByRole('button', { name: '开始创造' })
+  expect(await page.getByRole('heading', { level: 1 }).textContent()).toBe('Button')
+  const action = page.getByRole('button', { name: '触发交互' })
   expect(await action.getAttribute('type')).toBe('button')
 
   for (const [index, style] of ['soft', 'brutalist', 'minimal', 'clean'].entries()) {
     await page.getByLabel('设计风格').selectOption(style)
     await expect.poll(() => page.getByTestId('preview').getAttribute('data-zx-style')).toBe(style)
+    expect(await page.locator('.preview-style-label').textContent()).toBe(
+      `${{ clean: 'Clean', minimal: 'Minimal', soft: 'Soft', brutalist: 'Brutalist' }[style]} / Button`,
+    )
     await action.click()
     await expect.poll(() => page.locator('output').textContent()).toBe(`已触发 ${index + 1} 次交互`)
   }
@@ -62,7 +65,7 @@ test('keeps component behavior across all four expressions', async () => {
 })
 
 test('updates variants, sizes, loading and disabled without losing keyboard behavior', async () => {
-  const action = page.getByRole('button', { name: '开始创造' })
+  const action = page.getByRole('button', { name: '触发交互' })
   await page.getByLabel('变体').selectOption('tonal')
   await page.getByRole('radio', { name: '大', exact: true }).check()
   await expect.poll(() => action.getAttribute('data-variant')).toBe('tonal')
@@ -81,6 +84,27 @@ test('updates variants, sizes, loading and disabled without losing keyboard beha
   await page.keyboard.press('Space')
   await expect.poll(() => page.locator('output').textContent()).toBe('已触发 2 次交互')
   expect(await action.evaluate((element) => getComputedStyle(element).outlineStyle)).toBe('solid')
+})
+
+test('reflects variant selection in the samples, preview and current code', async () => {
+  const outlined = page.getByRole('button', { name: '预览 Outlined' })
+  await outlined.click()
+  await expect.poll(() => page.getByLabel('变体').inputValue()).toBe('outline')
+  expect(await outlined.getAttribute('aria-pressed')).toBe('true')
+  expect(await page.getByRole('button', { name: '预览 Filled' }).getAttribute('aria-pressed')).toBe(
+    'false',
+  )
+  expect(await page.locator('.variant-example[data-selected="true"]').count()).toBe(1)
+  expect(await page.locator('.preview-properties').textContent()).toBe('outline / md')
+  expect(await page.getByRole('code').textContent()).toContain('variant="outline"')
+
+  await page.getByLabel('变体').selectOption('ghost')
+  await page.getByRole('radio', { name: '小', exact: true }).check()
+  expect(await outlined.getAttribute('aria-pressed')).toBe('false')
+  expect(await page.getByRole('button', { name: '预览 Text' }).getAttribute('aria-pressed')).toBe(
+    'true',
+  )
+  expect(await page.locator('.preview-properties').textContent()).toBe('ghost / sm')
 })
 
 test('switches light and dark colors for every expression without changing the page theme', async () => {
@@ -381,7 +405,7 @@ test('fits mobile, navigates and respects reduced motion', async () => {
     '先统一行为，再表达风格。',
   )
   await page.getByRole('link', { name: '组件', exact: true }).click()
-  await expect.poll(() => page.getByRole('heading', { level: 1 }).textContent()).toBe('Clean.')
+  await expect.poll(() => page.getByRole('heading', { level: 1 }).textContent()).toBe('Button')
 })
 
 test('serves meaningful SSR content with JavaScript disabled', async () => {
@@ -390,11 +414,11 @@ test('serves meaningful SSR content with JavaScript disabled', async () => {
     const ssr = await noJS.newPage()
     const response = await ssr.goto(app!.url)
     expect(response?.status()).toBe(200)
-    expect(await ssr.getByRole('heading', { level: 1 }).textContent()).toBe('Clean.')
+    expect(await ssr.getByRole('heading', { level: 1 }).textContent()).toBe('Button')
     // Nasti injects development CSS through JavaScript. This checks SSR semantics;
     // no-JS production styling requires a separate build/preview validation.
-    expect(await ssr.getByRole('button', { name: '开始创造' }).getAttribute('type')).toBe('button')
-    expect(await ssr.getByRole('button', { name: '开始创造' }).getAttribute('data-variant')).toBe(
+    expect(await ssr.getByRole('button', { name: '触发交互' }).getAttribute('type')).toBe('button')
+    expect(await ssr.getByRole('button', { name: '触发交互' }).getAttribute('data-variant')).toBe(
       'solid',
     )
   } finally {
@@ -410,6 +434,7 @@ test('captures the real desktop, mobile, dark and zoomed layouts with Playwright
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
     if (directory) await page.screenshot({ path: join(directory, `${name}.png`), fullPage })
   }
+  expect((await page.getByTestId('preview').boundingBox())!.y).toBeLessThan(300)
   await capture('desktop')
   await capture('desktop-full', true)
   await page.getByRole('button', { name: '深色模式' }).click()
@@ -424,6 +449,7 @@ test('captures the real desktop, mobile, dark and zoomed layouts with Playwright
   }
   await page.getByLabel('设计风格').selectOption('clean')
   await page.setViewportSize({ width: 390, height: 844 })
+  expect((await page.getByTestId('preview').boundingBox())!.y).toBeLessThan(360)
   await capture('mobile')
   await capture('mobile-full', true)
   // A 1440×900 window at 200% zoom has a 720×450 CSS viewport.
@@ -437,7 +463,7 @@ test('captures the real desktop, mobile, dark and zoomed layouts with Playwright
   try {
     const zoomPage = await zoomContext.newPage()
     await zoomPage.goto('/')
-    await zoomPage.getByRole('button', { name: '开始创造' }).click()
+    await zoomPage.getByRole('button', { name: '触发交互' }).click()
     await expect.poll(() => zoomPage.locator('output').textContent()).toBe('已触发 1 次交互')
     expect(await zoomPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
