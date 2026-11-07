@@ -8,10 +8,10 @@ export const Route = createFileRoute('/')({
 })
 
 const styles = [
-  { id: 'clean', name: 'Clean', description: '清晰的层次，刚好的表达。' },
-  { id: 'minimal', name: 'Minimal', description: '去掉多余修饰，让内容成为焦点。' },
-  { id: 'soft', name: 'Soft', description: '柔和的色彩，轻盈而亲近的触感。' },
-  { id: 'brutalist', name: 'Brutalist', description: '鲜明的边界，直接而有力的表达。' },
+  { id: 'clean', name: 'Clean', description: '圆角轮廓，蓝灰配色' },
+  { id: 'minimal', name: 'Minimal', description: '小圆角，绿色强调' },
+  { id: 'soft', name: 'Soft', description: '柔和紫色，轻量阴影' },
+  { id: 'brutalist', name: 'Brutalist', description: '直角边界，高对比配色' },
 ] as const
 
 const variants = [
@@ -38,7 +38,7 @@ import '@zixiao-labs/ui-kits-react/styles.css'
 
 <div data-zx-style="${style.id}" data-zx-color-mode="${dark ? 'dark' : 'light'}">
   <Button variant="${variant}" size="${size}"${loading ? ' loading' : ''}${disabled ? ' disabled' : ''}>
-    开始创造
+    触发交互
   </Button>
 </div>`
   const copyState = copyResult?.code === example ? copyResult.state : 'idle'
@@ -55,42 +55,27 @@ import '@zixiao-labs/ui-kits-react/styles.css'
   return (
     <main className="catalog">
       <aside className="catalog-nav" aria-label="组件目录">
-        <div className="catalog-nav-heading">
-          <span className="catalog-symbol" aria-hidden="true">
-            ◧
-          </span>
-          设计语言
-        </div>
+        <div className="catalog-nav-heading">组件目录</div>
         <a className="catalog-current" href="#button" aria-current="location">
-          <span>Button</span>
-          <span className="nav-count">01</span>
+          Button
         </a>
         <a href="#variants">按钮层级</a>
         <a href="#colors">色彩与主题</a>
-        <div className="catalog-nav-note">
-          <span className="status-dot" />
-          <span>一套行为，多种表达</span>
-        </div>
+        <p className="catalog-nav-note">共享行为，独立主题</p>
       </aside>
 
       <div className="catalog-content">
         <div className="page-intro">
           <div>
-            <p className="eyebrow">设计风格 / 01</p>
-            <h1>
-              Clean<span className="title-period">.</span>
-            </h1>
-            <p className="intro-description">克制的色彩，清晰的层次。让组件回到内容与交互本身。</p>
+            <h1>Button</h1>
+            <p className="intro-description">调整风格、尺寸与状态，查看对应的 React 代码</p>
           </div>
-          <span className="style-badge">Material-inspired</span>
+          <span className="intro-meta">{styles.length} 种设计风格</span>
         </div>
 
         <section id="button" className="component-section" aria-labelledby="button-title">
           <div className="section-heading">
-            <div className="section-title">
-              <h2 id="button-title">Button</h2>
-              <span className="component-kind">操作组件</span>
-            </div>
+            <h2 id="button-title">交互预览</h2>
             <span className="section-caption">原生语义 · 键盘可用</span>
           </div>
 
@@ -102,10 +87,7 @@ import '@zixiao-labs/ui-kits-react/styles.css'
               data-zx-color-mode={dark ? 'dark' : 'light'}
             >
               <div className="preview-toolbar">
-                <span className="preview-label">
-                  <span className="preview-dot" />
-                  实时预览
-                </span>
+                <span className="preview-style-label">{style.name} / Button</span>
                 <button
                   className="mode-toggle"
                   type="button"
@@ -120,7 +102,6 @@ import '@zixiao-labs/ui-kits-react/styles.css'
                 </button>
               </div>
               <div className="preview-stage">
-                <span className="preview-style-label">{style.name} / Button</span>
                 <h3>{style.description}</h3>
                 <div className="preview-actions">
                   <Button
@@ -130,10 +111,7 @@ import '@zixiao-labs/ui-kits-react/styles.css'
                     disabled={disabled}
                     onClick={() => setCount((value) => value + 1)}
                   >
-                    开始创造
-                    <svg className="action-icon" viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M5 12h14m-6-6 6 6-6 6" />
-                    </svg>
+                    触发交互
                   </Button>
                   <Button variant="ghost" size={size} onClick={() => setCount(0)}>
                     重置计数
@@ -144,7 +122,9 @@ import '@zixiao-labs/ui-kits-react/styles.css'
                 </output>
               </div>
               <div className="preview-bottom">
-                <span>外观自由切换，行为始终一致。</span>
+                <span className="preview-properties">
+                  {variant} / {size}
+                </span>
                 <div className="token-swatches" aria-label="当前主题色板">
                   <span className="token-accent" title="Primary" />
                   <span className="token-tonal" title="Secondary container" />
@@ -157,7 +137,7 @@ import '@zixiao-labs/ui-kits-react/styles.css'
             <aside className="lab-controls" aria-label="组件配置">
               <div className="controls-heading">
                 <h3>配置</h3>
-                <span>PROPERTIES</span>
+                <span>Props</span>
               </div>
               <label className="select-control" htmlFor="style">
                 <span>设计风格</span>
@@ -257,9 +237,7 @@ import '@zixiao-labs/ui-kits-react/styles.css'
             </pre>
             {copyState !== 'idle' && (
               <output className="copy-feedback">
-                {copyState === 'copied'
-                  ? '已复制当前代码。'
-                  : '无法访问剪贴板，请选中代码手动复制。'}
+                {copyState === 'copied' ? '已复制当前代码' : '无法访问剪贴板，请选中代码手动复制'}
               </output>
             )}
           </div>
@@ -267,13 +245,17 @@ import '@zixiao-labs/ui-kits-react/styles.css'
 
         <section id="variants" className="variants-section" aria-labelledby="variants-title">
           <div className="section-heading">
-            <h2 id="variants-title">恰到好处的强调</h2>
-            <span className="section-caption">四种层级，同一套 API</span>
+            <h2 id="variants-title">按钮层级</h2>
+            <span className="section-caption">Clean / 点击样本切换变体</span>
           </div>
           <div className="variant-grid" data-zx-style="clean">
             {variants.map((item) => (
-              <div className="variant-example" key={item.id}>
-                <Button variant={item.id} onClick={() => setVariant(item.id)}>
+              <div className="variant-example" key={item.id} data-selected={variant === item.id}>
+                <Button
+                  variant={item.id}
+                  aria-pressed={variant === item.id}
+                  onClick={() => setVariant(item.id)}
+                >
                   预览 {item.name}
                 </Button>
                 <span>
@@ -287,11 +269,8 @@ import '@zixiao-labs/ui-kits-react/styles.css'
 
         <section id="colors" className="colors-section" aria-labelledby="colors-title">
           <div className="section-heading">
-            <div>
-              <p className="eyebrow">FOUNDATIONS</p>
-              <h2 id="colors-title">少一点颜色，多一点秩序。</h2>
-            </div>
-            <span className="section-caption">语义色彩 · 局部作用域 · 明暗配对</span>
+            <h2 id="colors-title">色彩与主题</h2>
+            <span className="section-caption">Clean / 浅色参考</span>
           </div>
           <div className="color-grid" data-zx-style="clean">
             <div className="color-sample color-primary">
@@ -320,8 +299,8 @@ import '@zixiao-labs/ui-kits-react/styles.css'
             </div>
           </div>
           <p className="foundation-note">
-            Clean 是第一套完善的风格。Minimal、Soft 与 Brutalist
-            仍可在上方预览中切换，组件行为与属性保持一致。
+            Clean 是当前优先完善的风格。Minimal、Soft 与 Brutalist
+            也可在上方切换，四种风格均支持明暗预览，组件行为与属性保持一致。
           </p>
         </section>
       </div>

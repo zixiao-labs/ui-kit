@@ -59,7 +59,7 @@ function Root() {
         </div>
         <footer className="site-footer">
           <span>Zixiao Laboratories UI Kits</span>
-          <span>一套行为，多种表达。 / React · TypeScript</span>
+          <span>一套行为，多种表达 / React · TypeScript</span>
         </footer>
         <Scripts />
       </body>
