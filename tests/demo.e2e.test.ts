@@ -364,6 +364,7 @@ test('copies the current code and reports a recoverable clipboard failure', asyn
   await page.getByLabel('变体').selectOption('tonal')
   await page.getByRole('button', { name: '复制代码' }).click()
   await expect.poll(() => page.getByRole('status').filter({ hasText: '已复制' }).count()).toBe(1)
+  expect(await page.getByRole('button', { name: '已复制', exact: true }).count()).toBe(1)
   expect(await page.locator('html').getAttribute('data-copied-code')).toBe(
     await page.getByRole('code').textContent(),
   )
@@ -384,6 +385,7 @@ test('copies the current code and reports a recoverable clipboard failure', asyn
   await expect
     .poll(() => page.getByRole('status').filter({ hasText: '请选中代码手动复制' }).count())
     .toBe(1)
+  expect(await page.getByRole('button', { name: '复制失败，重试', exact: true }).count()).toBe(1)
   expect(await page.getByLabel('变体').inputValue()).toBe('outline')
 })
 

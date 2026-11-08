@@ -1,0 +1,586 @@
+.zx-picker-field,
+.zx-autocomplete,
+.zx-color-slider {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  color: var(--zx-text);
+  font-family: var(--zx-font);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.zx-picker-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.zx-picker-help,
+.zx-picker-error {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.zx-picker-help {
+  color: var(--zx-muted);
+}
+
+.zx-picker-error {
+  color: var(--zx-error);
+}
+
+.zx-picker-error:empty {
+  display: none;
+}
+
+.zx-picker-control,
+.zx-date-input,
+.zx-color-field-input {
+  box-sizing: border-box;
+  min-height: 44px;
+  border: 1px solid var(--zx-control-border);
+  border-radius: var(--zx-radius-md);
+  background: var(--zx-surface);
+  color: var(--zx-text);
+  transition:
+    border-color var(--zx-motion-duration-short) var(--zx-motion-easing),
+    background-color var(--zx-motion-duration-short) var(--zx-motion-easing);
+}
+
+.zx-picker-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 0 0 0 12px;
+}
+
+.zx-picker-control[data-hovered],
+.zx-picker-control:hover:not([data-disabled]),
+.zx-date-input[data-hovered],
+.zx-color-field-input:hover:not(:disabled) {
+  border-color: var(--zx-accent);
+}
+
+.zx-picker-control[data-focus-within],
+.zx-date-input[data-focus-within],
+.zx-color-field-input:focus-visible {
+  outline: 2px solid var(--zx-focus);
+  outline-offset: 2px;
+}
+
+.zx-picker-field[data-invalid] .zx-picker-control,
+.zx-picker-field[data-invalid] > .zx-date-input,
+.zx-picker-field[data-invalid] > .zx-color-field-input {
+  border-color: var(--zx-error);
+}
+
+.zx-picker-field[data-disabled],
+.zx-autocomplete[data-disabled],
+.zx-calendar[data-disabled],
+.zx-color-area[data-disabled],
+.zx-color-slider[data-disabled] {
+  opacity: 0.5;
+}
+
+.zx-picker-input {
+  box-sizing: border-box;
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  margin: 0;
+  padding: 8px 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.zx-picker-input::placeholder {
+  color: var(--zx-muted);
+}
+
+.zx-picker-input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.zx-picker-icon-button {
+  display: inline-flex;
+  flex: 0 0 44px;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--zx-radius-sm);
+  background: transparent;
+  color: var(--zx-muted);
+  cursor: pointer;
+}
+
+.zx-picker-icon-button svg,
+.zx-select-trigger > svg,
+.zx-color-picker-trigger > svg,
+.zx-picker-option svg,
+.zx-picker-search-icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.zx-picker-icon-button[data-hovered],
+.zx-picker-icon-button[data-pressed] {
+  background: var(--zx-surface-subtle);
+  color: var(--zx-text);
+}
+
+.zx-picker-icon-button[data-focus-visible],
+.zx-select-trigger[data-focus-visible],
+.zx-color-picker-trigger[data-focus-visible],
+.zx-color-picker-done[data-focus-visible] {
+  outline: 2px solid var(--zx-focus);
+  outline-offset: 2px;
+}
+
+.zx-picker-icon-button[data-disabled] {
+  cursor: not-allowed;
+}
+
+.zx-date-input {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  max-width: 100%;
+  padding: 8px 12px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.zx-picker-control .zx-date-input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  outline: none;
+}
+
+.zx-date-segment {
+  padding: 0 2px;
+  border-radius: var(--zx-radius-sm);
+  outline: none;
+}
+
+.zx-date-segment[data-type='literal'] {
+  padding: 0;
+  color: var(--zx-muted);
+}
+
+.zx-date-segment[data-placeholder] {
+  color: var(--zx-muted);
+}
+
+.zx-date-segment[data-focused] {
+  background: var(--zx-accent);
+  color: var(--zx-on-accent);
+}
+
+.zx-picker-range-separator {
+  color: var(--zx-muted);
+  font-size: 12px;
+}
+
+.zx-date-range-control {
+  gap: 4px;
+}
+
+.zx-picker-popover {
+  box-sizing: border-box;
+  z-index: 100;
+  max-width: calc(100vw - 16px);
+  max-height: var(--available-height);
+  overflow: auto;
+  padding: 8px;
+  border: 1px solid var(--zx-border);
+  border-radius: var(--zx-radius-lg);
+  background: var(--zx-surface-raised);
+  color: var(--zx-text);
+  font-family: var(--zx-font);
+}
+
+.zx-picker-dialog {
+  outline: none;
+}
+
+.zx-calendar {
+  box-sizing: border-box;
+  width: max-content;
+  max-width: 100%;
+  padding: 8px;
+  border: 1px solid var(--zx-border);
+  border-radius: var(--zx-radius-lg);
+  background: var(--zx-surface);
+  color: var(--zx-text);
+  font-family: var(--zx-font);
+  font-size: 14px;
+}
+
+.zx-picker-dialog > .zx-calendar {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.zx-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.zx-calendar-heading {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.zx-calendar-grid {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.zx-calendar-grid td {
+  padding: 0;
+}
+
+.zx-calendar-weekday {
+  height: 32px;
+  color: var(--zx-muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.zx-calendar-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--zx-radius-sm);
+  outline: none;
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+
+.zx-calendar-cell[data-hovered] {
+  background: var(--zx-surface-subtle);
+}
+
+.zx-calendar-cell[data-today] {
+  box-shadow: inset 0 0 0 1px var(--zx-accent);
+}
+
+.zx-calendar-cell[data-selected] {
+  background: var(--zx-accent);
+  color: var(--zx-on-accent);
+}
+
+.zx-range-calendar .zx-calendar-cell[data-selected] {
+  border-radius: 0;
+  background: var(--zx-tonal);
+  color: var(--zx-on-tonal);
+}
+
+.zx-range-calendar .zx-calendar-cell[data-selection-start],
+.zx-range-calendar .zx-calendar-cell[data-selection-end] {
+  border-radius: var(--zx-radius-sm);
+  background: var(--zx-accent);
+  color: var(--zx-on-accent);
+}
+
+.zx-calendar-cell[data-focus-visible] {
+  outline: 2px solid var(--zx-focus);
+  outline-offset: -2px;
+}
+
+.zx-calendar-cell[data-outside-month] {
+  visibility: hidden;
+}
+
+.zx-calendar-cell[data-disabled] {
+  color: var(--zx-muted);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.zx-calendar-cell[data-unavailable] {
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+.zx-calendar-cell[data-invalid] {
+  background: var(--zx-error);
+  color: var(--zx-surface);
+}
+
+.zx-select-trigger,
+.zx-color-picker-trigger {
+  justify-content: space-between;
+  padding-right: 12px;
+  cursor: pointer;
+  font: inherit;
+  text-align: start;
+}
+
+.zx-select-value {
+  flex: 1;
+  min-width: 0;
+}
+
+.zx-select-value[data-placeholder] {
+  color: var(--zx-muted);
+}
+
+.zx-select-trigger[data-disabled],
+.zx-color-picker-trigger[data-disabled] {
+  cursor: not-allowed;
+}
+
+.zx-options-popover {
+  min-width: var(--trigger-width);
+  padding: 4px;
+}
+
+.zx-picker-options {
+  display: grid;
+  gap: 4px;
+  max-height: 280px;
+  overflow: auto;
+  outline: none;
+}
+
+.zx-picker-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: var(--zx-radius-sm);
+  outline: none;
+  color: var(--zx-text);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.zx-picker-option-label {
+  flex: 1;
+}
+
+.zx-picker-option-icon {
+  display: flex;
+  color: var(--zx-muted);
+}
+
+.zx-picker-option-check {
+  margin-inline-start: auto;
+}
+
+.zx-picker-option[data-hovered],
+.zx-picker-option[data-focused] {
+  background: var(--zx-surface-subtle);
+}
+
+.zx-picker-option[data-selected] {
+  background: var(--zx-tonal);
+  color: var(--zx-on-tonal);
+}
+
+.zx-picker-option[data-focus-visible] {
+  outline: 2px solid var(--zx-focus);
+  outline-offset: -2px;
+}
+
+.zx-picker-option[data-disabled] {
+  color: var(--zx-muted);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.zx-picker-empty {
+  display: block;
+  padding: 16px;
+  color: var(--zx-muted);
+  font-size: 14px;
+}
+
+.zx-autocomplete-options {
+  padding: 4px;
+  border: 1px solid var(--zx-border);
+  border-radius: var(--zx-radius-md);
+  background: var(--zx-surface);
+}
+
+.zx-color-area {
+  position: relative;
+  width: 256px;
+  max-width: 100%;
+  height: 192px;
+  border-radius: var(--zx-radius-md);
+  touch-action: none;
+}
+
+.zx-color-thumb {
+  box-sizing: border-box;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--zx-surface);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--zx-control-border);
+}
+
+.zx-color-thumb::after {
+  position: absolute;
+  inset: -10px;
+  content: '';
+}
+
+.zx-color-thumb[data-focus-visible] {
+  outline: 2px solid var(--zx-focus);
+  outline-offset: 4px;
+}
+
+.zx-color-slider {
+  grid-template-columns: 1fr auto;
+  width: 256px;
+  max-width: 100%;
+}
+
+.zx-color-track {
+  position: relative;
+  grid-column: 1 / -1;
+  box-sizing: border-box;
+  height: 44px;
+  border: 1px solid var(--zx-border);
+  border-radius: var(--zx-radius-sm);
+  touch-action: none;
+}
+
+.zx-color-slider[data-orientation='horizontal'] .zx-color-thumb {
+  top: 50%;
+}
+
+.zx-color-slider[data-orientation='vertical'] {
+  width: max-content;
+}
+
+.zx-color-slider[data-orientation='vertical'] .zx-color-track {
+  width: 44px;
+  height: 192px;
+  margin-inline: auto;
+}
+
+.zx-color-slider[data-orientation='vertical'] .zx-color-thumb {
+  left: 50%;
+}
+
+.zx-color-field-input {
+  width: 100%;
+  padding: 8px 12px;
+}
+
+.zx-color-swatch {
+  box-sizing: border-box;
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+  border: 1px solid var(--zx-border);
+  border-radius: var(--zx-radius-sm);
+  forced-color-adjust: none;
+}
+
+.zx-color-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  outline: none;
+}
+
+.zx-color-swatch-option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  border: 2px solid transparent;
+  border-radius: var(--zx-radius-md);
+  outline: none;
+  cursor: pointer;
+}
+
+.zx-color-swatch-option[data-hovered] {
+  background: var(--zx-surface-subtle);
+}
+
+.zx-color-swatch-option[data-selected] {
+  border-color: var(--zx-accent);
+}
+
+.zx-color-swatch-option[data-focus-visible] {
+  outline: 2px solid var(--zx-focus);
+  outline-offset: 2px;
+}
+
+.zx-color-swatch-option[data-disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.zx-color-picker-trigger {
+  gap: 12px;
+  padding-block: 4px;
+}
+
+.zx-color-picker-trigger > span {
+  flex: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.zx-color-picker-panel {
+  display: grid;
+  gap: 16px;
+  padding: 8px;
+}
+
+.zx-color-picker-done {
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: var(--zx-radius-md);
+  background: var(--zx-accent);
+  color: var(--zx-on-accent);
+  cursor: pointer;
+  font: inherit;
+}
+
+.zx-color-picker-done[data-hovered] {
+  background: var(--zx-on-tonal);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zx-picker-control,
+  .zx-date-input,
+  .zx-color-field-input {
+    transition: none;
+  }
+}

@@ -1,6 +1,8 @@
 import { createRootRoute, HeadContent, Link, Outlet, Scripts } from '@tanstack/react-router'
+import { I18nProvider } from '@zixiao-labs/ui-kits-react'
 import '@zixiao-labs/ui-kits-react/styles.css'
 import '../styles.css'
+import '../catalog.css'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -55,7 +57,9 @@ function Root() {
           <span className="version-tag">v0.0.0</span>
         </header>
         <div id="main-content" tabIndex={-1}>
-          <Outlet />
+          <I18nProvider locale="zh-CN">
+            <Outlet />
+          </I18nProvider>
         </div>
         <footer className="site-footer">
           <span>Zixiao Laboratories UI Kits</span>

@@ -1,0 +1,353 @@
+.zx-surface {
+  box-sizing: border-box;
+  color: var(--zx-text);
+  background: var(--zx-surface-raised);
+  font: 400 14px/1.6 var(--zx-font);
+  border-radius: var(--zx-radius-md);
+  padding: 24px;
+  min-width: 0;
+}
+.zx-surface[data-variant='tonal'] {
+  background: var(--zx-surface-subtle);
+}
+.zx-surface[data-variant='outline'] {
+  border: 1px solid var(--zx-border);
+}
+.zx-card {
+  display: grid;
+  gap: 16px;
+}
+.zx-button-group,
+.zx-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.zx-toolbar {
+  padding: 8px;
+  border-radius: var(--zx-radius-md);
+  background: var(--zx-surface-subtle);
+}
+.zx-toggle-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid var(--zx-control-border);
+  border-radius: var(--zx-radius-full);
+  background: var(--zx-surface);
+  color: var(--zx-text);
+  font: 500 14px/20px var(--zx-font);
+  cursor: pointer;
+  transition: background var(--zx-motion-duration-short) var(--zx-motion-easing);
+}
+.zx-toggle-button[data-selected] {
+  background: var(--zx-tonal);
+  color: var(--zx-on-tonal);
+  border-color: var(--zx-accent);
+}
+.zx-toggle-button[data-hovered] {
+  background: var(--zx-surface-subtle);
+}
+.zx-toggle-button[data-disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.zx-toggle-button[data-focus-visible],
+.zx-chip-remove:focus-visible,
+.zx-scroll-shadow:focus-visible,
+.zx-table [data-focus-visible] {
+  outline: 2px solid var(--zx-focus);
+  outline-offset: 3px;
+}
+.zx-separator {
+  border: 0;
+  border-top: 1px solid var(--zx-border);
+  margin: 16px 0;
+  width: 100%;
+}
+.zx-separator[aria-orientation='vertical'] {
+  height: 32px;
+  width: 1px;
+  border-top: 0;
+  border-left: 1px solid var(--zx-border);
+  margin: 0 8px;
+}
+.zx-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: var(--zx-radius-sm);
+  background: var(--zx-surface-subtle);
+  color: var(--zx-text);
+  font: 500 12px/20px var(--zx-font);
+  font-variant-numeric: tabular-nums;
+}
+.zx-badge[data-tone='accent'],
+.zx-alert[data-tone='accent'] {
+  background: var(--zx-tonal);
+  color: var(--zx-on-tonal);
+}
+.zx-badge[data-tone='error'],
+.zx-alert[data-tone='error'] {
+  background: var(--zx-error-container);
+  color: var(--zx-on-error-container);
+}
+.zx-chip {
+  min-height: 32px;
+  padding: 4px 12px;
+  border: 1px solid var(--zx-border);
+}
+.zx-chip:has(.zx-chip-remove) {
+  min-height: 44px;
+  padding-right: 0;
+}
+.zx-chip-remove {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-block: -4px;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-radius: var(--zx-radius-sm);
+  cursor: pointer;
+}
+.zx-chip-remove:hover {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+.zx-avatar {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--zx-radius-full);
+  background: var(--zx-tonal);
+  color: var(--zx-on-tonal);
+  font: 500 16px/1 var(--zx-font);
+}
+.zx-avatar[data-size='sm'] {
+  width: 32px;
+  height: 32px;
+  font-size: 12px;
+}
+.zx-avatar[data-size='lg'] {
+  width: 64px;
+  height: 64px;
+  font-size: 24px;
+}
+.zx-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.zx-avatar-group {
+  display: inline-flex;
+  padding-left: 8px;
+}
+.zx-avatar-group > .zx-avatar {
+  margin-left: -8px;
+  outline: 3px solid var(--zx-surface);
+}
+.zx-alert {
+  display: grid;
+  gap: 4px;
+  padding: 16px 24px;
+  border-radius: var(--zx-radius-md);
+  background: var(--zx-surface-subtle);
+  color: var(--zx-text);
+  font: 400 14px/24px var(--zx-font);
+}
+.zx-alert strong {
+  font-weight: 500;
+}
+.zx-progress {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  min-width: 120px;
+  color: var(--zx-text);
+  font: 400 14px/24px var(--zx-font);
+}
+.zx-progress-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-variant-numeric: tabular-nums;
+}
+.zx-progress-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: var(--zx-radius-full);
+  background: var(--zx-surface-subtle);
+}
+.zx-progress-fill {
+  height: 100%;
+  background: var(--zx-accent);
+  transform-origin: left;
+  border-radius: inherit;
+  transition: transform var(--zx-motion-duration-short) var(--zx-motion-easing);
+}
+.zx-progress-track[data-indeterminate] .zx-progress-fill {
+  animation: zx-progress-wait 1.6s var(--zx-motion-easing) infinite;
+}
+.zx-progress-circle {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: var(--zx-text);
+  font: 400 14px/24px var(--zx-font);
+  font-variant-numeric: tabular-nums;
+}
+.zx-progress-circle svg {
+  width: 48px;
+  height: 48px;
+  transform: rotate(-90deg);
+  fill: none;
+  stroke-width: 4;
+}
+.zx-circle-track {
+  stroke: var(--zx-surface-subtle);
+}
+.zx-circle-fill {
+  stroke: var(--zx-accent);
+  stroke-linecap: round;
+}
+.zx-progress-circle svg[data-indeterminate] {
+  animation: zx-spin 1s linear infinite;
+}
+.zx-spinner {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--zx-border);
+  border-top-color: var(--zx-accent);
+  border-radius: var(--zx-radius-full);
+  animation: zx-spin 700ms linear infinite;
+}
+.zx-skeleton {
+  min-height: 24px;
+  width: 100%;
+  /* Tint the actual backing surface so placeholders cannot disappear into
+     a container that already uses the subtle surface token. */
+  background: color-mix(in srgb, var(--zx-text) 12%, transparent);
+  border-radius: var(--zx-radius-sm);
+}
+.zx-kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  padding: 4px 8px;
+  border: 1px solid var(--zx-border);
+  border-bottom-width: 2px;
+  border-radius: var(--zx-radius-sm);
+  color: var(--zx-muted);
+  background: var(--zx-surface);
+  font: 400 12px/20px monospace;
+}
+.zx-typography {
+  margin: 0;
+  color: var(--zx-text);
+  font: 400 16px/24px var(--zx-font);
+}
+.zx-typography[data-variant='headline'] {
+  font-size: 32px;
+  line-height: 40px;
+}
+.zx-typography[data-variant='title'] {
+  font-size: 22px;
+  line-height: 28px;
+}
+.zx-typography[data-variant='label'] {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+}
+.zx-scroll-shadow {
+  max-height: 200px;
+  overflow: auto;
+  padding: 16px;
+  color: var(--zx-text);
+  border: 1px solid var(--zx-border);
+  border-radius: var(--zx-radius-md);
+  background:
+    linear-gradient(var(--zx-surface), var(--zx-surface)) center / 100% calc(100% - 16px) local,
+    linear-gradient(
+      var(--zx-border),
+      transparent 8px,
+      transparent calc(100% - 8px),
+      var(--zx-border)
+    );
+  font: 400 14px/24px var(--zx-font);
+}
+.zx-table {
+  border-collapse: collapse;
+  width: 100%;
+  color: var(--zx-text);
+  font: 400 14px/24px var(--zx-font);
+  font-variant-numeric: tabular-nums;
+}
+.zx-table th,
+.zx-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--zx-border);
+}
+.zx-table th {
+  color: var(--zx-muted);
+  font-weight: 500;
+  background: var(--zx-surface-subtle);
+}
+.zx-table tr[data-selected] {
+  background: var(--zx-tonal);
+  color: var(--zx-on-tonal);
+}
+.zx-table [data-allows-sorting] {
+  cursor: pointer;
+}
+.zx-table [aria-sort='ascending']::after {
+  content: ' ↑';
+}
+.zx-table [aria-sort='descending']::after {
+  content: ' ↓';
+}
+.zx-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+@keyframes zx-progress-wait {
+  50% {
+    transform: translateX(65%) scaleX(0.35);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .zx-toggle-button,
+  .zx-progress-fill {
+    transition: none;
+  }
+  .zx-spinner,
+  .zx-progress-fill,
+  .zx-progress-circle svg {
+    animation: none !important;
+  }
+}
