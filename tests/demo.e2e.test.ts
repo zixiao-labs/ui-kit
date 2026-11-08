@@ -142,10 +142,13 @@ test('keeps Clean text and control boundaries legible in both color modes', asyn
       const probe = document.createElement('span')
       preview.append(probe)
       function luminance(color: string) {
-        const channels = color
-          .match(/[\d.]+/g)!
+        const canvas = document.createElement('canvas')
+        canvas.width = canvas.height = 1
+        const context = canvas.getContext('2d')!
+        context.fillStyle = color
+        context.fillRect(0, 0, 1, 1)
+        const channels = Array.from(context.getImageData(0, 0, 1, 1).data)
           .slice(0, 3)
-          .map(Number)
           .map((value) => {
             const srgb = value / 255
             return srgb <= 0.04045 ? srgb / 12.92 : ((srgb + 0.055) / 1.055) ** 2.4
@@ -162,6 +165,7 @@ test('keeps Clean text and control boundaries legible in both color modes', asyn
       }
       const result = {
         filled: contrast('--zx-on-accent', '--zx-accent'),
+        hovered: contrast('--zx-on-accent', '--zx-accent-hover'),
         tonal: contrast('--zx-on-tonal', '--zx-tonal'),
         body: contrast('--zx-text', '--zx-surface-subtle'),
         supporting: contrast('--zx-muted', '--zx-surface-subtle'),
@@ -170,7 +174,7 @@ test('keeps Clean text and control boundaries legible in both color modes', asyn
       probe.remove()
       return result
     })
-    for (const key of ['filled', 'tonal', 'body', 'supporting'] as const) {
+    for (const key of ['filled', 'hovered', 'tonal', 'body', 'supporting'] as const) {
       expect(contrasts[key]).toBeGreaterThanOrEqual(4.5)
     }
     expect(contrasts.outlined).toBeGreaterThanOrEqual(3)
@@ -209,7 +213,7 @@ test('resets nested clean and legacy scopes instead of inheriting dark or brutal
     return tokens
   })
   expect(result.clean).toEqual({
-    surface: 'rgb(250, 249, 252)',
+    surface: 'rgb(254, 247, 255)',
     radius: '9999px',
     shadow: 'none',
     border: '1px',
@@ -218,7 +222,7 @@ test('resets nested clean and legacy scopes instead of inheriting dark or brutal
     height: '48px',
     easing: 'cubic-bezier(0.2, 0, 0, 1), cubic-bezier(0.2, 0, 0, 1), cubic-bezier(0.2, 0, 0, 1)',
   })
-  expect(result.dark.surface).toBe('rgb(18, 19, 24)')
+  expect(result.dark.surface).toBe('rgb(20, 18, 24)')
   expect(result.dark.scheme).toBe('dark')
   expect(result.minimal.surface).toBe('rgb(255, 255, 255)')
   expect(result.minimal.radius).toBe('6px')
@@ -343,7 +347,7 @@ test('allows explicit legacy themes on the root element as well as nested scopes
     return colors
   })
   expect(palettes).toEqual({
-    clean: '#405e8d',
+    clean: '#8b5cf6',
     minimal: '#25563f',
     soft: '#71509a',
     brutalist: '#e5f36a',

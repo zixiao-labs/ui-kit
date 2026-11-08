@@ -1,7 +1,7 @@
 :root {
-  --page: var(--md-sys-color-surface);
-  --ink: var(--md-sys-color-on-surface);
-  --muted: var(--md-sys-color-on-surface-variant);
+  --page: var(--zx-surface);
+  --ink: var(--zx-text);
+  --muted: var(--zx-muted);
   --quiet: color-mix(in srgb, var(--ink) 64%, var(--page));
   --line: color-mix(in srgb, var(--ink) 10%, transparent);
   --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
@@ -15,7 +15,7 @@
   --space-10: 40px;
   --space-12: 48px;
   --space-16: 64px;
-  font-family: var(--md-sys-typescale-body-large-font);
+  font-family: var(--zx-font);
   color: var(--ink);
   background: var(--page);
   font-synthesis: none;
@@ -51,7 +51,7 @@ a {
 button,
 select,
 input {
-  accent-color: var(--md-sys-color-primary);
+  accent-color: var(--zx-accent-ink);
 }
 button {
   cursor: pointer;
@@ -61,12 +61,12 @@ a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 pre:focus-visible {
-  outline: 3px solid var(--md-sys-color-primary);
+  outline: 2px solid var(--zx-focus);
   outline-offset: 4px;
 }
 ::selection {
-  background: var(--md-sys-color-secondary-container);
-  color: var(--md-sys-color-on-secondary-container);
+  background: var(--zx-tonal);
+  color: var(--zx-on-tonal);
 }
 h1,
 h2,

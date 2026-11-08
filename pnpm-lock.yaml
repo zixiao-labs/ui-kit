@@ -236,6 +236,9 @@ importers:
       '@internationalized/date':
         specifier: ^3.12.4
         version: 3.12.4
+      '@material/material-color-utilities':
+        specifier: 0.3.0
+        version: 0.3.0
       react-aria:
         specifier: 3.53.1
         version: 3.53.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -377,6 +380,9 @@ packages:
         optional: true
       playwright-core:
         optional: true
+
+  '@material/material-color-utilities@0.3.0':
+    resolution: {integrity: sha512-ztmtTd6xwnuh2/xu+Vb01btgV8SQWYCaK56CkRK8gEkWe5TuDyBcYJ0wgkMRn+2VcE9KUmhvkz+N9GHrqw/C0g==}
 
   '@nasti-toolchain/nasti@2.6.5':
     resolution: {integrity: sha512-B1mbES1Lm+c/bHMD+U8XseSfe20zx8IyxhcSK2GxDv26VOo1oSzKDlVLXErr0VRmhePEsDN2rHmasvoLMChUsw==}
@@ -2309,6 +2315,8 @@ snapshots:
       - react-server-dom-webpack
       - supports-color
       - utf-8-validate
+
+  '@material/material-color-utilities@0.3.0': {}
 
   '@nasti-toolchain/nasti@2.6.5(supports-color@7.2.0)':
     dependencies:

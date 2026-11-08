@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Copy, Magnifier, Moon, Sun } from '@gravity-ui/icons'
+import { ArrowUpRight, ChevronRight, Copy, Magnifier, Moon, Sun } from '@gravity-ui/icons'
 import { Button } from '@zixiao-labs/ui-kits-react'
+import { useTheme } from '../theme'
+import { ThemePanel } from '../theme-panel'
 import { ButtonPlayground } from '../examples/button-playground'
 import { displayExamples } from '../examples/display'
 import { formsExamples } from '../examples/forms'
@@ -71,6 +73,7 @@ function Home() {
   const [query, setQuery] = useState('')
   const [dark, setDark] = useState(false)
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'error'>('idle')
+  const { previewStyle } = useTheme()
   const active = componentExamples.find((item) => item.name === component) ?? componentExamples[0]
   const filtered = componentExamples.filter((item) =>
     `${item.name} ${item.description} ${categoryLabels[item.category]}`
@@ -107,7 +110,7 @@ function Home() {
           />
         </label>
         <label className="mobile-component-picker">
-          选择组件
+          <span className="zx-sr-only">选择组件</span>
           <select
             aria-label="选择组件"
             value={filtered.some((item) => item.name === active.name) ? active.name : ''}
@@ -154,15 +157,25 @@ function Home() {
       <div className="catalog-content">
         <div className="page-intro">
           <div>
-            {active.name !== 'Button' && (
-              <p className="component-category">
-                Clean / {categoryLabels[active.category] ?? active.category}
-              </p>
-            )}
+            <p className="component-category">
+              组件 <ChevronRight aria-hidden="true" />{' '}
+              {categoryLabels[active.category] ?? active.category}
+            </p>
             <h1>{active.name}</h1>
-            <p className="intro-description">{active.description}</p>
+            <p className="intro-description">{active.description.replace(/。$/, '')}</p>
           </div>
-          {active.name !== 'Button' && (
+          <a
+            className="reference-link"
+            href="https://react-aria.adobe.com/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            React Aria <ArrowUpRight aria-hidden="true" />
+          </a>
+        </div>
+        {active.name !== 'Button' && (
+          <div className="section-heading" id="interactive">
+            <h2>交互预览</h2>
             <Button
               className="preview-theme-toggle"
               variant="outline"
@@ -173,8 +186,8 @@ function Home() {
               {dark ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
               <span className="theme-mode-label">{dark ? '浅色样本' : '深色样本'}</span>
             </Button>
-          )}
-        </div>
+          </div>
+        )}
         {active.name === 'Button' ? (
           active.demo
         ) : (
@@ -184,14 +197,15 @@ function Home() {
               aria-label={`${active.name} 用法`}
               data-zx-style="clean"
               data-zx-color-mode={dark ? 'dark' : 'light'}
+              style={previewStyle(dark)}
             >
               <div className="demo-heading">
-                <span>交互样本</span>
-                <span>React · @gravity-ui/icons</span>
+                <span>预览</span>
+                <span>Clean / {dark ? 'Dark' : 'Light'}</span>
               </div>
               <div className="demo-stage">{active.demo}</div>
             </section>
-            <section className="code-panel" aria-label="使用代码">
+            <section className="code-panel" id="usage" aria-label="使用代码">
               <div className="code-heading">
                 <span>使用代码 / TSX</span>
                 <button type="button" className="copy-button" onClick={copyCode}>
@@ -221,6 +235,7 @@ function Home() {
           </a>
         </div>
       </div>
+      <ThemePanel />
     </main>
   )
 }

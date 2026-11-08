@@ -1,8 +1,11 @@
 import { createRootRoute, HeadContent, Link, Outlet, Scripts } from '@tanstack/react-router'
 import { I18nProvider } from '@zixiao-labs/ui-kits-react'
+import { Moon, Sun } from '@gravity-ui/icons'
+import { ThemeProvider, useTheme } from '../theme'
 import '@zixiao-labs/ui-kits-react/styles.css'
 import '../styles.css'
 import '../catalog.css'
+import '../docs.css'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -34,39 +37,57 @@ function Root() {
         <HeadContent />
       </head>
       <body>
-        <a className="skip-link" href="#main-content">
-          跳转到内容
-        </a>
-        <header className="site-header">
-          <Link className="brand" to="/" aria-label="Zixiao Laboratories UI Kits 首页">
-            <span className="brand-mark" aria-hidden="true">
-              z
-            </span>
-            <span className="brand-name">
-              Zixiao Laboratories<small>UI Kits</small>
-            </span>
-          </Link>
-          <nav aria-label="主导航">
-            <Link to="/" activeOptions={{ exact: true }} activeProps={{ className: 'is-active' }}>
-              组件
+        <ThemeProvider>
+          <a className="skip-link" href="#main-content">
+            跳转到内容
+          </a>
+          <header className="site-header">
+            <Link className="brand" to="/" aria-label="Zixiao Laboratories UI Kits 首页">
+              <span className="brand-mark" aria-hidden="true">
+                z
+              </span>
+              <span className="brand-name">
+                Zixiao Laboratories<small>UI Kits</small>
+              </span>
             </Link>
-            <Link to="/about" activeProps={{ className: 'is-active' }}>
-              设计原则
-            </Link>
-          </nav>
-          <span className="version-tag">v0.0.0</span>
-        </header>
-        <div id="main-content" tabIndex={-1}>
-          <I18nProvider locale="zh-CN">
-            <Outlet />
-          </I18nProvider>
-        </div>
-        <footer className="site-footer">
-          <span>Zixiao Laboratories UI Kits</span>
-          <span>一套行为，多种表达 / React · TypeScript</span>
-        </footer>
+            <nav aria-label="主导航">
+              <Link to="/" activeOptions={{ exact: true }} activeProps={{ className: 'is-active' }}>
+                组件
+              </Link>
+              <Link to="/about" activeProps={{ className: 'is-active' }}>
+                设计原则
+              </Link>
+            </nav>
+            <span className="version-tag">React / TS</span>
+            <PageThemeToggle />
+          </header>
+          <div id="main-content" tabIndex={-1}>
+            <I18nProvider locale="zh-CN">
+              <Outlet />
+            </I18nProvider>
+          </div>
+          <footer className="site-footer">
+            <span>Zixiao Laboratories UI Kits</span>
+            <span>一套行为，多种表达 / React · TypeScript</span>
+          </footer>
+        </ThemeProvider>
         <Scripts />
       </body>
     </html>
+  )
+}
+
+function PageThemeToggle() {
+  const { settings, update } = useTheme()
+  return (
+    <button
+      className="icon-button"
+      type="button"
+      aria-label="切换页面明暗"
+      aria-pressed={settings.dark}
+      onClick={() => update({ dark: !settings.dark })}
+    >
+      {settings.dark ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
+    </button>
   )
 }

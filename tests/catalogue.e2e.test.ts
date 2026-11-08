@@ -219,8 +219,18 @@ test('keeps nested modal portals themed and restores focus to native triggers', 
     ),
   ).toBe('soft')
   await page.keyboard.press('Escape')
+  // Exiting portals become inaccessible before RAC finishes unmounting them.
+  // A second Escape belongs to the parent only after the top overlay is detached.
+  await page.locator('.zx-popover').waitFor({ state: 'detached' })
   await expect.poll(() => nested.count()).toBe(0)
   await expect.poll(() => dialog.count()).toBe(1)
+  await expect
+    .poll(() =>
+      dialog
+        .getByRole('button', { name: '团队说明', exact: true })
+        .evaluate((element) => element === document.activeElement),
+    )
+    .toBe(true)
   await page.keyboard.press('Escape')
   await expect.poll(() => dialog.count()).toBe(0)
   await expect

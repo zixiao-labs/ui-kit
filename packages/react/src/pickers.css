@@ -574,7 +574,7 @@
 }
 
 .zx-color-picker-done[data-hovered] {
-  background: var(--zx-on-tonal);
+  background: var(--zx-accent-hover);
 }
 
 @media (prefers-reduced-motion: reduce) {

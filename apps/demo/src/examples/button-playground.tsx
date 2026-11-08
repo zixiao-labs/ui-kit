@@ -2,9 +2,10 @@ import { useState } from 'react'
 import { Copy, Moon, Plus } from '@gravity-ui/icons'
 import { Button } from '@zixiao-labs/ui-kits-react'
 import type { ButtonSize, ButtonVariant } from '@zixiao-labs/ui-kits-react'
+import { useTheme } from '../theme'
 
 const styles = [
-  { id: 'clean', name: 'Clean', description: '圆角轮廓，蓝灰配色' },
+  { id: 'clean', name: 'Clean', description: '圆角轮廓，紫霄品牌色' },
   { id: 'minimal', name: 'Minimal', description: '小圆角，绿色强调' },
   { id: 'soft', name: 'Soft', description: '柔和紫色，轻量阴影' },
   { id: 'brutalist', name: 'Brutalist', description: '直角边界，高对比配色' },
@@ -18,6 +19,7 @@ const variants = [
 ] as const
 
 export function ButtonPlayground() {
+  const { previewStyle, settings } = useTheme()
   const [style, setStyle] = useState<(typeof styles)[number]>(styles[0])
   const [dark, setDark] = useState(false)
   const [variant, setVariant] = useState<ButtonVariant>('solid')
@@ -53,7 +55,7 @@ import '@zixiao-labs/ui-kits-react/styles.css'${withIcon ? "\nimport { Plus } fr
     <div className="button-playground">
       <div>
         <section id="button" className="component-section" aria-labelledby="button-title">
-          <div className="section-heading">
+          <div className="section-heading" id="interactive">
             <h2 id="button-title">交互预览</h2>
             <span className="section-caption">原生语义 · 键盘可用</span>
           </div>
@@ -64,6 +66,7 @@ import '@zixiao-labs/ui-kits-react/styles.css'${withIcon ? "\nimport { Plus } fr
               data-testid="preview"
               data-zx-style={style.id}
               data-zx-color-mode={dark ? 'dark' : 'light'}
+              style={previewStyle(dark)}
             >
               <div className="preview-toolbar">
                 <span className="preview-style-label">{style.name} / Button</span>
@@ -206,7 +209,7 @@ import '@zixiao-labs/ui-kits-react/styles.css'${withIcon ? "\nimport { Plus } fr
             </aside>
           </div>
 
-          <div className="code-panel">
+          <div className="code-panel" id="usage">
             <div className="code-heading">
               <div>
                 <span className="code-tab">使用代码</span>
@@ -237,7 +240,12 @@ import '@zixiao-labs/ui-kits-react/styles.css'${withIcon ? "\nimport { Plus } fr
             <h2 id="variants-title">按钮层级</h2>
             <span className="section-caption">Clean / 点击样本切换变体</span>
           </div>
-          <div className="variant-grid" data-zx-style="clean">
+          <div
+            className="variant-grid"
+            data-zx-style="clean"
+            data-zx-color-mode={settings.dark ? 'dark' : 'light'}
+            style={previewStyle(settings.dark)}
+          >
             {variants.map((item) => (
               <div className="variant-example" key={item.id} data-selected={variant === item.id}>
                 <Button
@@ -259,9 +267,14 @@ import '@zixiao-labs/ui-kits-react/styles.css'${withIcon ? "\nimport { Plus } fr
         <section id="colors" className="colors-section" aria-labelledby="colors-title">
           <div className="section-heading">
             <h2 id="colors-title">色彩与主题</h2>
-            <span className="section-caption">Clean / 浅色参考</span>
+            <span className="section-caption">品牌色与自适应表面</span>
           </div>
-          <div className="color-grid" data-zx-style="clean">
+          <div
+            className="color-grid"
+            data-zx-style="clean"
+            data-zx-color-mode={settings.dark ? 'dark' : 'light'}
+            style={previewStyle(settings.dark)}
+          >
             <div className="color-sample color-primary">
               <span>Aa</span>
               <span>

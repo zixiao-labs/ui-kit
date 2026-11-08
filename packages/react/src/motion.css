@@ -1,0 +1,281 @@
+/* Shared feedback and RAC-owned overlay lifecycles, independent of any skin. */
+:is(
+  .zx-disclosure__trigger,
+  .zx-tabs__tab,
+  .zx-pagination__button,
+  .zx-menu__item,
+  .zx-listbox__item,
+  .zx-tag,
+  .zx-tag__remove,
+  .zx-overlay-close,
+  .zx-overlay-action,
+  .zx-toast__action,
+  .zx-field-button,
+  .zx-toggle-button,
+  .zx-picker-icon-button,
+  .zx-picker-option,
+  .zx-calendar-cell,
+  .zx-color-swatch-option,
+  .zx-color-picker-done
+) {
+  transition:
+    background-color var(--zx-motion-duration-short) var(--zx-motion-easing),
+    color var(--zx-motion-duration-short) var(--zx-motion-easing),
+    border-color var(--zx-motion-duration-short) var(--zx-motion-easing),
+    transform var(--zx-motion-duration-short) var(--zx-motion-easing);
+}
+
+:is(
+    .zx-field-button,
+    .zx-toggle-button,
+    .zx-overlay-action,
+    .zx-picker-icon-button
+  )[data-pressed]:not([data-disabled]) {
+  transform: scale(0.97);
+}
+
+.zx-slider__thumb::before {
+  transition:
+    transform var(--zx-motion-duration-short) var(--zx-motion-easing),
+    background-color var(--zx-motion-duration-short) var(--zx-motion-easing);
+}
+
+.zx-slider__thumb[data-dragging]::before {
+  transform: scale(1.1);
+}
+
+.zx-select-trigger > svg {
+  transition: transform var(--zx-motion-duration-short) var(--zx-motion-easing);
+}
+
+.zx-select-trigger[aria-expanded='true'] > svg {
+  transform: rotate(180deg);
+}
+
+.zx-circle-fill {
+  transition: stroke-dasharray var(--zx-motion-duration-medium) var(--zx-motion-easing);
+}
+
+.zx-modal-overlay[data-entering] {
+  animation: zx-fade-in var(--zx-motion-duration-medium) var(--zx-motion-easing);
+}
+
+.zx-modal-overlay[data-exiting] {
+  animation: zx-fade-out var(--zx-motion-duration-exit) var(--zx-motion-easing);
+  pointer-events: none;
+}
+
+.zx-modal {
+  --zx-overlay-x: 0px;
+  --zx-overlay-y: 8px;
+  --zx-overlay-scale: 0.97;
+}
+
+.zx-modal[data-surface='drawer'] {
+  --zx-overlay-x: 100%;
+  --zx-overlay-y: 0px;
+  --zx-overlay-scale: 1;
+}
+
+.zx-modal[data-surface='sheet'] {
+  --zx-overlay-y: 100%;
+  --zx-overlay-scale: 1;
+}
+
+.zx-modal[data-entering] {
+  animation: zx-overlay-in var(--zx-motion-duration-long) var(--zx-motion-easing);
+}
+
+.zx-modal[data-exiting] {
+  animation: zx-overlay-out var(--zx-motion-duration-exit) var(--zx-motion-easing);
+  pointer-events: none;
+}
+
+.zx-popover,
+.zx-picker-popover,
+.zx-tooltip {
+  --zx-overlay-x: 0px;
+  --zx-overlay-y: 4px;
+  --zx-overlay-scale: 0.97;
+  transform-origin: var(--trigger-anchor-point, center);
+}
+
+:is(.zx-popover, .zx-picker-popover, .zx-tooltip)[data-placement='bottom'] {
+  --zx-overlay-y: -4px;
+}
+
+:is(.zx-popover, .zx-picker-popover, .zx-tooltip)[data-placement='left'] {
+  --zx-overlay-x: 4px;
+  --zx-overlay-y: 0px;
+}
+
+:is(.zx-popover, .zx-picker-popover, .zx-tooltip)[data-placement='right'] {
+  --zx-overlay-x: -4px;
+  --zx-overlay-y: 0px;
+}
+
+:is(.zx-popover, .zx-picker-popover, .zx-tooltip)[data-entering] {
+  animation: zx-overlay-in var(--zx-motion-duration-medium) var(--zx-motion-easing);
+}
+
+:is(.zx-popover, .zx-picker-popover, .zx-tooltip)[data-exiting] {
+  animation: zx-overlay-out var(--zx-motion-duration-exit) var(--zx-motion-easing);
+  pointer-events: none;
+}
+
+.zx-tabs__panel[data-entering],
+.zx-toast {
+  animation: zx-content-in var(--zx-motion-duration-medium) var(--zx-motion-easing);
+}
+
+/* Do not capture or block the whole document for a queue update. */
+:root:active-view-transition-type(zx-toast) {
+  view-transition-name: none;
+}
+
+:root:active-view-transition-type(zx-toast)::view-transition {
+  pointer-events: none;
+}
+
+:root:active-view-transition-type(zx-toast) .zx-toast {
+  /* Capture a fully painted toast, not frame zero of its fallback entrance. */
+  animation: none;
+}
+
+::view-transition-group(.zx-toast) {
+  animation-duration: var(--zx-motion-duration-medium);
+  animation-timing-function: var(--zx-motion-easing);
+}
+
+::view-transition-old(.zx-toast) {
+  animation: zx-toast-out var(--zx-motion-duration-exit) var(--zx-motion-easing);
+}
+
+::view-transition-new(.zx-toast) {
+  animation: zx-content-in var(--zx-motion-duration-medium) var(--zx-motion-easing);
+}
+
+@keyframes zx-toast-out {
+  to {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* Loading is meaningful motion, not decorative pulsing. */
+.zx-skeleton {
+  position: relative;
+  overflow: hidden;
+}
+
+.zx-skeleton::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--zx-text) 8%, transparent),
+    transparent
+  );
+  transform: translateX(-100%);
+  animation: zx-skeleton-wait 1.6s linear infinite;
+}
+
+@keyframes zx-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes zx-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes zx-overlay-in {
+  from {
+    opacity: 0;
+    transform: translate(var(--zx-overlay-x), var(--zx-overlay-y)) scale(var(--zx-overlay-scale));
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes zx-overlay-out {
+  from {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(var(--zx-overlay-x), var(--zx-overlay-y)) scale(var(--zx-overlay-scale));
+  }
+}
+
+@keyframes zx-content-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes zx-skeleton-wait {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(
+    .zx-disclosure__trigger,
+    .zx-tabs__tab,
+    .zx-pagination__button,
+    .zx-menu__item,
+    .zx-listbox__item,
+    .zx-tag,
+    .zx-tag__remove,
+    .zx-overlay-close,
+    .zx-overlay-action,
+    .zx-toast__action,
+    .zx-field-button,
+    .zx-toggle-button,
+    .zx-picker-icon-button,
+    .zx-picker-option,
+    .zx-calendar-cell,
+    .zx-color-swatch-option,
+    .zx-color-picker-done,
+    .zx-slider__thumb,
+    .zx-select-trigger > svg,
+    .zx-circle-fill
+  ),
+  .zx-slider__thumb::before {
+    transition: none;
+  }
+
+  :is(
+    .zx-modal-overlay,
+    .zx-modal,
+    .zx-popover,
+    .zx-picker-popover,
+    .zx-tooltip,
+    .zx-tabs__panel,
+    .zx-toast
+  ),
+  .zx-skeleton::after {
+    animation: none !important;
+  }
+}

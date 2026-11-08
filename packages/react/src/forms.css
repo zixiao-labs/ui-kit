@@ -261,7 +261,11 @@
 }
 
 .zx-checkbox__box > svg {
-  visibility: hidden;
+  opacity: 0;
+  transform: scale(0.65);
+  transition:
+    opacity var(--zx-motion-duration-short) var(--zx-motion-easing),
+    transform var(--zx-motion-duration-short) var(--zx-motion-easing);
 }
 
 .zx-checkbox[data-selected] .zx-checkbox__box,
@@ -272,7 +276,8 @@
 
 .zx-checkbox[data-selected] .zx-checkbox__box > svg,
 .zx-checkbox[data-indeterminate] .zx-checkbox__box > svg {
-  visibility: visible;
+  opacity: 1;
+  transform: scale(1);
 }
 
 .zx-radio__circle,
@@ -284,7 +289,11 @@
   width: 12px;
   height: 12px;
   background: var(--zx-accent);
-  visibility: hidden;
+  opacity: 0;
+  transform: scale(0.5);
+  transition:
+    opacity var(--zx-motion-duration-short) var(--zx-motion-easing),
+    transform var(--zx-motion-duration-short) var(--zx-motion-easing);
 }
 
 .zx-radio[data-selected] .zx-radio__circle {
@@ -292,7 +301,8 @@
 }
 
 .zx-radio[data-selected] .zx-radio__circle > span {
-  visibility: visible;
+  opacity: 1;
+  transform: scale(1);
 }
 
 .zx-choice[data-hovered]:not([data-disabled]) .zx-checkbox__box,
@@ -573,7 +583,9 @@
   .zx-input,
   .zx-input-group,
   .zx-checkbox__box,
+  .zx-checkbox__box > svg,
   .zx-radio__circle,
+  .zx-radio__circle > span,
   .zx-switch__track,
   .zx-switch__thumb {
     transition: none;

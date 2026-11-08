@@ -9,6 +9,7 @@
   ],
   "exports": {
     ".": "./src/index.ts",
+    "./theme": "./src/theme.ts",
     "./styles.css": "./src/styles.css",
     "./base.css": "./src/base.css",
     "./themes/*.css": "./src/themes/*.css"
@@ -20,6 +21,7 @@
   "dependencies": {
     "@gravity-ui/icons": "^2.23.1",
     "@internationalized/date": "^3.12.4",
+    "@material/material-color-utilities": "0.3.0",
     "react-aria": "3.53.1",
     "react-aria-components": "^1.22.1"
   },
@@ -31,6 +33,7 @@
     "typescript": "^7.0.2"
   },
   "peerDependencies": {
-    "react": "^19.0.0"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   }
 }

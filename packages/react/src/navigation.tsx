@@ -9,6 +9,7 @@ import {
   type ReactElement,
   type ReactNode,
 } from 'react'
+import { flushSync } from 'react-dom'
 import {
   Breadcrumb as AriaBreadcrumb,
   Breadcrumbs as AriaBreadcrumbs,
@@ -30,6 +31,7 @@ import {
   ModalOverlay,
   Popover as AriaPopover,
   Pressable,
+  SelectionIndicator,
   Tab,
   TabList,
   TabPanel,
@@ -212,7 +214,9 @@ export function Disclosure({ title, children, className, ...props }: DisclosureP
           <ChevronDown className="zx-disclosure__chevron" aria-hidden="true" />
         </AriaButton>
       </Heading>
-      <DisclosurePanel className="zx-disclosure__panel">{children}</DisclosurePanel>
+      <DisclosurePanel className="zx-disclosure__panel">
+        <div className="zx-disclosure__body">{children}</div>
+      </DisclosurePanel>
     </AriaDisclosure>
   )
 }
@@ -263,6 +267,7 @@ export function Tabs({ items, label, variant = 'underline', className, ...props 
       <TabList aria-label={label} className="zx-tabs__list" items={items}>
         {(item) => (
           <Tab id={item.id} isDisabled={item.disabled} className="zx-tabs__tab">
+            <SelectionIndicator className="zx-tabs__indicator" />
             <ItemLabel {...item} />
           </Tab>
         )}
@@ -798,7 +803,11 @@ const ToastContext = createContext<ToastQueue<ToastMessage> | null>(null)
 /** RAC toast renderer. Usually mounted by ToastProvider, not directly. */
 export function Toast({ toast }: { toast: QueuedToast<ToastMessage> }) {
   return (
-    <AriaToast toast={toast} className="zx-toast">
+    <AriaToast
+      toast={toast}
+      className="zx-toast"
+      style={{ viewTransitionName: `zx-toast-${toast.key}`, viewTransitionClass: 'zx-toast' }}
+    >
       <ToastContent className="zx-toast__content">
         <Text slot="title" className="zx-toast__title">
           {toast.content.title}
@@ -830,7 +839,28 @@ export function ToastProvider({
   label?: string
 }) {
   // Never share a global queue across SSR requests or independent theme scopes.
-  const [queue] = useState(() => new ToastQueue<ToastMessage>({ maxVisibleToasts: 3 }))
+  const [queue] = useState(
+    () =>
+      new ToastQueue<ToastMessage>({
+        maxVisibleToasts: 3,
+        wrapUpdate: (update, action) => {
+          // RAC's installed toast API does not expose exit states. Its queue supports
+          // native view transitions instead: no delayed removal or extra focus tree.
+          // Clear also runs during React teardown; keep it synchronous.
+          if (
+            action !== 'clear' &&
+            typeof document !== 'undefined' &&
+            document.startViewTransition &&
+            CSS.supports('view-transition-class', 'zx-toast') &&
+            !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+          ) {
+            document.startViewTransition({ update: () => flushSync(update), types: ['zx-toast'] })
+          } else {
+            update()
+          }
+        },
+      }),
+  )
   useEffect(() => () => queue.clear(), [queue])
   return (
     <ThemeScope>

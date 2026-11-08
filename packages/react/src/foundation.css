@@ -10,6 +10,9 @@
   --zx-accent: #232725;
   --zx-accent-hover: #383c3a;
   --zx-on-accent: #ffffff;
+  --zx-accent-ink: var(--zx-accent);
+  --zx-secondary: var(--zx-surface-subtle);
+  --zx-on-secondary: var(--zx-text);
   --zx-tonal: var(--zx-surface-subtle);
   --zx-on-tonal: var(--zx-text);
   --zx-control-border: var(--zx-border);
@@ -23,6 +26,9 @@
   --zx-label-weight: 600;
   --zx-label-line-height: 1.4;
   --zx-motion-duration-short: 160ms;
+  --zx-motion-duration-medium: 240ms;
+  --zx-motion-duration-long: 320ms;
+  --zx-motion-duration-exit: 140ms;
   --zx-motion-easing: ease;
   --zx-button-height: 44px;
   --zx-button-height-sm: 44px;

@@ -89,8 +89,23 @@
 }
 
 .zx-disclosure__panel {
-  padding: 0 16px 16px;
+  /* RAC measures intrinsic content and retains it during the closing transition.
+     Height is intentional here: following content must move with the disclosure. */
+  height: var(--disclosure-panel-height);
+  overflow: clip;
+  opacity: 0;
   color: var(--zx-muted);
+  transition:
+    height var(--zx-motion-duration-medium) var(--zx-motion-easing),
+    opacity var(--zx-motion-duration-medium) var(--zx-motion-easing);
+}
+
+.zx-disclosure[data-expanded] .zx-disclosure__panel {
+  opacity: 1;
+}
+
+.zx-disclosure__body {
+  padding: 0 16px 16px;
 }
 
 .zx-tabs__list {
@@ -103,6 +118,7 @@
 .zx-tabs__tab {
   display: flex;
   position: relative;
+  isolation: isolate;
   min-height: 48px;
   flex: none;
   align-items: center;
@@ -116,18 +132,23 @@
 }
 
 .zx-tabs__tab[data-selected] {
-  color: var(--zx-accent);
+  color: var(--zx-accent-ink);
 }
 
-.zx-tabs[data-variant='underline'] .zx-tabs__tab[data-selected]::after {
-  content: '';
+.zx-tabs__indicator {
   position: absolute;
   right: 16px;
   bottom: 0;
   left: 16px;
-  height: 4px;
+  height: 3px;
   background: var(--zx-accent);
   border-radius: var(--zx-radius-sm) var(--zx-radius-sm) 0 0;
+  z-index: -1;
+  /* RAC's shared element measures unequal tabs and handles RTL/vertical movement. */
+  transition:
+    translate var(--zx-motion-duration-medium) var(--zx-motion-easing),
+    width var(--zx-motion-duration-medium) var(--zx-motion-easing),
+    height var(--zx-motion-duration-medium) var(--zx-motion-easing);
 }
 
 .zx-tabs[data-variant='tonal'] .zx-tabs__list {
@@ -143,6 +164,12 @@
 
 .zx-tabs[data-variant='tonal'] .zx-tabs__tab[data-selected] {
   color: var(--zx-on-tonal);
+}
+
+.zx-tabs[data-variant='tonal'] .zx-tabs__indicator {
+  inset: 0;
+  height: 100%;
+  border-radius: inherit;
   background: var(--zx-tonal);
 }
 
@@ -172,7 +199,7 @@
   align-items: center;
   gap: 8px;
   border-radius: var(--zx-radius-sm);
-  color: var(--zx-accent);
+  color: var(--zx-accent-ink);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 4px;
@@ -546,7 +573,7 @@
 }
 
 .zx-toast__action {
-  color: var(--zx-accent);
+  color: var(--zx-accent-ink);
 }
 
 :is(
@@ -616,7 +643,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .zx-disclosure__chevron {
+  .zx-disclosure__chevron,
+  .zx-disclosure__panel,
+  .zx-tabs__indicator {
     transition: none;
   }
 }

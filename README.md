@@ -92,6 +92,44 @@ export function SoftExample() {
 
 此用法不会加载 Clean 或任何 Material tokens。演示站外壳显式选用 Clean，不代表组件库强制使用它。
 
+### 品牌色与动态主题
+
+Clean 默认采用公司品牌主色 **`#8B5CF6`** 和辅助色 **`#FCD34D`**。色彩保留原值，实心色上的文字按 WCAG 对比度选择黑或白；链接、选中标签文字使用独立的 `--zx-accent-ink` 深浅色阶，不直接把浅亮品牌色当正文。
+
+可选的 `theme` 入口使用 Material Color Utilities 的 HCT 色阶生成低彩度表面、文字、边界与明暗主题，输出仍然只有设计语言无关的 `--zx-*`。不会把 Material tokens 注入其他风格，也不修改全局 DOM：
+
+```tsx
+import { createTheme, themeToCSS } from '@zixiao-labs/ui-kits-react/theme'
+
+const theme = { primary: '#8b5cf6', secondary: '#fcd34d', radius: 12 }
+
+<div data-zx-style="clean" data-zx-color-mode="light" style={createTheme(theme)}>
+  <Button>创建项目</Button>
+</div>
+
+// 深色用 createTheme(theme, true)。
+// 导出后放在基础样式和风格适配层之后，并在作用域上添加 data-zx-theme="custom"。
+const css = themeToCSS(theme)
+```
+
+颜色须为六位十六进制值，圆角范围为 0–32px。自定义主题的圆角会覆盖所选风格的默认形状；未自定义时四种风格保留各自默认值。主题作用域里的浮层继续读取触发器的有效 tokens，不依赖弹层所在的 DOM 位置。
+
+Demo 参考 HeroUI docs 组织为目录、交互预览、用法代码与主题调节栏。支持种子色、辅助色、圆角、配色预设、页面明暗、预览独立明暗、复制明暗 CSS 和本地保存；刷新可恢复，浏览器禁止存储或剪贴板时有明确提示，输入非法颜色不会破坏当前主题。
+
+### 动效
+
+共享层的动效参考 HeroUI 的生命周期实现，所有风格复用同一套行为：
+
+- Modal / AlertDialog、Drawer、Sheet：遮罩淡入淡出，内容按位置进入和退出；退出期间不可点击。
+- Popover、Dropdown、选择器与日期/颜色浮层、Tooltip：从锚点方向短距离位移与淡入淡出。
+- Disclosure / Accordion：使用 RAC 的实测高度变量展开、收起，支持中途反向操作；这是有意保留的布局过渡。
+- Tabs：使用 RAC `SelectionIndicator` 处理变宽、纵向、RTL 的选中指示移动；内容短淡入。
+- Checkbox、Radio、Switch、Slider、ToggleButton、日历选中和各类操作控件：选中、按压及颜色反馈。
+- Skeleton：仅加载占位使用扫光；ProgressCircle 补齐数值变化过渡。
+- Toast：支持原生 View Transition 的浏览器使用队列进入、退出与重排动画；不支持时保留进入反馈和正常关闭，不延迟 DOM 移除。
+
+`--zx-motion-duration-short / medium / long / exit` 与 `--zx-motion-easing` 控制节奏。`prefers-reduced-motion: reduce` 关闭这些过渡和动画，不改变交互结果与焦点管理。
+
 新增设计语言时，在自己的 CSS 中为 `[data-zx-style="你的风格"]` 实现 `--zx-*`，需要明暗配色时再增加同作用域的 `data-zx-color-mode` 规则：
 
 | 共享角色                                                                                         | 控制内容             |
@@ -104,7 +142,7 @@ export function SoftExample() {
 
 每个作用域都从中性默认值开始，避免继承父作用域的语言特征。适配层可以直接赋值，也可映射自己的 token 命名；不需要修改 Button 或增加 `if (style)`。
 
-Clean 是受 Material 3 启发的 Web 实现，不是 Google 官方组件，也没有引入维护模式的 `@material/web`。它使用静态明暗配色，尚未实现动态种子色、高对比等级或 Compose Expressive 同等能力。这些限制不约束其他设计语言。
+Clean 是受 Material 3 启发的 Web 实现，不是 Google 官方组件，也没有引入维护模式的 `@material/web`。默认 CSS 提供静态品牌配色，可选 `theme` 入口支持动态种子色；尚未提供高对比等级或 Compose Expressive 同等能力。这些限制不约束其他设计语言。
 
 ### 组件目录
 
