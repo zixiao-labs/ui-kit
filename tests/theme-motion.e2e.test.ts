@@ -20,7 +20,11 @@ afterAll(async () => {
   }
 })
 beforeEach(async () => {
-  page = await browser.newPage({ baseURL: app.url, viewport: { width: 1440, height: 900 } })
+  page = await browser.newPage({
+    baseURL: app.url,
+    viewport: { width: 1440, height: 900 },
+    colorScheme: 'light',
+  })
   page.setDefaultTimeout(5000)
   errors = []
   page.on('pageerror', (error) => errors.push(error.message))
@@ -48,6 +52,20 @@ async function token(selector: string, name: string) {
       (element, property) => getComputedStyle(element).getPropertyValue(property).trim(),
       name,
     )
+}
+
+async function expectMode(mode: 'light' | 'dark') {
+  const scopes = page.locator(
+    'html, [data-testid="preview"], .variant-grid, .color-grid, .component-demo',
+  )
+  const expected = Array<string>(await scopes.count()).fill(mode)
+  await expect
+    .poll(() =>
+      scopes.evaluateAll((elements) =>
+        elements.map((element) => element.getAttribute('data-zx-color-mode')),
+      ),
+    )
+    .toEqual(expected)
 }
 
 async function observeMotion() {
@@ -83,7 +101,7 @@ test('adapts shell and preview, persists settings, exports both modes and resets
   await page.getByLabel('主色', { exact: true }).fill('#3269b1')
   await page.getByLabel('辅助色', { exact: true }).fill('#fcd34d')
   await page.getByLabel('主题圆角', { exact: true }).fill('20')
-  await page.getByRole('button', { name: '切换页面明暗', exact: true }).click()
+  await page.getByLabel('页面主题', { exact: true }).selectOption('dark')
   await page.reload()
   await expect.poll(() => token('html', '--zx-accent')).toBe('#3269b1')
   expect(await page.getByLabel('主色', { exact: true }).inputValue()).toBe('#3269b1')
@@ -99,6 +117,124 @@ test('adapts shell and preview, persists settings, exports both modes and resets
   await page.reload()
   await expect.poll(() => token('html', '--zx-accent')).toBe('#8b5cf6')
   expect(await page.locator('html').getAttribute('data-zx-color-mode')).toBe('light')
+})
+
+test('defaults to the system theme and updates every preview and custom token live', async () => {
+  await page.emulateMedia({ colorScheme: 'dark' })
+  await page.reload()
+  await expectMode('dark')
+  expect(await page.getByLabel('页面主题', { exact: true }).inputValue()).toBe('system')
+  expect(await page.getByLabel('预览主题', { exact: true }).inputValue()).toBe('system')
+  expect(await page.getByRole('code').textContent()).toContain('data-zx-color-mode="dark"')
+  const darkSurface = await token('[data-testid="preview"]', '--zx-surface')
+  await page.emulateMedia({ colorScheme: 'light' })
+  await expectMode('light')
+  expect(await token('[data-testid="preview"]', '--zx-surface')).not.toBe(darkSurface)
+  expect(await page.getByRole('code').textContent()).toContain('data-zx-color-mode="light"')
+
+  await page.getByRole('button', { name: '松林配色', exact: true }).click()
+  const lightSurface = await token('html', '--zx-surface')
+  await page.emulateMedia({ colorScheme: 'dark' })
+  await expectMode('dark')
+  expect(await token('html', '--zx-surface')).not.toBe(lightSurface)
+  for (const selector of ['[data-testid="preview"]', '.variant-grid', '.color-grid']) {
+    expect(await token(selector, '--zx-surface')).toBe(await token('html', '--zx-surface'))
+    expect(await token(selector, '--zx-accent')).toBe('#28745b')
+  }
+  await page.reload()
+  await expectMode('dark')
+  expect(await page.getByLabel('页面主题', { exact: true }).inputValue()).toBe('system')
+  await page.emulateMedia({ colorScheme: 'light' })
+  await expectMode('light')
+  expect(await token('html', '--zx-surface')).toBe(lightSurface)
+})
+
+test('persists explicit modes, ignores system changes until reselected and resets to system', async () => {
+  for (const mode of ['dark', 'light'] as const) {
+    const opposite = mode === 'dark' ? 'light' : 'dark'
+    await page.getByLabel('页面主题', { exact: true }).selectOption(mode)
+    await expectMode(mode)
+    await page.emulateMedia({ colorScheme: opposite })
+    await expectMode(mode)
+    await page.reload()
+    await expectMode(mode)
+    expect(await page.getByLabel('预览主题', { exact: true }).inputValue()).toBe(mode)
+    await page.getByLabel('预览主题', { exact: true }).selectOption('system')
+    await expectMode(opposite)
+    expect(await page.getByLabel('页面主题', { exact: true }).inputValue()).toBe('system')
+    await page.emulateMedia({ colorScheme: mode })
+    await expectMode(mode)
+  }
+  await page.getByLabel('页面主题', { exact: true }).selectOption('system')
+  await page.reload()
+  await expectMode('light')
+  await page.emulateMedia({ colorScheme: 'dark' })
+  await expectMode('dark')
+  await page.getByLabel('页面主题', { exact: true }).selectOption('light')
+  await page.getByRole('button', { name: '恢复默认主题', exact: true }).click()
+  await expectMode('dark')
+  expect(await page.getByLabel('页面主题', { exact: true }).inputValue()).toBe('system')
+})
+
+test('shares theme selection across component navigation and the mobile controls', async () => {
+  await page.getByLabel('页面主题', { exact: true }).selectOption('dark')
+  await select('TextField')
+  await expectMode('dark')
+  expect(await page.getByLabel('样本主题', { exact: true }).inputValue()).toBe('dark')
+  await page.getByLabel('样本主题', { exact: true }).selectOption('light')
+  await expectMode('light')
+  expect(await page.getByLabel('页面主题', { exact: true }).inputValue()).toBe('light')
+  await select('Button')
+  await expectMode('light')
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.getByLabel('预览主题', { exact: true }).selectOption('system')
+  await page.emulateMedia({ colorScheme: 'dark' })
+  await expectMode('dark')
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  await page.getByLabel('选择组件', { exact: true }).selectOption('TextField')
+  await expectMode('dark')
+  expect(await page.getByLabel('样本主题', { exact: true }).inputValue()).toBe('system')
+})
+
+test('preserves legacy light and dark preferences with their custom theme settings', async () => {
+  for (const dark of [true, false]) {
+    await page.evaluate((legacyDark) => {
+      localStorage.setItem(
+        'zx-ui-theme-v1',
+        JSON.stringify({
+          primary: '#28745b',
+          secondary: '#e8b86d',
+          radius: 20,
+          customized: true,
+          dark: legacyDark,
+        }),
+      )
+    }, dark)
+    await page.emulateMedia({ colorScheme: dark ? 'light' : 'dark' })
+    await page.reload()
+    await expectMode(dark ? 'dark' : 'light')
+    expect(await page.getByLabel('页面主题', { exact: true }).inputValue()).toBe(
+      dark ? 'dark' : 'light',
+    )
+    expect(await token('html', '--zx-accent')).toBe('#28745b')
+    expect(await token('[data-testid="preview"]', '--zx-radius')).toBe('20px')
+  }
+})
+
+test('keeps open nested portals in sync with system theme changes', async () => {
+  await page.getByRole('button', { name: '松林配色', exact: true }).click()
+  await select('Modal')
+  await page.getByRole('button', { name: '项目详情', exact: true }).click()
+  await page.locator('.zx-modal .zx-select-trigger').click()
+  for (const mode of ['dark', 'light'] as const) {
+    await page.emulateMedia({ colorScheme: mode })
+    await expectMode(mode)
+    const surface = await token('html', '--zx-surface')
+    for (const selector of ['.zx-modal-overlay', '.zx-picker-popover']) {
+      await expect.poll(() => token(selector, '--zx-surface')).toBe(surface)
+      expect(await token(selector, '--zx-accent')).toBe('#28745b')
+    }
+  }
 })
 
 test('keeps invalid colors out of the active theme and recovers from storage failure', async () => {
@@ -188,7 +324,7 @@ test('animates disclosure geometry, tab indicator and selection feedback without
 test('propagates dynamic tokens into nested portals and respects reduced motion', async () => {
   await page.getByRole('button', { name: '松林配色', exact: true }).click()
   await select('Modal')
-  await page.getByRole('button', { name: '样本深色模式', exact: true }).click()
+  await page.getByLabel('样本主题', { exact: true }).selectOption('dark')
   await page.emulateMedia({ reducedMotion: 'reduce' })
   const trigger = page.getByRole('button', { name: '项目详情', exact: true })
   await trigger.click()

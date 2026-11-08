@@ -107,37 +107,37 @@ test('reflects variant selection in the samples, preview and current code', asyn
   expect(await page.locator('.preview-properties').textContent()).toBe('ghost / sm')
 })
 
-test('switches light and dark colors for every expression without changing the page theme', async () => {
+test('shares light and dark colors between every expression and the page theme', async () => {
   const preview = page.getByTestId('preview')
-  const shell = await page
-    .locator('body')
-    .evaluate(() => getComputedStyle(document.documentElement).backgroundColor)
   for (const style of ['clean', 'minimal', 'soft', 'brutalist']) {
     await page.getByLabel('设计风格').selectOption(style)
+    await page.getByLabel('页面主题', { exact: true }).selectOption('light')
     const light = await preview.evaluate((element) =>
       getComputedStyle(element).getPropertyValue('--zx-surface'),
     )
-    await page.getByRole('button', { name: '深色模式' }).click()
+    await page.getByLabel('页面主题', { exact: true }).selectOption('dark')
     await expect.poll(() => preview.getAttribute('data-zx-color-mode')).toBe('dark')
+    expect(await page.getByLabel('预览主题', { exact: true }).inputValue()).toBe('dark')
     const dark = await preview.evaluate((element) =>
       getComputedStyle(element).getPropertyValue('--zx-surface'),
     )
     expect(dark).not.toBe(light)
-    expect(await page.getByRole('button', { name: '深色模式' }).getAttribute('aria-pressed')).toBe(
-      'true',
-    )
+    expect(await page.locator('html').getAttribute('data-zx-color-mode')).toBe('dark')
+    expect(await page.getByRole('code').textContent()).toContain('data-zx-color-mode="dark"')
+    await page.getByLabel('预览主题', { exact: true }).selectOption('light')
+    await expect.poll(() => page.locator('html').getAttribute('data-zx-color-mode')).toBe('light')
+    expect(await page.getByLabel('页面主题', { exact: true }).inputValue()).toBe('light')
     expect(
-      await page
-        .locator('body')
-        .evaluate(() => getComputedStyle(document.documentElement).backgroundColor),
-    ).toBe(shell)
-    await page.getByRole('button', { name: '深色模式' }).click()
+      await preview.evaluate((element) =>
+        getComputedStyle(element).getPropertyValue('--zx-surface'),
+      ),
+    ).toBe(light)
   }
 })
 
 test('keeps Clean text and control boundaries legible in both color modes', async () => {
   for (const mode of ['light', 'dark']) {
-    if (mode === 'dark') await page.getByRole('button', { name: '深色模式' }).click()
+    await page.getByLabel('预览主题', { exact: true }).selectOption(mode)
     const contrasts = await page.getByTestId('preview').evaluate((preview) => {
       const probe = document.createElement('span')
       preview.append(probe)
@@ -443,9 +443,9 @@ test('captures the real desktop, mobile, dark and zoomed layouts with Playwright
   expect((await page.getByTestId('preview').boundingBox())!.y).toBeLessThan(300)
   await capture('desktop')
   await capture('desktop-full', true)
-  await page.getByRole('button', { name: '深色模式' }).click()
+  await page.getByLabel('预览主题', { exact: true }).selectOption('dark')
   await capture('desktop-dark')
-  await page.getByRole('button', { name: '深色模式' }).click()
+  await page.getByLabel('预览主题', { exact: true }).selectOption('light')
   for (const style of ['minimal', 'soft', 'brutalist']) {
     await page.getByLabel('设计风格').selectOption(style)
     if (directory)

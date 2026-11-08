@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { ArrowUpRight, ChevronRight, Copy, Magnifier, Moon, Sun } from '@gravity-ui/icons'
-import { Button } from '@zixiao-labs/ui-kits-react'
+import { ArrowUpRight, ChevronRight, Copy, Magnifier } from '@gravity-ui/icons'
 import { useTheme } from '../theme'
 import { ThemePanel } from '../theme-panel'
+import { ThemeModeSelect } from '../theme-mode-select'
 import { ButtonPlayground } from '../examples/button-playground'
 import { displayExamples } from '../examples/display'
 import { formsExamples } from '../examples/forms'
@@ -71,9 +71,8 @@ function Home() {
   const { component } = Route.useSearch()
   const navigate = useNavigate({ from: '/' })
   const [query, setQuery] = useState('')
-  const [dark, setDark] = useState(false)
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'error'>('idle')
-  const { previewStyle } = useTheme()
+  const { previewStyle, dark } = useTheme()
   const active = componentExamples.find((item) => item.name === component) ?? componentExamples[0]
   const filtered = componentExamples.filter((item) =>
     `${item.name} ${item.description} ${categoryLabels[item.category]}`
@@ -176,16 +175,7 @@ function Home() {
         {active.name !== 'Button' && (
           <div className="section-heading" id="interactive">
             <h2>交互预览</h2>
-            <Button
-              className="preview-theme-toggle"
-              variant="outline"
-              aria-label="样本深色模式"
-              aria-pressed={dark}
-              onClick={() => setDark(!dark)}
-            >
-              {dark ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
-              <span className="theme-mode-label">{dark ? '浅色样本' : '深色样本'}</span>
-            </Button>
+            <ThemeModeSelect label="样本主题" />
           </div>
         )}
         {active.name === 'Button' ? (
@@ -197,7 +187,7 @@ function Home() {
               aria-label={`${active.name} 用法`}
               data-zx-style="clean"
               data-zx-color-mode={dark ? 'dark' : 'light'}
-              style={previewStyle(dark)}
+              style={previewStyle}
             >
               <div className="demo-heading">
                 <span>预览</span>

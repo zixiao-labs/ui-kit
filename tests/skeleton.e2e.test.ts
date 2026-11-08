@@ -51,7 +51,7 @@ afterEach(async () => {
 
 for (const mode of ['light', 'dark']) {
   test(`keeps skeleton placeholders visible on each theme's surfaces in ${mode} mode`, async () => {
-    if (mode === 'dark') await page.getByRole('button', { name: '样本深色模式' }).click()
+    await page.getByLabel('样本主题', { exact: true }).selectOption(mode)
     const blocks = page.locator('.demo-stage .zx-skeleton')
     expect(await blocks.count()).toBe(4)
     expect(await blocks.first().getAttribute('aria-hidden')).toBe('true')

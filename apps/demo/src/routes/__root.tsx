@@ -1,7 +1,7 @@
 import { createRootRoute, HeadContent, Link, Outlet, Scripts } from '@tanstack/react-router'
 import { I18nProvider } from '@zixiao-labs/ui-kits-react'
-import { Moon, Sun } from '@gravity-ui/icons'
-import { ThemeProvider, useTheme } from '../theme'
+import { ThemeProvider } from '../theme'
+import { ThemeModeSelect } from '../theme-mode-select'
 import '@zixiao-labs/ui-kits-react/styles.css'
 import '../styles.css'
 import '../catalog.css'
@@ -59,7 +59,7 @@ function Root() {
               </Link>
             </nav>
             <span className="version-tag">React / TS</span>
-            <PageThemeToggle />
+            <ThemeModeSelect label="页面主题" compact />
           </header>
           <div id="main-content" tabIndex={-1}>
             <I18nProvider locale="zh-CN">
@@ -74,20 +74,5 @@ function Root() {
         <Scripts />
       </body>
     </html>
-  )
-}
-
-function PageThemeToggle() {
-  const { settings, update } = useTheme()
-  return (
-    <button
-      className="icon-button"
-      type="button"
-      aria-label="切换页面明暗"
-      aria-pressed={settings.dark}
-      onClick={() => update({ dark: !settings.dark })}
-    >
-      {settings.dark ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
-    </button>
   )
 }

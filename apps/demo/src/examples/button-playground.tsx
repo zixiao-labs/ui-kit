@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Copy, Moon, Plus } from '@gravity-ui/icons'
+import { Copy, Plus } from '@gravity-ui/icons'
 import { Button } from '@zixiao-labs/ui-kits-react'
 import type { ButtonSize, ButtonVariant } from '@zixiao-labs/ui-kits-react'
 import { useTheme } from '../theme'
+import { ThemeModeSelect } from '../theme-mode-select'
 
 const styles = [
   { id: 'clean', name: 'Clean', description: '圆角轮廓，紫霄品牌色' },
@@ -19,9 +20,8 @@ const variants = [
 ] as const
 
 export function ButtonPlayground() {
-  const { previewStyle, settings } = useTheme()
+  const { previewStyle, dark } = useTheme()
   const [style, setStyle] = useState<(typeof styles)[number]>(styles[0])
-  const [dark, setDark] = useState(false)
   const [variant, setVariant] = useState<ButtonVariant>('solid')
   const [size, setSize] = useState<ButtonSize>('md')
   const [loading, setLoading] = useState(false)
@@ -66,20 +66,11 @@ import '@zixiao-labs/ui-kits-react/styles.css'${withIcon ? "\nimport { Plus } fr
               data-testid="preview"
               data-zx-style={style.id}
               data-zx-color-mode={dark ? 'dark' : 'light'}
-              style={previewStyle(dark)}
+              style={previewStyle}
             >
               <div className="preview-toolbar">
                 <span className="preview-style-label">{style.name} / Button</span>
-                <button
-                  className="mode-toggle"
-                  type="button"
-                  aria-label="深色模式"
-                  aria-pressed={dark}
-                  onClick={() => setDark(!dark)}
-                >
-                  <Moon aria-hidden="true" />
-                  {dark ? '深色' : '浅色'}
-                </button>
+                <ThemeModeSelect label="预览主题" />
               </div>
               <div className="preview-stage">
                 <h3>{style.description}</h3>
@@ -243,8 +234,8 @@ import '@zixiao-labs/ui-kits-react/styles.css'${withIcon ? "\nimport { Plus } fr
           <div
             className="variant-grid"
             data-zx-style="clean"
-            data-zx-color-mode={settings.dark ? 'dark' : 'light'}
-            style={previewStyle(settings.dark)}
+            data-zx-color-mode={dark ? 'dark' : 'light'}
+            style={previewStyle}
           >
             {variants.map((item) => (
               <div className="variant-example" key={item.id} data-selected={variant === item.id}>
@@ -272,8 +263,8 @@ import '@zixiao-labs/ui-kits-react/styles.css'${withIcon ? "\nimport { Plus } fr
           <div
             className="color-grid"
             data-zx-style="clean"
-            data-zx-color-mode={settings.dark ? 'dark' : 'light'}
-            style={previewStyle(settings.dark)}
+            data-zx-color-mode={dark ? 'dark' : 'light'}
+            style={previewStyle}
           >
             <div className="color-sample color-primary">
               <span>Aa</span>

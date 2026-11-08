@@ -124,9 +124,9 @@ test('captures representative light, dark, mobile and zoom-equivalent evidence',
   await capture('catalogue-button-desktop')
   await select('TextField')
   await capture('catalogue-textfield-desktop')
-  await page.getByRole('button', { name: '样本深色模式' }).click()
+  await page.getByLabel('样本主题', { exact: true }).selectOption('dark')
   await capture('catalogue-textfield-dark')
-  await page.getByRole('button', { name: '样本深色模式' }).click()
+  await page.getByLabel('样本主题', { exact: true }).selectOption('light')
   await select('Calendar')
   await capture('catalogue-calendar-desktop')
   await select('ColorPicker')
@@ -183,7 +183,7 @@ test('validates forms and preserves OTP native editing and clipboard behavior', 
 
 test('keeps nested modal portals themed and restores focus to native triggers', async () => {
   await select('Modal')
-  await page.getByRole('button', { name: '样本深色模式' }).click()
+  await page.getByLabel('样本主题', { exact: true }).selectOption('dark')
   const trigger = page.getByRole('button', { name: '项目详情', exact: true })
   await trigger.click()
   const dialog = page.getByRole('dialog', { name: '北岸设计', exact: true })
