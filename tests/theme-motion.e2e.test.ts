@@ -268,7 +268,7 @@ test('runs modal, drawer, sheet and anchored enter/exit lifecycles and restores 
     await select(name)
     const trigger =
       name === 'Select'
-        ? page.locator('.zx-select-trigger').first()
+        ? page.getByRole('button', { name: /北岸设计负责人/ })
         : page.getByRole('button', { name: triggerName, exact: true })
     await trigger.click()
     await sawMotion(`${surface.slice(1)}:zx-overlay-in`)

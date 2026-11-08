@@ -4,6 +4,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, expect, test } from '@light
 import { chromium } from 'playwright'
 import type { Browser, Page } from 'playwright'
 import { contrastRatio } from '../packages/react/src/theme'
+import { styleOptions } from '../apps/demo/src/style-options'
 import { startDemo } from './dev-server'
 
 let app: Awaited<ReturnType<typeof startDemo>>
@@ -35,7 +36,7 @@ beforeEach(async () => {
   await page.goto('/')
   await page.getByRole('button', { name: '触发交互', exact: true }).click()
   await expect.poll(() => page.locator('.click-count').textContent()).toBe('已触发 1 次交互')
-  await page.getByLabel('全局风格', { exact: true }).selectOption('endfield')
+  await chooseStyle('全局风格', 'endfield')
 })
 afterEach(async () => {
   try {
@@ -44,6 +45,15 @@ afterEach(async () => {
     await page?.context().close()
   }
 })
+
+async function chooseStyle(label: string, value: string) {
+  const name =
+    value === 'inherit' ? '跟随全局' : styleOptions.find((item) => item.id === value)!.name
+  await page.getByRole('button', { name: new RegExp(label) }).click()
+  const menu = page.getByRole('listbox', { name: label, exact: true })
+  await menu.getByRole('option', { name, exact: true }).click()
+  await menu.waitFor({ state: 'detached' })
+}
 
 async function select(name: string) {
   const mobile = page.viewportSize()!.width <= 800
@@ -89,12 +99,12 @@ test('switches global and preview styles independently without resetting compone
   const input = page.locator('.demo-stage input').first()
   await input.fill('保留输入内容')
   for (const style of ['soft', 'minimal', 'brutalist', 'clean', 'endfield']) {
-    await page.getByLabel('全局风格', { exact: true }).selectOption(style)
+    await chooseStyle('全局风格', style)
     expect(await page.locator('html').getAttribute('data-zx-style')).toBe(style)
     expect(await page.locator('.component-demo').getAttribute('data-zx-style')).toBe(style)
     expect(await input.inputValue()).toBe('保留输入内容')
   }
-  await page.getByLabel('预览风格', { exact: true }).selectOption('soft')
+  await chooseStyle('预览风格', 'soft')
   await page.getByRole('button', { name: '松林配色', exact: true }).click()
   expect(await token('html', '--zx-accent')).toBe('#28745b')
   expect(await token('.component-demo', '--zx-accent')).toBe('#71509a')
@@ -106,11 +116,13 @@ test('switches global and preview styles independently without resetting compone
   await page.locator('.zx-modal-overlay').waitFor({ state: 'detached' })
   await page.reload()
   await expect.poll(() => token('html', '--zx-accent')).toBe('#28745b')
-  expect(await page.getByLabel('全局风格', { exact: true }).inputValue()).toBe('endfield')
-  expect(await page.getByLabel('预览风格', { exact: true }).inputValue()).toBe('soft')
-  await page.getByLabel('预览风格', { exact: true }).selectOption('inherit')
+  expect(await page.getByRole('button', { name: /全局风格/ }).textContent()).toBe('Endfield')
+  expect(await page.getByRole('button', { name: /预览风格/ }).textContent()).toBe('Soft')
+  await chooseStyle('预览风格', 'inherit')
   expect(await token('.component-demo', '--zx-accent')).toBe('#28745b')
-  await page.getByLabel('全局风格', { exact: true }).selectOption('endfield')
+  // Re-selecting the current value is not a change; switch presets to restore their tokens.
+  await chooseStyle('全局风格', 'clean')
+  await chooseStyle('全局风格', 'endfield')
   expect(await token('.component-demo', '--zx-accent')).toBe('#fffa00')
 })
 
@@ -120,7 +132,7 @@ test('keeps nested styles, modes, live changes and portal focus isolated in both
     ['clean', 'endfield'],
     ['endfield', 'clean'],
   ]) {
-    await page.getByLabel('全局风格', { exact: true }).selectOption(outer)
+    await chooseStyle('全局风格', outer)
     await page.getByLabel('嵌套风格', { exact: true }).selectOption(inner)
     await page.getByLabel('嵌套明暗', { exact: true }).selectOption('dark')
     expect(await token('.composition-outer', '--zx-radius')).toBe(
@@ -177,7 +189,7 @@ test('exports native Endfield CSS separately from custom tokens and restores sav
   const native = await page.evaluate(() => navigator.clipboard.readText())
   expect(native).toContain('/themes/endfield.css')
   expect(native).not.toContain('--zx-radius: 4px')
-  await page.getByLabel('设计风格', { exact: true }).selectOption('minimal')
+  await chooseStyle('设计风格', 'minimal')
   await page.getByLabel('页面主题', { exact: true }).selectOption('dark')
   await page.reload()
   await expect.poll(() => page.locator('html').getAttribute('data-zx-style')).toBe('endfield')
@@ -185,7 +197,7 @@ test('exports native Endfield CSS separately from custom tokens and restores sav
   expect(await page.locator('html').getAttribute('data-zx-color-mode')).toBe('dark')
   await page.getByRole('button', { name: '恢复默认主题', exact: true }).click()
   expect(await page.locator('html').getAttribute('data-zx-style')).toBe('clean')
-  expect(await page.getByLabel('设计风格', { exact: true }).inputValue()).toBe('inherit')
+  expect(await page.getByRole('button', { name: /设计风格/ }).textContent()).toBe('跟随全局')
 })
 
 test('keeps Endfield text, focus, small indicators and control boundaries contrast-safe', async () => {
@@ -239,7 +251,7 @@ test('captures Endfield desktop, portrait, dark, nested and 200% reflow evidence
   await select('Tabs')
   await capture('endfield-reflow')
   await page.setViewportSize({ width: 1440, height: 1000 })
-  await page.getByLabel('全局风格', { exact: true }).selectOption('clean')
+  await chooseStyle('全局风格', 'clean')
   await page.locator('.theme-composition > summary').click()
   await page.locator('.composition-outer').scrollIntoViewIfNeeded()
   await capture('endfield-mixed')

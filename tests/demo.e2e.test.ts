@@ -45,6 +45,25 @@ afterEach(async () => {
   }
 })
 
+const styleLabels: Record<string, string> = {
+  clean: 'Clean',
+  endfield: 'Endfield',
+  minimal: 'Minimal',
+  soft: 'Soft',
+  brutalist: 'Brutalist',
+}
+
+function configTrigger(label: string) {
+  return page.getByRole('button', { name: new RegExp(label) })
+}
+
+async function chooseConfig(label: string, option: string) {
+  await configTrigger(label).click()
+  const menu = page.getByRole('listbox', { name: new RegExp(label) })
+  await menu.getByRole('option', { name: option, exact: true }).click()
+  await menu.waitFor({ state: 'detached' })
+}
+
 test('keeps component behavior across all five expressions', async () => {
   expect(await page.title()).toContain('Zixiao Laboratories UI Kits')
   expect(await page.getByRole('heading', { level: 1 }).textContent()).toBe('Button')
@@ -52,10 +71,10 @@ test('keeps component behavior across all five expressions', async () => {
   expect(await action.getAttribute('type')).toBe('button')
 
   for (const [index, style] of ['soft', 'brutalist', 'minimal', 'endfield', 'clean'].entries()) {
-    await page.getByLabel('设计风格').selectOption(style)
+    await chooseConfig('设计风格', styleLabels[style])
     await expect.poll(() => page.getByTestId('preview').getAttribute('data-zx-style')).toBe(style)
     expect(await page.locator('.preview-style-label').textContent()).toBe(
-      `${{ clean: 'Clean', minimal: 'Minimal', soft: 'Soft', brutalist: 'Brutalist', endfield: 'Endfield' }[style]} / Button`,
+      `${styleLabels[style]} / Button`,
     )
     await action.click()
     await expect.poll(() => page.locator('output').textContent()).toBe(`已触发 ${index + 1} 次交互`)
@@ -66,7 +85,7 @@ test('keeps component behavior across all five expressions', async () => {
 
 test('updates variants, sizes, loading and disabled without losing keyboard behavior', async () => {
   const action = page.getByRole('button', { name: '触发交互' })
-  await page.getByLabel('变体').selectOption('tonal')
+  await chooseConfig('变体', 'Tonal')
   await page.getByRole('radio', { name: '大', exact: true }).check()
   await expect.poll(() => action.getAttribute('data-variant')).toBe('tonal')
   expect(await action.getAttribute('data-size')).toBe('lg')
@@ -89,7 +108,7 @@ test('updates variants, sizes, loading and disabled without losing keyboard beha
 test('reflects variant selection in the samples, preview and current code', async () => {
   const outlined = page.getByRole('button', { name: '预览 Outlined' })
   await outlined.click()
-  await expect.poll(() => page.getByLabel('变体').inputValue()).toBe('outline')
+  await expect.poll(() => configTrigger('变体').textContent()).toBe('Outlined')
   expect(await outlined.getAttribute('aria-pressed')).toBe('true')
   expect(await page.getByRole('button', { name: '预览 Filled' }).getAttribute('aria-pressed')).toBe(
     'false',
@@ -98,7 +117,7 @@ test('reflects variant selection in the samples, preview and current code', asyn
   expect(await page.locator('.preview-properties').textContent()).toBe('outline / md')
   expect(await page.getByRole('code').textContent()).toContain('variant="outline"')
 
-  await page.getByLabel('变体').selectOption('ghost')
+  await chooseConfig('变体', 'Text')
   await page.getByRole('radio', { name: '小', exact: true }).check()
   expect(await outlined.getAttribute('aria-pressed')).toBe('false')
   expect(await page.getByRole('button', { name: '预览 Text' }).getAttribute('aria-pressed')).toBe(
@@ -107,10 +126,152 @@ test('reflects variant selection in the samples, preview and current code', asyn
   expect(await page.locator('.preview-properties').textContent()).toBe('ghost / sm')
 })
 
+test('uses aligned themed configuration menus instead of native system popups', async () => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  const panel = page.getByRole('complementary', { name: '组件配置' })
+  const styleTrigger = configTrigger('设计风格')
+  const variantTrigger = configTrigger('变体')
+  expect(await panel.getByRole('combobox').count()).toBe(0)
+  expect((await styleTrigger.boundingBox())!.height).toBe(44)
+  expect((await variantTrigger.boundingBox())!.height).toBe(44)
+
+  for (const style of ['clean', 'endfield', 'minimal', 'soft', 'brutalist']) {
+    await chooseConfig('全局风格', styleLabels[style])
+    for (const mode of ['light', 'dark']) {
+      await page.getByLabel('页面主题', { exact: true }).selectOption(mode)
+      await styleTrigger.click()
+      const menu = page.getByRole('listbox', { name: '设计风格' })
+      await menu.waitFor()
+      const popover = page.locator('.zx-options-popover')
+      const triggerBox = (await styleTrigger.boundingBox())!
+      const menuBox = (await popover.boundingBox())!
+      expect(Math.abs(menuBox.x - triggerBox.x)).toBeLessThanOrEqual(1)
+      expect(Math.abs(menuBox.width - triggerBox.width)).toBeLessThanOrEqual(1)
+      expect(menuBox.y).toBeGreaterThanOrEqual(triggerBox.y + triggerBox.height)
+      expect(await popover.getAttribute('data-zx-style')).toBe(style)
+      expect(await popover.getAttribute('data-zx-color-mode')).toBe(mode)
+      expect(
+        await popover.evaluate((element) =>
+          getComputedStyle(element).getPropertyValue('--zx-text'),
+        ),
+      ).toBe(
+        await styleTrigger.evaluate((element) =>
+          getComputedStyle(element).getPropertyValue('--zx-text'),
+        ),
+      )
+      expect(await popover.evaluate((element) => getComputedStyle(element).backdropFilter)).toBe(
+        'none',
+      )
+      expect(await menu.getByRole('option').allTextContents()).toEqual([
+        '跟随全局',
+        'Clean',
+        'Endfield',
+        'Minimal',
+        'Soft',
+        'Brutalist',
+      ])
+      expect(await menu.getByRole('option', { selected: true }).textContent()).toBe('跟随全局')
+      expect(await menu.locator('.zx-picker-option-check').count()).toBe(1)
+      await page.keyboard.press('Escape')
+      await expect.poll(() => styleTrigger.getAttribute('aria-expanded')).toBe('false')
+      await expect
+        .poll(() => styleTrigger.evaluate((element) => element === document.activeElement))
+        .toBe(true)
+    }
+  }
+})
+
+test('supports keyboard selection, cancellation and focus return in configuration menus', async () => {
+  const trigger = configTrigger('变体')
+  await trigger.focus()
+  await page.keyboard.press('Enter')
+  await page.getByRole('listbox').waitFor()
+  await page.keyboard.press('End')
+  await page.keyboard.press('Enter')
+  await expect.poll(() => trigger.textContent()).toBe('Text')
+  expect(await page.getByRole('button', { name: '触发交互' }).getAttribute('data-variant')).toBe(
+    'ghost',
+  )
+  expect(await page.getByRole('code').textContent()).toContain('variant="ghost"')
+  await expect
+    .poll(() => trigger.evaluate((element) => element === document.activeElement))
+    .toBe(true)
+  expect(await trigger.getAttribute('data-focus-visible')).not.toBeNull()
+  expect(await trigger.evaluate((element) => getComputedStyle(element).outlineStyle)).toBe('solid')
+
+  await page.keyboard.press('Space')
+  await page.getByRole('listbox').waitFor()
+  await page.keyboard.press('Home')
+  await page.keyboard.press('Escape')
+  await expect.poll(() => trigger.getAttribute('aria-expanded')).toBe('false')
+  expect(await trigger.textContent()).toBe('Text')
+  await expect
+    .poll(() => trigger.evaluate((element) => element === document.activeElement))
+    .toBe(true)
+  await page.keyboard.press('Tab')
+  expect(
+    await page
+      .getByRole('radio', { name: '中', exact: true })
+      .evaluate((element) => element === document.activeElement),
+  ).toBe(true)
+
+  await chooseConfig('设计风格', 'Soft')
+  await configTrigger('设计风格').click()
+  expect(
+    await page.getByRole('listbox').getByRole('option', { selected: true }).textContent(),
+  ).toBe('Soft')
+  await page.mouse.click(8, 8)
+  await expect.poll(() => configTrigger('设计风格').getAttribute('aria-expanded')).toBe('false')
+  expect(await configTrigger('设计风格').textContent()).toBe('Soft')
+})
+
+test('keeps configuration menus touch-sized and inside narrow and zoom-equivalent viewports', async () => {
+  const touchContext = await browser.newContext({
+    baseURL: app!.url,
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+    isMobile: true,
+    reducedMotion: 'reduce',
+  })
+  try {
+    const touchPage = await touchContext.newPage()
+    touchPage.on('pageerror', (error) => errors.push(error.message))
+    touchPage.setDefaultTimeout(5000)
+    await touchPage.goto('/')
+    await touchPage.getByRole('button', { name: '触发交互', exact: true }).tap()
+    for (const width of [390, 320, 720]) {
+      await touchPage.setViewportSize({ width, height: width === 720 ? 450 : 844 })
+      const trigger = touchPage.getByRole('button', { name: /变体/ })
+      expect((await trigger.boundingBox())!.height).toBeGreaterThanOrEqual(44)
+      await trigger.tap()
+      const menu = touchPage.getByRole('listbox')
+      await menu.waitFor()
+      const box = (await menu.boundingBox())!
+      expect(box.x).toBeGreaterThanOrEqual(0)
+      expect(box.x + box.width).toBeLessThanOrEqual(width)
+      expect(box.y).toBeGreaterThanOrEqual(0)
+      expect(box.y + box.height).toBeLessThanOrEqual(width === 720 ? 450 : 844)
+      for (const option of await menu.getByRole('option').all()) {
+        expect((await option.boundingBox())!.height).toBeGreaterThanOrEqual(44)
+      }
+      await menu.getByRole('option', { name: 'Outlined', exact: true }).tap()
+      expect(await trigger.textContent()).toBe('Outlined')
+      expect(
+        await touchPage.getByRole('button', { name: '触发交互' }).getAttribute('data-variant'),
+      ).toBe('outline')
+      expect(
+        await touchPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+      ).toBe(true)
+    }
+  } finally {
+    await touchContext.close()
+  }
+})
+
 test('shares light and dark colors between every expression and the page theme', async () => {
   const preview = page.getByTestId('preview')
   for (const style of ['clean', 'minimal', 'soft', 'brutalist', 'endfield']) {
-    await page.getByLabel('设计风格').selectOption(style)
+    await chooseConfig('设计风格', styleLabels[style])
     await page.getByLabel('页面主题', { exact: true }).selectOption('light')
     const light = await preview.evaluate((element) =>
       getComputedStyle(element).getPropertyValue('--zx-surface'),
@@ -376,14 +537,14 @@ test('copies the current code and reports a recoverable clipboard failure', asyn
       },
     })
   })
-  await page.getByLabel('变体').selectOption('tonal')
+  await chooseConfig('变体', 'Tonal')
   await page.getByRole('button', { name: '复制代码' }).click()
   await expect.poll(() => page.getByRole('status').filter({ hasText: '已复制' }).count()).toBe(1)
   expect(await page.getByRole('button', { name: '已复制', exact: true }).count()).toBe(1)
   expect(await page.locator('html').getAttribute('data-copied-code')).toBe(
     await page.getByRole('code').textContent(),
   )
-  await page.getByLabel('变体').selectOption('outline')
+  await chooseConfig('变体', 'Outlined')
   await expect.poll(() => page.getByRole('status').filter({ hasText: '已复制' }).count()).toBe(0)
 
   await page.evaluate(() => {
@@ -401,7 +562,7 @@ test('copies the current code and reports a recoverable clipboard failure', asyn
     .poll(() => page.getByRole('status').filter({ hasText: '请选中代码手动复制' }).count())
     .toBe(1)
   expect(await page.getByRole('button', { name: '复制失败，重试', exact: true }).count()).toBe(1)
-  expect(await page.getByLabel('变体').inputValue()).toBe('outline')
+  expect(await configTrigger('变体').textContent()).toBe('Outlined')
 })
 
 test('fits mobile, navigates and respects reduced motion', async () => {
@@ -458,13 +619,13 @@ test('captures the real desktop, mobile, dark and zoomed layouts with Playwright
   await capture('desktop-dark')
   await page.getByLabel('预览主题', { exact: true }).selectOption('light')
   for (const style of ['minimal', 'soft', 'brutalist']) {
-    await page.getByLabel('设计风格').selectOption(style)
+    await chooseConfig('设计风格', styleLabels[style])
     if (directory)
       await page
         .getByTestId('preview')
         .screenshot({ path: join(directory, `preview-${style}.png`) })
   }
-  await page.getByLabel('设计风格').selectOption('clean')
+  await chooseConfig('设计风格', 'Clean')
   await page.setViewportSize({ width: 390, height: 844 })
   expect((await page.getByTestId('preview').boundingBox())!.y).toBeLessThan(480)
   await capture('mobile')

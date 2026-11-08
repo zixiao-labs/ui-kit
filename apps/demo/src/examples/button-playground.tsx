@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Copy, Plus } from '@gravity-ui/icons'
-import { Button } from '@zixiao-labs/ui-kits-react'
+import { Button, Select } from '@zixiao-labs/ui-kits-react'
 import type { ButtonSize, ButtonVariant } from '@zixiao-labs/ui-kits-react'
 import { useTheme } from '../theme'
 import { ThemeModeSelect } from '../theme-mode-select'
@@ -104,23 +104,21 @@ import '@zixiao-labs/ui-kits-react/styles.css'${settings.customized && previewSt
                 <h3>配置</h3>
                 <span>Props</span>
               </div>
-              <StyleSelect label="设计风格" />
-              <label className="select-control" htmlFor="variant">
-                <span>
-                  变体 <small>variant</small>
-                </span>
-                <select
-                  id="variant"
-                  value={variant}
-                  onChange={(event) => setVariant(event.target.value as ButtonVariant)}
-                >
-                  {variants.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <StyleSelect label="设计风格" className="select-control" />
+              <Select
+                className="select-control"
+                label={
+                  <>
+                    变体 <small>variant</small>
+                  </>
+                }
+                items={variants.map(({ id, name }) => ({ id, label: name }))}
+                value={variant}
+                onChange={(value) => {
+                  const selected = variants.find((item) => item.id === value)
+                  if (selected) setVariant(selected.id)
+                }}
+              />
               <fieldset className="size-control">
                 <legend>
                   尺寸 <small>size</small>

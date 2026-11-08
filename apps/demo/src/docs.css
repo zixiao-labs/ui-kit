@@ -258,13 +258,8 @@ h1 {
   gap: 4px;
   font-size: 12px;
 }
-.select-control select {
-  min-height: 36px;
-  border-color: var(--zx-control-border);
+.select-control .zx-select-trigger {
   border-radius: var(--zx-radius-sm);
-  background: var(--page);
-  font-size: 12px;
-  padding: 4px 8px;
 }
 .select-control small,
 .size-control small {
@@ -793,8 +788,10 @@ h1 {
   .lab-controls {
     padding: 16px;
   }
-  .select-control select {
+  .select-control .zx-select-trigger {
     min-height: 44px;
+  }
+  .select-control {
     font-size: 14px;
   }
   .segmented-control label,

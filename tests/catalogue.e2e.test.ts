@@ -320,7 +320,7 @@ test('supports date keyboard editing, selection callbacks and color keyboard con
   await page.keyboard.press('ArrowUp')
   await expect.poll(() => page.locator('.demo-stage output').textContent()).toContain('2026-06-19')
   await select('Select')
-  await page.locator('.zx-select-trigger').first().click()
+  await page.getByRole('button', { name: /北岸设计负责人/ }).click()
   await page.getByRole('option', { name: '林舒', exact: true }).click()
   await expect.poll(() => page.locator('.demo-stage output').textContent()).toContain('林舒')
   await select('DatePicker')

@@ -435,28 +435,20 @@ h2 {
   font-size: 14px;
   line-height: 20px;
 }
-.select-control > span,
+.select-control .zx-picker-label,
 .size-control legend {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+}
+.select-control .zx-picker-label {
+  font: inherit;
 }
 .select-control small,
 .size-control small,
 .switch-control small {
   color: var(--quiet);
   font: 12px/20px var(--mono);
-}
-.select-control select {
-  width: 100%;
-  min-height: 44px;
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--zx-control-border);
-  border-radius: var(--zx-radius-sm);
-  background: var(--zx-surface);
-  color: var(--ink);
-  font-size: 14px;
-  cursor: pointer;
 }
 .size-control {
   min-width: 0;
