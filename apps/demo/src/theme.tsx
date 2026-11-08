@@ -8,6 +8,7 @@ import {
 } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 import { brandTheme, createTheme } from '@zixiao-labs/ui-kits-react/theme'
+import { isStyleName, styleOptions, type StyleName } from './style-options'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
 
@@ -17,9 +18,17 @@ export interface ThemeSettings {
   radius: number
   customized: boolean
   mode: ThemeMode
+  style: StyleName
+  preview: StyleName | 'inherit'
 }
 
-const defaults: ThemeSettings = { ...brandTheme, customized: false, mode: 'system' }
+const defaults: ThemeSettings = {
+  ...brandTheme,
+  customized: false,
+  mode: 'system',
+  style: 'clean',
+  preview: 'inherit',
+}
 const storageKey = 'zx-ui-theme-v1'
 const systemThemeQuery = '(prefers-color-scheme: dark)'
 
@@ -50,6 +59,8 @@ function readSettings(value: unknown): ThemeSettings | undefined {
     radius: item.radius,
     customized: item.customized,
     mode,
+    style: isStyleName(item.style) ? item.style : 'clean',
+    preview: isStyleName(item.preview) ? item.preview : 'inherit',
   }
 }
 
@@ -71,7 +82,9 @@ interface ThemeState {
   settings: ThemeSettings
   dark: boolean
   update: (values: Partial<ThemeSettings>) => void
+  selectStyle: (style: StyleName) => void
   reset: () => void
+  sampleStyle: (typeof styleOptions)[number]
   previewStyle: CSSProperties | undefined
   storageError: boolean
 }
@@ -100,13 +113,17 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   /* oxlint-enable react/set-state-in-effect */
   useEffect(() => {
     const root = document.documentElement
+    root.dataset.zxStyle = settings.style
+    if (settings.style === 'endfield') root.dataset.arkTheme = 'endfield'
+    else root.removeAttribute('data-ark-theme')
+    root.dataset.arkDepth = 'moderate'
     root.dataset.zxColorMode = dark ? 'dark' : 'light'
     for (const [key, value] of Object.entries(tokens ?? {})) root.style.setProperty(key, value)
     return () => {
       for (const key of Object.keys(tokens ?? {})) root.style.removeProperty(key)
       root.removeAttribute('data-zx-color-mode')
     }
-  }, [dark, tokens])
+  }, [dark, tokens, settings.style])
   const value = useMemo<ThemeState>(() => {
     const save = (next: ThemeSettings) => {
       setSettings(next)
@@ -121,8 +138,25 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       settings,
       dark,
       update: (values) => save({ ...settings, ...values }),
+      selectStyle: (style) => {
+        const preset = styleOptions.find((item) => item.id === style)!
+        save({
+          ...settings,
+          style,
+          primary: preset.primary,
+          secondary: preset.secondary,
+          radius: preset.radius,
+          customized: false,
+        })
+      },
       reset: () => save(defaults),
-      previewStyle: tokens as CSSProperties | undefined,
+      sampleStyle: styleOptions.find(
+        (item) => item.id === (settings.preview === 'inherit' ? settings.style : settings.preview),
+      )!,
+      previewStyle:
+        settings.preview === 'inherit' || settings.preview === settings.style
+          ? (tokens as CSSProperties | undefined)
+          : undefined,
       storageError,
     }
   }, [settings, dark, tokens, storageError])

@@ -271,7 +271,7 @@
 .zx-checkbox[data-selected] .zx-checkbox__box,
 .zx-checkbox[data-indeterminate] .zx-checkbox__box {
   background: var(--zx-accent);
-  border-color: var(--zx-accent);
+  border-color: var(--zx-selection-border);
 }
 
 .zx-checkbox[data-selected] .zx-checkbox__box > svg,
@@ -288,7 +288,7 @@
 .zx-radio__circle > span {
   width: 12px;
   height: 12px;
-  background: var(--zx-accent);
+  background: var(--zx-indicator);
   opacity: 0;
   transform: scale(0.5);
   transition:
@@ -297,7 +297,7 @@
 }
 
 .zx-radio[data-selected] .zx-radio__circle {
-  border-color: var(--zx-accent);
+  border-color: var(--zx-selection-border);
 }
 
 .zx-radio[data-selected] .zx-radio__circle > span {
@@ -307,7 +307,7 @@
 
 .zx-choice[data-hovered]:not([data-disabled]) .zx-checkbox__box,
 .zx-choice[data-hovered]:not([data-disabled]) .zx-radio__circle {
-  border-color: var(--zx-accent);
+  border-color: var(--zx-selection-border);
 }
 
 .zx-choice[data-invalid] .zx-checkbox__box,
@@ -352,7 +352,7 @@
   height: 28px;
   padding: 4px;
   border: 1px solid var(--zx-control-border);
-  border-radius: 999px;
+  border-radius: var(--zx-switch-radius);
   background: var(--zx-tonal);
   transition: background-color var(--zx-motion-duration-short) var(--zx-motion-easing);
 }
@@ -360,7 +360,7 @@
 .zx-switch__thumb {
   width: 20px;
   height: 20px;
-  border-radius: 50%;
+  border-radius: var(--zx-switch-radius);
   background: var(--zx-muted);
   transition:
     transform var(--zx-motion-duration-short) var(--zx-motion-easing),
@@ -369,7 +369,7 @@
 
 .zx-switch[data-selected] .zx-switch__track {
   background: var(--zx-accent);
-  border-color: var(--zx-accent);
+  border-color: var(--zx-selection-border);
 }
 
 .zx-switch[data-selected] .zx-switch__thumb {
@@ -382,7 +382,7 @@
 }
 
 .zx-switch[data-hovered]:not([data-disabled]) .zx-switch__track {
-  border-color: var(--zx-accent);
+  border-color: var(--zx-selection-border);
 }
 
 .zx-slider__header {
@@ -410,14 +410,14 @@
   top: 20px;
   width: 100%;
   height: 4px;
-  border-radius: 999px;
+  border-radius: var(--zx-radius-full);
   background: var(--zx-border);
 }
 
 .zx-slider__fill {
   position: absolute;
   border-radius: inherit;
-  background: var(--zx-accent);
+  background: var(--zx-indicator);
 }
 
 .zx-slider__thumb {
@@ -434,8 +434,8 @@
   box-sizing: border-box;
   width: 24px;
   height: 24px;
-  border: 2px solid var(--zx-accent);
-  border-radius: 50%;
+  border: 2px solid var(--zx-selection-border);
+  border-radius: var(--zx-slider-thumb-radius);
   background: var(--zx-surface);
   content: '';
 }

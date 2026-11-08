@@ -17,6 +17,9 @@
   --zx-on-tonal: var(--zx-text);
   --zx-control-border: var(--zx-border);
   --zx-focus: var(--zx-accent);
+  --zx-selection-border: var(--zx-accent);
+  --zx-selection-shadow: none;
+  --zx-indicator: var(--zx-accent);
   --zx-radius: 6px;
   --zx-border-width: 1px;
   --zx-solid-border: transparent;
@@ -38,11 +41,14 @@
   --zx-button-padding-lg: 28px;
   --zx-button-font-size-sm: 13px;
   --zx-button-font-size-lg: 16px;
+  --zx-button-hover-transform: translateY(-1px);
   --zx-button-active-transform: translateY(1px);
   --zx-radius-sm: 8px;
   --zx-radius-md: 12px;
   --zx-radius-lg: 16px;
   --zx-radius-full: 9999px;
+  --zx-switch-radius: 999px;
+  --zx-slider-thumb-radius: 50%;
   --zx-surface-raised: var(--zx-surface);
   --zx-error: #ba1a1a;
   --zx-on-error: #ffffff;
@@ -126,7 +132,7 @@
 
 .zx-button:not(:disabled):hover {
   background: var(--zx-accent-hover);
-  transform: translateY(-1px);
+  transform: var(--zx-button-hover-transform);
 }
 
 .zx-button[data-variant='outline']:not(:disabled):hover,

@@ -2,11 +2,11 @@
 
 `@zixiao-labs` 的多风格 React 组件库。**一套组件 API，共享语义与交互，多种视觉表达。**
 
-Clean 是当前优先完善的风格，不是整个项目唯一的风格。Minimal、Soft、Brutalist 保留在同一个主题机制中；后续风格继续复用组件行为，不复制组件实现。
+Clean 和 Endfield 复用同一套完整组件实现。Minimal、Soft、Brutalist 保留在同一个主题机制中；后续风格继续复用组件行为，不复制组件实现。
 
 ## 开始开发
 
-需要 Node.js >=22.12.0 和 pnpm 12.16.1。
+需要 Node.js >=22.12.0 和 pnpm 12.18.0。
 
 ```sh
 pnpm install
@@ -52,11 +52,37 @@ export function Example() {
 | `data-zx-style` | 定位                                                                    | 当前状态                                 |
 | --------------- | ----------------------------------------------------------------------- | ---------------------------------------- |
 | `clean`         | 克制的 Material-inspired 风格，语义色彩、tonal surfaces、全圆角操作按钮 | 第一套重点完善的风格；也是根作用域默认值 |
+| `endfield`      | Endfield-inspired 工程风格，灰白 / 炭灰表面、信号黄操作、矩形控件       | 74 个目录条目的明暗配色与响应式覆盖      |
 | `minimal`       | 简洁直观，小圆角与绿色强调                                              | 保留的基础风格                           |
 | `soft`          | 柔和紫色、圆润轮廓与轻阴影                                              | 保留的基础风格                           |
 | `brutalist`     | 高对比边界、直角与硬阴影                                                | 保留的基础风格                           |
 
-四套风格均提供显式 `light` / `dark` 配色。把 `data-zx-style` 和 `data-zx-color-mode` 放在同一个作用域元素上。不同作用域可并存；嵌套的 `data-zx-style` 会重置为该风格的浅色默认值，深色需显式指定。
+五套风格均提供显式 `light` / `dark` 配色。把 `data-zx-style` 和 `data-zx-color-mode` 放在同一个作用域元素上。不同作用域可并存；嵌套的 `data-zx-style` 会重置为该风格的浅色默认值，深色需显式指定。
+
+Endfield 使用独立的 `themes/endfield.css`，不依赖 Clean 或 Material tokens。浅色背景上的细进度线、单选标记与焦点使用炭灰，信号黄保留给主要操作与选中状态；不是所有文本和边框都染成黄色。形状与状态通过中性 tokens 表达，不使用跨越嵌套边界的后代选择器。
+
+### 全局切换与局部混用
+
+Demo 的「全局风格」控制页面和跟随全局的预览；「预览风格」（Button 配置中为「设计风格」）可单独覆盖，选择跨组件导航和刷新保留。切换全局风格恢复目标风格的原生配色与形状；自定义配色只覆盖全局及同风格预览，不会污染另一风格的局部预览。明暗仍由全站的浅色 / 深色 / 跟随系统设置控制。
+
+展开「风格混用实验」可独立选择内层风格和明暗，操作开关、Modal 及其中的 Select，验证 body portal 下的主题隔离。实际项目不需要额外 Provider：
+
+```tsx
+import { Button, Card, Modal, Switch } from '@zixiao-labs/ui-kits-react'
+import '@zixiao-labs/ui-kits-react/styles.css'
+
+;<div data-zx-style="clean" data-zx-color-mode="light">
+  <Button>外层操作</Button>
+  <Card data-zx-style="endfield" data-zx-color-mode="dark">
+    <Switch>保留本地草稿</Switch>
+    <Modal trigger={<Button>查看设置</Button>} title="局部设置">
+      浮层及其内部控件保持 Endfield 深色
+    </Modal>
+  </Card>
+</div>
+```
+
+并列作用域、反向嵌套（Endfield 包含 Clean）也使用同一规则。作用域可以小到单个组件：`<Button data-zx-style="endfield">确认</Button>`。所有交互行为保持不变；发布 Toast 时仍需把 `ToastProvider` 放在对应作用域内。
 
 **设计语言不是全局前提。** Clean 借鉴 Material，其他风格以及后续设计语言不需要采用 Material 的颜色、排版、形状或动效规则，也不需要定义任何 `--md-*` 变量。
 
@@ -112,7 +138,7 @@ const theme = { primary: '#8b5cf6', secondary: '#fcd34d', radius: 12 }
 const css = themeToCSS(theme)
 ```
 
-颜色须为六位十六进制值，圆角范围为 0–32px。自定义主题的圆角会覆盖所选风格的默认形状；未自定义时四种风格保留各自默认值。主题作用域里的浮层继续读取触发器的有效 tokens，不依赖弹层所在的 DOM 位置。
+颜色须为六位十六进制值，圆角范围为 0–32px。自定义主题的圆角会覆盖所选风格的默认容器形状；未自定义时五种风格保留各自默认值。主题作用域里的浮层继续读取触发器的有效 tokens，不依赖弹层所在的 DOM 位置。
 
 Demo 参考 HeroUI docs 组织为目录、交互预览、用法代码与主题调节栏。支持种子色、辅助色、圆角、配色预设，以及全站共享的浅色 / 深色 / 跟随系统设置；页面、所有预览与浮层保持一致，默认跟随系统并实时响应系统主题变化。支持复制明暗 CSS 和本地保存；刷新可恢复（包括旧版的明暗偏好），恢复默认主题会回到跟随系统。浏览器禁止存储或剪贴板时有明确提示，输入非法颜色不会破坏当前主题。
 
@@ -139,6 +165,8 @@ Demo 参考 HeroUI docs 组织为目录、交互预览、用法代码与主题�
 | `--zx-radius`、`--zx-border-width`、`--zx-shadow`                                                | 形状、边界与层次     |
 | `--zx-button-height`、`--zx-button-height-sm`、`--zx-button-height-lg`、`--zx-button-padding` 等 | 各尺寸档位与留白     |
 | `--zx-motion-duration-short`、`--zx-motion-easing`、`--zx-button-active-transform`               | 过渡与按压反馈       |
+| `--zx-selection-border`、`--zx-selection-shadow`、`--zx-indicator`                               | 选中轮廓与细线可读性 |
+| `--zx-switch-radius`、`--zx-slider-thumb-radius`、`--zx-button-hover-transform`                  | 控件几何与悬停反馈   |
 
 每个作用域都从中性默认值开始，避免继承父作用域的语言特征。适配层可以直接赋值，也可映射自己的 token 命名；不需要修改 Button 或增加 `if (style)`。
 
@@ -165,7 +193,7 @@ Clean 是受 Material 3 启发的 Web 实现，不是 Google 官方组件，也�
 | 选择器     | Autocomplete、ComboBox、Select                                                                                                                                                       |
 | 排版与工具 | Kbd、Typography、ScrollShadow                                                                                                                                                        |
 
-Demo 的目录支持检索、组件深链接（`/?component=DatePicker`）、手机选择器、深色样本和可复制 TSX。每个条目包含实际可操作用法；Button 保留四主题调参台。新组件首先针对 Clean 打磨，其他适配层能读取中性合同，但不代表已逐个完成其他风格的视觉验收。
+Demo 的目录支持检索、组件深链接（`/?component=DatePicker`）、手机选择器、深色样本和可复制 TSX。每个条目包含实际可操作用法；全部条目均可切换五种风格。Endfield 验证覆盖完整目录的桌面 / 手机与浅色 / 深色组合，并抽查表单、日历、导航、数据和浮层。Minimal、Soft、Brutalist 能读取中性合同，但不代表已逐个完成这些风格的视觉验收。设计依据与 Unslop 审查见 [Endfield 验收](docs/endfield-review.md)。
 
 复杂交互复用 `react-aria-components`，支持受控与非受控状态、键盘导航和辅助技术语义。表单/选择类遵循 React Aria 的 `isDisabled`、`isRequired`、`isInvalid` 命名；原 `Button` 继续保留原生 `disabled` 和 `onClick`。日期值使用 `@internationalized/date`，颜色值使用 React Aria Color。具体 Props 类型由入口导出，可结合 Demo 查看完整组合。
 
@@ -197,7 +225,7 @@ import { Button, TextField } from '@zixiao-labs/ui-kits-react'
 | `loading`  | `boolean`                               | `false` |
 | `disabled` | 原生属性                                | `false` |
 
-工作台中的 Filled / Tonal / Outlined / Text 分别对应上述四个 variant，这些是展示文案，不是对其他设计语言的命名要求。尺寸和排版由适配层决定：Clean 的 `sm / md / lg` 高度为 44 / 48 / 56px；其他三套风格保留原有的 44 / 44 / 52px，不强制跟随 Material 尺度。加载时保留文字与可访问名称、设置 `aria-busy` 并禁用重复交互。提供 hover、active、focus-visible、disabled、loading，尊重 `prefers-reduced-motion`。
+工作台中的 Filled / Tonal / Outlined / Text 分别对应上述四个 variant，这些是展示文案，不是对其他设计语言的命名要求。尺寸和排版由适配层决定：Clean 与 Endfield 的 `sm / md / lg` 高度为 44 / 48 / 56px；其他三套风格保留原有的 44 / 44 / 52px，不强制跟随 Material 尺度。加载时保留文字与可访问名称、设置 `aria-busy` 并禁用重复交互。提供 hover、active、focus-visible、disabled、loading，尊重 `prefers-reduced-motion`。
 
 ## 常用命令
 
@@ -235,7 +263,7 @@ OTP 的跨浏览器裁切回归可单独运行：先执行 `pnpm exec playwright
 
 ## 扩展原则
 
-- 优先完善 Clean；只列已经实现且可操作的组件，不用不可用的导航制造完整感。
+- 通过独立适配层扩展 Clean、Endfield 等风格；只列已经实现且可操作的组件，不用不可用的导航制造完整感。
 - 风格不改变行为；无法由 tokens 表达的结构差异再考虑 skin，不在组件里堆积 `if (style)`。
 - Dialog、Select 等复杂交互使用 React Aria 无样式无障碍 primitives，不自行重造焦点管理。扩展时保留受控状态、原生表单语义与主题隔离。
 - 出现真实复用和发布需求后再拆独立 tokens/primitives 包，引入库构建、产物验证和版本发布流程。

@@ -4,6 +4,8 @@ import { ArrowUpRight, ChevronRight, Copy, Magnifier } from '@gravity-ui/icons'
 import { useTheme } from '../theme'
 import { ThemePanel } from '../theme-panel'
 import { ThemeModeSelect } from '../theme-mode-select'
+import { GlobalStyleSelect, StyleSelect } from '../style-select'
+import { ThemeComposition } from '../theme-composition'
 import { ButtonPlayground } from '../examples/button-playground'
 import { displayExamples } from '../examples/display'
 import { formsExamples } from '../examples/forms'
@@ -71,24 +73,39 @@ function Home() {
   const { component } = Route.useSearch()
   const navigate = useNavigate({ from: '/' })
   const [query, setQuery] = useState('')
-  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'error'>('idle')
-  const { previewStyle, dark } = useTheme()
+  const [copyResult, setCopyResult] = useState<{ code: string; state: 'copied' | 'error' } | null>(
+    null,
+  )
+  const { previewStyle, dark, sampleStyle, settings } = useTheme()
   const active = componentExamples.find((item) => item.name === component) ?? componentExamples[0]
   const filtered = componentExamples.filter((item) =>
     `${item.name} ${item.description} ${categoryLabels[item.category]}`
       .toLowerCase()
       .includes(query.toLowerCase().trim()),
   )
+  const custom = settings.customized && previewStyle
+  const code = `import type { ReactNode } from 'react'
+${custom ? "import { createTheme } from '@zixiao-labs/ui-kits-react/theme'\n" : ''}${active.code}
+
+// 用此作用域包裹上方组件 JSX；不改变组件的状态与行为
+export function ThemedScope({ children }: { children: ReactNode }) {
+  return (
+    <div data-zx-style="${sampleStyle.id}" data-zx-color-mode="${dark ? 'dark' : 'light'}"${custom ? `\n      style={createTheme(${JSON.stringify({ primary: settings.primary, secondary: settings.secondary, radius: settings.radius })}, ${dark})}` : ''}>
+      {children}
+    </div>
+  )
+}`
+  const copyState = copyResult?.code === code ? copyResult.state : 'idle'
   function select(name: string) {
-    setCopyState('idle')
+    setCopyResult(null)
     void navigate({ search: { component: name }, replace: true })
   }
   async function copyCode() {
     try {
-      await navigator.clipboard.writeText(active.code)
-      setCopyState('copied')
+      await navigator.clipboard.writeText(code)
+      setCopyResult({ code, state: 'copied' })
     } catch {
-      setCopyState('error')
+      setCopyResult({ code, state: 'error' })
     }
   }
   return (
@@ -172,10 +189,17 @@ function Home() {
             React Aria <ArrowUpRight aria-hidden="true" />
           </a>
         </div>
+        <div className="workspace-toolbar">
+          <GlobalStyleSelect />
+          <a href="#theme-composition">风格混用实验</a>
+        </div>
         {active.name !== 'Button' && (
           <div className="section-heading" id="interactive">
             <h2>交互预览</h2>
-            <ThemeModeSelect label="样本主题" />
+            <div className="preview-selectors">
+              <StyleSelect />
+              <ThemeModeSelect label="样本主题" />
+            </div>
           </div>
         )}
         {active.name === 'Button' ? (
@@ -185,13 +209,15 @@ function Home() {
             <section
               className="component-demo"
               aria-label={`${active.name} 用法`}
-              data-zx-style="clean"
+              data-zx-style={sampleStyle.id}
               data-zx-color-mode={dark ? 'dark' : 'light'}
               style={previewStyle}
             >
               <div className="demo-heading">
                 <span>预览</span>
-                <span>Clean / {dark ? 'Dark' : 'Light'}</span>
+                <span>
+                  {sampleStyle.name} / {dark ? 'Dark' : 'Light'}
+                </span>
               </div>
               <div className="demo-stage">{active.demo}</div>
             </section>
@@ -208,7 +234,7 @@ function Home() {
                 </button>
               </div>
               <pre tabIndex={0} aria-label="当前组件代码">
-                <code>{active.code}</code>
+                <code>{code}</code>
               </pre>
               {copyState !== 'idle' && (
                 <output className="copy-feedback">
@@ -218,6 +244,7 @@ function Home() {
             </section>
           </div>
         )}
+        <ThemeComposition />
         <div className="catalog-footnote">
           <span>{componentExamples.length} 个组件条目 · 共用行为与主题合同</span>
           <a href="https://www.heroui.com/docs/components" target="_blank" rel="noreferrer">

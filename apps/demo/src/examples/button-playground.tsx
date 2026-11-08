@@ -4,13 +4,7 @@ import { Button } from '@zixiao-labs/ui-kits-react'
 import type { ButtonSize, ButtonVariant } from '@zixiao-labs/ui-kits-react'
 import { useTheme } from '../theme'
 import { ThemeModeSelect } from '../theme-mode-select'
-
-const styles = [
-  { id: 'clean', name: 'Clean', description: '圆角轮廓，紫霄品牌色' },
-  { id: 'minimal', name: 'Minimal', description: '小圆角，绿色强调' },
-  { id: 'soft', name: 'Soft', description: '柔和紫色，轻量阴影' },
-  { id: 'brutalist', name: 'Brutalist', description: '直角边界，高对比配色' },
-] as const
+import { StyleSelect } from '../style-select'
 
 const variants = [
   { id: 'solid', name: 'Filled', description: '主要操作' },
@@ -20,8 +14,7 @@ const variants = [
 ] as const
 
 export function ButtonPlayground() {
-  const { previewStyle, dark } = useTheme()
-  const [style, setStyle] = useState<(typeof styles)[number]>(styles[0])
+  const { previewStyle, dark, sampleStyle: style, settings } = useTheme()
   const [variant, setVariant] = useState<ButtonVariant>('solid')
   const [size, setSize] = useState<ButtonSize>('md')
   const [loading, setLoading] = useState(false)
@@ -33,9 +26,9 @@ export function ButtonPlayground() {
     state: 'copied' | 'error'
   } | null>(null)
   const example = `import { Button } from '@zixiao-labs/ui-kits-react'
-import '@zixiao-labs/ui-kits-react/styles.css'${withIcon ? "\nimport { Plus } from '@gravity-ui/icons'" : ''}
+import '@zixiao-labs/ui-kits-react/styles.css'${settings.customized && previewStyle ? "\nimport { createTheme } from '@zixiao-labs/ui-kits-react/theme'" : ''}${withIcon ? "\nimport { Plus } from '@gravity-ui/icons'" : ''}
 
-<div data-zx-style="${style.id}" data-zx-color-mode="${dark ? 'dark' : 'light'}">
+<div data-zx-style="${style.id}" data-zx-color-mode="${dark ? 'dark' : 'light'}"${settings.customized && previewStyle ? `\n  style={createTheme(${JSON.stringify({ primary: settings.primary, secondary: settings.secondary, radius: settings.radius })}, ${dark})}` : ''}>
   <Button variant="${variant}" size="${size}"${loading ? ' loading' : ''}${disabled ? ' disabled' : ''}>
     ${withIcon ? '<Plus aria-hidden="true" />' : ''}触发交互
   </Button>
@@ -111,23 +104,7 @@ import '@zixiao-labs/ui-kits-react/styles.css'${withIcon ? "\nimport { Plus } fr
                 <h3>配置</h3>
                 <span>Props</span>
               </div>
-              <label className="select-control" htmlFor="style">
-                <span>设计风格</span>
-                <select
-                  id="style"
-                  value={style.id}
-                  onChange={(event) => {
-                    const selected = styles.find((item) => item.id === event.target.value)
-                    if (selected) setStyle(selected)
-                  }}
-                >
-                  {styles.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <StyleSelect label="设计风格" />
               <label className="select-control" htmlFor="variant">
                 <span>
                   变体 <small>variant</small>
@@ -229,11 +206,11 @@ import '@zixiao-labs/ui-kits-react/styles.css'${withIcon ? "\nimport { Plus } fr
         <section id="variants" className="variants-section" aria-labelledby="variants-title">
           <div className="section-heading">
             <h2 id="variants-title">按钮层级</h2>
-            <span className="section-caption">Clean / 点击样本切换变体</span>
+            <span className="section-caption">{style.name} / 点击样本切换变体</span>
           </div>
           <div
             className="variant-grid"
-            data-zx-style="clean"
+            data-zx-style={style.id}
             data-zx-color-mode={dark ? 'dark' : 'light'}
             style={previewStyle}
           >
@@ -262,7 +239,7 @@ import '@zixiao-labs/ui-kits-react/styles.css'${withIcon ? "\nimport { Plus } fr
           </div>
           <div
             className="color-grid"
-            data-zx-style="clean"
+            data-zx-style={style.id}
             data-zx-color-mode={dark ? 'dark' : 'light'}
             style={previewStyle}
           >
@@ -292,8 +269,7 @@ import '@zixiao-labs/ui-kits-react/styles.css'${withIcon ? "\nimport { Plus } fr
             </div>
           </div>
           <p className="foundation-note">
-            Clean 是当前优先完善的风格。Minimal、Soft 与 Brutalist
-            也可在上方切换，四种风格均支持明暗预览，组件行为与属性保持一致。
+            五种风格共用组件行为。预览默认跟随全局，也可独立选择；下方可验证嵌套风格与浮层隔离。
           </p>
         </section>
         <section className="variants-section" aria-labelledby="icon-button-title">
@@ -301,7 +277,12 @@ import '@zixiao-labs/ui-kits-react/styles.css'${withIcon ? "\nimport { Plus } fr
             <h2 id="icon-button-title">图标与状态</h2>
             <span className="section-caption">@gravity-ui/icons</span>
           </div>
-          <div className="example-row">
+          <div
+            className="example-row"
+            data-zx-style={style.id}
+            data-zx-color-mode={dark ? 'dark' : 'light'}
+            style={previewStyle}
+          >
             <Button>
               <Plus aria-hidden="true" />
               创建项目

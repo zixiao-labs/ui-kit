@@ -1,0 +1,223 @@
+/* Theme controls stay outside the sample boundary; samples own their own tokens. */
+.workspace-toolbar,
+.preview-selectors,
+.composition-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+.workspace-toolbar {
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.workspace-toolbar > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  color: var(--muted);
+}
+.style-select {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--zx-text);
+  font: 400 12px/20px var(--zx-font);
+}
+.style-select select {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid var(--zx-control-border);
+  border-radius: var(--zx-radius-sm);
+  color: var(--zx-text);
+  background: var(--zx-surface-raised);
+  cursor: pointer;
+}
+.lab-controls .style-select {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.theme-composition {
+  margin-top: 32px;
+  border-block: 1px solid var(--line);
+  scroll-margin-top: 88px;
+}
+.theme-composition > summary {
+  padding-block: 16px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.theme-composition > summary:focus-visible {
+  outline: 2px solid var(--zx-focus);
+  outline-offset: 4px;
+}
+.composition-controls {
+  padding-block: 8px 24px;
+}
+.composition-outer {
+  display: grid;
+  gap: 24px;
+  padding: 24px;
+  border: 1px solid var(--zx-border);
+  border-radius: var(--zx-radius-md);
+  color: var(--zx-text);
+  background: var(--zx-surface);
+  font-family: var(--zx-font);
+}
+.composition-inner {
+  gap: 16px;
+}
+.composition-inner .zx-button {
+  justify-self: start;
+}
+.composition-outer > .zx-button {
+  justify-self: start;
+}
+.composition-caption {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--zx-muted);
+  font-size: 12px;
+  line-height: 20px;
+}
+.theme-composition pre {
+  overflow-x: auto;
+  margin-block: 24px;
+  padding: 16px;
+  background: var(--zx-surface-subtle);
+  color: var(--zx-text);
+  font: 12px/24px var(--mono);
+}
+.variant-grid,
+.color-grid {
+  color: var(--zx-text);
+  font-family: var(--zx-font);
+}
+.variant-example small {
+  color: var(--zx-muted);
+}
+
+/* Endfield's moderate shell: pale directory, ruled content, charcoal utility dock.
+ * No game artwork, telemetry, ambient loops, or global component overrides. */
+html[data-zx-style='endfield'] .page-intro {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 24px;
+  margin-bottom: 16px;
+}
+html[data-zx-style='endfield'] h1 {
+  font-family: 'Arial Narrow', 'DIN Condensed', var(--zx-font);
+  font-size: clamp(32px, 4vw, 48px);
+  line-height: 1.1;
+}
+html[data-zx-style='endfield'] .component-category::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: var(--zx-accent);
+  border: 1px solid var(--zx-selection-border);
+}
+html[data-zx-style='endfield'] .component-directory {
+  padding: 16px 12px;
+  background: var(--zx-surface-raised);
+  border-inline-end: 1px solid var(--zx-border);
+}
+html[data-zx-style='endfield'] .directory-group button[aria-current] {
+  box-shadow: inset 3px 0 var(--zx-accent);
+  background: var(--zx-surface-subtle);
+  color: var(--zx-text);
+}
+html[data-zx-style='endfield'] .brand-mark {
+  color: var(--zx-text);
+  background: transparent;
+  border: 1px solid var(--zx-control-border);
+}
+html[data-zx-style='endfield'] .brand-mark::after {
+  background: var(--zx-accent);
+  border-radius: 0;
+}
+html[data-zx-style='endfield'] .site-header nav .is-active {
+  box-shadow: inset 0 -3px var(--zx-accent);
+}
+.preview[data-zx-style='endfield'] .preview-toolbar,
+.component-demo[data-zx-style='endfield'] .demo-heading {
+  padding: 12px 16px;
+  background: #191919;
+  color: #f2f2f0;
+}
+.preview[data-zx-style='endfield'] {
+  padding: 0;
+}
+.preview[data-zx-style='endfield'] .preview-style-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: inherit;
+}
+.preview[data-zx-style='endfield'] .preview-style-label::before {
+  content: '';
+  width: 8px;
+  height: 16px;
+  background: var(--zx-accent);
+  clip-path: polygon(0 0, 100% 0, 100% 50%, 0 100%);
+}
+.preview[data-zx-style='endfield'] .mode-toggle {
+  color: #f2f2f0;
+  background: #30302d;
+}
+.preview[data-zx-style='endfield'] .theme-mode-control:focus-within {
+  outline-color: #f2f2f0;
+}
+.preview[data-zx-style='endfield'] .preview-bottom {
+  padding: 12px 16px;
+  border-top: 1px solid var(--zx-border);
+}
+.preview[data-zx-style='endfield'] .preview-stage {
+  align-items: flex-start;
+  padding: 32px;
+  text-align: start;
+}
+.preview[data-zx-style='endfield'] .preview-actions {
+  justify-content: flex-start;
+}
+@media (max-width: 800px) {
+  .workspace-toolbar {
+    gap: 8px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+  }
+  .preview-selectors {
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .section-heading:has(.preview-selectors) {
+    flex-wrap: wrap;
+  }
+  .style-select select {
+    font-size: 14px;
+  }
+  .composition-outer {
+    padding: 16px;
+  }
+  html[data-zx-style='endfield'] .component-directory {
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+  html[data-zx-style='endfield'] .page-intro {
+    padding-bottom: 16px;
+  }
+  .preview[data-zx-style='endfield'] .preview-stage {
+    padding: 24px;
+  }
+}

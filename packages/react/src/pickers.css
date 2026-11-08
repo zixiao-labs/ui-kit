@@ -60,7 +60,7 @@
 .zx-picker-control:hover:not([data-disabled]),
 .zx-date-input[data-hovered],
 .zx-color-field-input:hover:not(:disabled) {
-  border-color: var(--zx-accent);
+  border-color: var(--zx-selection-border);
 }
 
 .zx-picker-control[data-focus-within],
@@ -285,18 +285,20 @@
 }
 
 .zx-calendar-cell[data-today] {
-  box-shadow: inset 0 0 0 1px var(--zx-accent);
+  box-shadow: inset 0 0 0 1px var(--zx-selection-border);
 }
 
 .zx-calendar-cell[data-selected] {
   background: var(--zx-accent);
   color: var(--zx-on-accent);
+  box-shadow: var(--zx-selection-shadow);
 }
 
 .zx-range-calendar .zx-calendar-cell[data-selected] {
   border-radius: 0;
   background: var(--zx-tonal);
   color: var(--zx-on-tonal);
+  box-shadow: none;
 }
 
 .zx-range-calendar .zx-calendar-cell[data-selection-start],
@@ -304,6 +306,7 @@
   border-radius: var(--zx-radius-sm);
   background: var(--zx-accent);
   color: var(--zx-on-accent);
+  box-shadow: var(--zx-selection-shadow);
 }
 
 .zx-calendar-cell[data-focus-visible] {
@@ -533,7 +536,7 @@
 }
 
 .zx-color-swatch-option[data-selected] {
-  border-color: var(--zx-accent);
+  border-color: var(--zx-selection-border);
 }
 
 .zx-color-swatch-option[data-focus-visible] {

@@ -12,6 +12,7 @@ test('keeps the shared contract and non-Material adapters free of Material depen
     'themes/minimal.css',
     'themes/soft.css',
     'themes/brutalist.css',
+    'themes/endfield.css',
   ]) {
     expect(readStyle(path)).not.toContain('--md-')
   }
@@ -54,7 +55,7 @@ test('exports a base-only entry and direct theme entries without requiring the b
   expect(manifest.exports['./base.css']).toBe('./src/base.css')
   expect(manifest.exports['./themes/*.css']).toBe('./src/themes/*.css')
   const fromDemo = createRequire(resolve('apps/demo/package.json'))
-  for (const path of ['base.css', 'themes/soft.css']) {
+  for (const path of ['base.css', 'themes/soft.css', 'themes/endfield.css']) {
     expect(readFileSync(fromDemo.resolve(`@zixiao-labs/ui-kits-react/${path}`), 'utf8')).toBe(
       readStyle(path),
     )
@@ -69,4 +70,37 @@ test('all neutral CSS token references have a declared source', () => {
   const defined = new Set([...sources.matchAll(/(--zx-[\w-]+)\s*:/g)].map((match) => match[1]))
   const used = new Set([...sources.matchAll(/var\((--zx-[\w-]+)/g)].map((match) => match[1]))
   expect([...used].filter((token) => !defined.has(token))).toEqual([])
+})
+
+test('Endfield implements neutral scope tokens without descendant overrides or production assets', () => {
+  const css = readStyle('themes/endfield.css')
+  const selectors = [...css.matchAll(/(?:^|\n)([^{}\n]+)\s*\{/g)].map((match) => match[1].trim())
+  expect(selectors).toEqual([
+    "[data-zx-style='endfield']",
+    "[data-zx-style='endfield'][data-zx-color-mode='dark']",
+  ])
+  for (const token of [
+    '--zx-surface',
+    '--zx-surface-raised',
+    '--zx-control-border',
+    '--zx-accent-ink',
+    '--zx-selection-border',
+    '--zx-indicator',
+    '--zx-radius-full',
+    '--zx-switch-radius',
+    '--zx-slider-thumb-radius',
+    '--zx-motion-easing',
+    '--zx-scrim',
+  ]) {
+    expect(css).toContain(`${token}:`)
+    expect(readStyle('foundation.css')).toContain(`${token}:`)
+  }
+  expect(css).not.toContain('url(')
+  expect(css).not.toContain('--md-')
+})
+
+test('the demo shell no longer relies on a particular design language token set', () => {
+  for (const path of ['styles.css', 'catalog.css', 'docs.css', 'theme-workbench.css']) {
+    expect(readFileSync(`apps/demo/src/${path}`, 'utf8')).not.toContain('--md-')
+  }
 })

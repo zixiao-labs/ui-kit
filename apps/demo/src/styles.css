@@ -103,9 +103,9 @@ main,
   place-items: center;
   width: 40px;
   height: 40px;
-  color: var(--md-sys-color-on-primary);
-  background: var(--md-sys-color-primary);
-  border-radius: var(--md-sys-shape-corner-medium);
+  color: var(--zx-on-accent);
+  background: var(--zx-accent);
+  border-radius: var(--zx-radius-md);
   font-size: 26px;
   font-weight: 500;
   letter-spacing: -2px;
@@ -137,18 +137,18 @@ main,
   place-items: center;
   min-height: 36px;
   padding-inline: var(--space-4);
-  border-radius: var(--md-sys-shape-corner-small);
+  border-radius: var(--zx-radius-sm);
   color: var(--muted);
   transition:
-    color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard),
-    background-color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+    color var(--zx-motion-duration-short) var(--zx-motion-easing),
+    background-color var(--zx-motion-duration-short) var(--zx-motion-easing);
 }
 .site-header nav a:hover {
-  background: var(--md-sys-color-surface-container);
+  background: var(--zx-surface-subtle);
   color: var(--ink);
 }
 .site-header nav .is-active {
-  background: var(--md-sys-color-surface-container-low);
+  background: var(--zx-surface-subtle);
   box-shadow: inset 0 0 0 1px var(--line);
   color: var(--ink);
   font-weight: 500;
@@ -164,9 +164,9 @@ main,
   top: -80px;
   z-index: 10;
   padding: var(--space-3) var(--space-6);
-  color: var(--md-sys-color-on-primary);
-  background: var(--md-sys-color-primary);
-  border-radius: var(--md-sys-shape-corner-small);
+  color: var(--zx-on-accent);
+  background: var(--zx-accent);
+  border-radius: var(--zx-radius-sm);
 }
 .skip-link:focus {
   top: var(--space-3);
@@ -202,18 +202,18 @@ main,
   justify-content: space-between;
   min-height: 36px;
   padding: var(--space-2) var(--space-3);
-  border-radius: var(--md-sys-shape-corner-small);
+  border-radius: var(--zx-radius-sm);
   color: var(--muted);
   transition:
-    color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard),
-    background-color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+    color var(--zx-motion-duration-short) var(--zx-motion-easing),
+    background-color var(--zx-motion-duration-short) var(--zx-motion-easing);
 }
 .catalog-nav a:hover {
-  background: var(--md-sys-color-surface-container);
+  background: var(--zx-surface-subtle);
   color: var(--ink);
 }
 .catalog-nav .catalog-current {
-  background: var(--md-sys-color-surface-container-low);
+  background: var(--zx-surface-subtle);
   box-shadow: inset 0 0 0 1px var(--line);
   color: var(--ink);
   font-weight: 500;
@@ -291,10 +291,10 @@ h2 {
   padding: var(--space-4);
   color: var(--zx-text);
   background: var(--zx-surface-subtle);
-  border-radius: var(--md-sys-shape-corner-large);
+  border-radius: var(--zx-radius-lg);
   transition:
-    color var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-standard),
-    background-color var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-standard);
+    color var(--zx-motion-duration-medium) var(--zx-motion-easing),
+    background-color var(--zx-motion-duration-medium) var(--zx-motion-easing);
 }
 .preview-toolbar {
   display: flex;
@@ -313,15 +313,15 @@ h2 {
   min-height: 44px;
   padding: 0 var(--space-3);
   border: 0;
-  border-radius: var(--md-sys-shape-corner-small);
+  border-radius: var(--zx-radius-sm);
   color: var(--zx-text);
   background: var(--zx-surface);
   font-size: 14px;
   line-height: 20px;
   transition:
-    color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard),
-    background-color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard),
-    transform var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+    color var(--zx-motion-duration-short) var(--zx-motion-easing),
+    background-color var(--zx-motion-duration-short) var(--zx-motion-easing),
+    transform var(--zx-motion-duration-short) var(--zx-motion-easing);
 }
 .mode-toggle:hover {
   background: var(--zx-tonal);
@@ -390,7 +390,7 @@ h2 {
   width: 16px;
   height: 16px;
   border: 1px solid var(--zx-border);
-  border-radius: var(--md-sys-shape-corner-full);
+  border-radius: var(--zx-radius-full);
 }
 .token-accent {
   background: var(--zx-accent);
@@ -408,8 +408,8 @@ h2 {
 .lab-controls {
   min-width: 0;
   padding: var(--space-5);
-  background: var(--md-sys-color-surface-container-low);
-  border-radius: var(--md-sys-shape-corner-large);
+  background: var(--zx-surface-subtle);
+  border-radius: var(--zx-radius-lg);
 }
 .controls-heading {
   display: flex;
@@ -451,9 +451,9 @@ h2 {
   width: 100%;
   min-height: 44px;
   padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--md-sys-color-outline);
-  border-radius: var(--md-sys-shape-corner-small);
-  background: var(--md-sys-color-surface);
+  border: 1px solid var(--zx-control-border);
+  border-radius: var(--zx-radius-sm);
+  background: var(--zx-surface);
   color: var(--ink);
   font-size: 14px;
   cursor: pointer;
@@ -476,7 +476,7 @@ h2 {
   grid-template-columns: repeat(3, 1fr);
   padding: var(--space-1);
   box-shadow: inset 0 0 0 1px var(--line);
-  border-radius: var(--md-sys-shape-corner-small);
+  border-radius: var(--zx-radius-sm);
 }
 .segment-indicator {
   position: absolute;
@@ -485,9 +485,9 @@ h2 {
   bottom: var(--space-1);
   left: var(--space-1);
   width: calc((100% - 8px) / 3);
-  background: var(--md-sys-color-surface-container-highest);
-  border-radius: var(--md-sys-shape-corner-extra-small);
-  transition: transform var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-standard);
+  background: var(--zx-border);
+  border-radius: var(--zx-radius-sm);
+  transition: transform var(--zx-motion-duration-medium) var(--zx-motion-easing);
 }
 .segment-indicator[data-size='md'] {
   transform: translateX(100%);
@@ -504,8 +504,8 @@ h2 {
   font-size: 14px;
   line-height: 20px;
   cursor: pointer;
-  border-radius: var(--md-sys-shape-corner-extra-small);
-  transition: color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+  border-radius: var(--zx-radius-sm);
+  transition: color var(--zx-motion-duration-short) var(--zx-motion-easing);
 }
 .segmented-control label:hover {
   color: var(--ink);
@@ -515,7 +515,7 @@ h2 {
   font-weight: 500;
 }
 .segmented-control label:has(:focus-visible) {
-  outline: 3px solid var(--md-sys-color-primary);
+  outline: 3px solid var(--zx-focus);
   outline-offset: 2px;
 }
 .segmented-control input,
@@ -548,42 +548,42 @@ h2 {
   width: 44px;
   height: 28px;
   padding: 4px;
-  background: var(--md-sys-color-surface-container-highest);
-  border: 2px solid var(--md-sys-color-outline);
-  border-radius: var(--md-sys-shape-corner-full);
+  background: var(--zx-border);
+  border: 2px solid var(--zx-control-border);
+  border-radius: var(--zx-switch-radius);
   flex-shrink: 0;
   transition:
-    background-color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard),
-    border-color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+    background-color var(--zx-motion-duration-short) var(--zx-motion-easing),
+    border-color var(--zx-motion-duration-short) var(--zx-motion-easing);
 }
 .switch-track::after {
   content: '';
   width: 16px;
   height: 16px;
-  background: var(--md-sys-color-outline);
-  border-radius: var(--md-sys-shape-corner-full);
+  background: var(--zx-control-border);
+  border-radius: var(--zx-switch-radius);
   transition:
-    background-color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard),
-    transform var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+    background-color var(--zx-motion-duration-short) var(--zx-motion-easing),
+    transform var(--zx-motion-duration-short) var(--zx-motion-easing);
 }
 .switch-control input:checked + .switch-track {
-  background: var(--md-sys-color-primary);
-  border-color: var(--md-sys-color-primary);
+  background: var(--zx-accent);
+  border-color: var(--zx-selection-border);
 }
 .switch-control input:checked + .switch-track::after {
-  background: var(--md-sys-color-on-primary);
+  background: var(--zx-on-accent);
   transform: translateX(16px);
 }
 .switch-control input:focus-visible + .switch-track {
-  outline: 3px solid var(--md-sys-color-primary);
+  outline: 3px solid var(--zx-focus);
   outline-offset: 4px;
 }
 
 .code-panel {
   margin-top: var(--space-4);
-  background: var(--md-sys-color-surface-container-low);
+  background: var(--zx-surface-subtle);
   border: 1px solid var(--line);
-  border-radius: var(--md-sys-shape-corner-medium);
+  border-radius: var(--zx-radius-md);
   overflow: hidden;
 }
 .code-heading {
@@ -616,18 +616,18 @@ h2 {
   min-height: 44px;
   padding: var(--space-2);
   border: 0;
-  border-radius: var(--md-sys-shape-corner-small);
+  border-radius: var(--zx-radius-sm);
   color: var(--muted);
   background: transparent;
   font-size: 14px;
   line-height: 20px;
   transition:
-    color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard),
-    background-color var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard),
-    transform var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+    color var(--zx-motion-duration-short) var(--zx-motion-easing),
+    background-color var(--zx-motion-duration-short) var(--zx-motion-easing),
+    transform var(--zx-motion-duration-short) var(--zx-motion-easing);
 }
 .copy-button:hover {
-  background: var(--md-sys-color-surface-container-high);
+  background: var(--zx-surface-subtle);
   color: var(--ink);
 }
 .copy-button:active {
@@ -638,7 +638,7 @@ h2 {
   overflow-x: auto;
   margin: 0;
   padding: var(--space-6);
-  color: var(--md-sys-color-on-surface-variant);
+  color: var(--zx-muted);
   font: 13px/24px var(--mono);
   font-variant-numeric: tabular-nums;
   tab-size: 2;
@@ -661,7 +661,7 @@ h2 {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   border: 1px solid var(--line);
-  border-radius: var(--md-sys-shape-corner-medium);
+  border-radius: var(--zx-radius-md);
   overflow: hidden;
 }
 .variant-example {
@@ -671,13 +671,12 @@ h2 {
   justify-content: center;
   gap: var(--space-5);
   padding: var(--space-6) var(--space-4);
-  background: var(--md-sys-color-surface-container-lowest);
+  background: var(--zx-surface-raised);
   text-align: center;
-  transition: background-color var(--md-sys-motion-duration-short)
-    var(--md-sys-motion-easing-standard);
+  transition: background-color var(--zx-motion-duration-short) var(--zx-motion-easing);
 }
 .variant-example[data-selected='true'] {
-  background: var(--md-sys-color-surface-container-low);
+  background: var(--zx-surface-subtle);
 }
 .variant-example > span {
   font-size: 14px;
@@ -703,7 +702,7 @@ h2 {
   justify-content: space-between;
   gap: var(--space-8);
   padding: var(--space-6);
-  border-radius: var(--md-sys-shape-corner-medium);
+  border-radius: var(--zx-radius-md);
 }
 .color-sample > span:first-child {
   font-size: 32px;
@@ -720,21 +719,21 @@ h2 {
   font-size: 12px;
 }
 .color-primary {
-  background: var(--md-sys-color-primary);
-  color: var(--md-sys-color-on-primary);
+  background: var(--zx-accent);
+  color: var(--zx-on-accent);
 }
 .color-secondary {
-  background: var(--md-sys-color-secondary-container);
-  color: var(--md-sys-color-on-secondary-container);
+  background: var(--zx-tonal);
+  color: var(--zx-on-tonal);
 }
 .color-surface {
-  background: var(--md-sys-color-surface-container-lowest);
-  color: var(--md-sys-color-on-surface);
+  background: var(--zx-surface-raised);
+  color: var(--zx-text);
   border: 1px solid var(--line);
 }
 .color-container {
-  background: var(--md-sys-color-surface-container-high);
-  color: var(--md-sys-color-on-surface);
+  background: var(--zx-surface-subtle);
+  color: var(--zx-text);
 }
 .foundation-note {
   margin-top: var(--space-4);
@@ -777,7 +776,7 @@ h2 {
   align-items: center;
   min-height: 48px;
   margin-top: var(--space-6);
-  color: var(--md-sys-color-primary);
+  color: var(--zx-accent-ink);
 }
 .principle-grid {
   display: grid;
@@ -815,7 +814,7 @@ h2 {
   }
 }
 .catalog-content {
-  animation: workspace-enter 320ms var(--md-sys-motion-easing-standard) backwards;
+  animation: workspace-enter 320ms var(--zx-motion-easing) backwards;
 }
 
 @media (max-width: 1100px) {

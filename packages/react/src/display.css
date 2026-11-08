@@ -51,7 +51,7 @@
 .zx-toggle-button[data-selected] {
   background: var(--zx-tonal);
   color: var(--zx-on-tonal);
-  border-color: var(--zx-accent);
+  border-color: var(--zx-selection-border);
 }
 .zx-toggle-button[data-hovered] {
   background: var(--zx-surface-subtle);
@@ -196,7 +196,7 @@
 }
 .zx-progress-fill {
   height: 100%;
-  background: var(--zx-accent);
+  background: var(--zx-indicator);
   transform-origin: left;
   border-radius: inherit;
   transition: transform var(--zx-motion-duration-short) var(--zx-motion-easing);
@@ -224,7 +224,7 @@
   stroke: var(--zx-surface-subtle);
 }
 .zx-circle-fill {
-  stroke: var(--zx-accent);
+  stroke: var(--zx-indicator);
   stroke-linecap: round;
 }
 .zx-progress-circle svg[data-indeterminate] {
@@ -235,8 +235,8 @@
   width: 24px;
   height: 24px;
   border: 3px solid var(--zx-border);
-  border-top-color: var(--zx-accent);
-  border-radius: var(--zx-radius-full);
+  border-top-color: var(--zx-indicator);
+  border-radius: 50%;
   animation: zx-spin 700ms linear infinite;
 }
 .zx-skeleton {

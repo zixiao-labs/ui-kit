@@ -57,7 +57,15 @@ function SeedInput({
 export function ThemePanel() {
   const { settings, update, reset, storageError } = useTheme()
   const [copy, setCopy] = useState<{ code: string; state: 'copied' | 'error' } | null>(null)
-  const css = themeToCSS(settings)
+  const css = settings.customized
+    ? themeToCSS(settings)
+    : `/* Zixiao Laboratories UI Kits — ${settings.style}
+ * 使用 data-zx-style="${settings.style}" 和 data-zx-color-mode="light" / "dark"
+ * 嵌套作用域可选择其他风格；这两个入口不加载其他设计语言。
+ */
+@import '@zixiao-labs/ui-kits-react/base.css';
+@import '@zixiao-labs/ui-kits-react/themes/${settings.style}.css';
+`
   const copyState = copy?.code === css ? copy.state : 'idle'
   return (
     <aside className="docs-aside" aria-label="主题与本页导航">
@@ -65,6 +73,7 @@ export function ThemePanel() {
         <h2>本页内容</h2>
         <a href="#interactive">交互预览</a>
         <a href="#usage">使用代码</a>
+        <a href="#theme-composition">风格混用实验</a>
         <a href="#theme-customizer">主题定制</a>
       </nav>
       <section className="theme-panel" id="theme-customizer" aria-labelledby="theme-panel-title">
@@ -83,7 +92,11 @@ export function ThemePanel() {
             <ArrowRotateLeft aria-hidden="true" />
           </button>
         </div>
-        <p>从品牌色出发，让表面、文字与组件自然呼应</p>
+        <p>
+          {settings.customized
+            ? '自定义配色覆盖全局风格，同风格预览同步更新'
+            : '当前使用风格原生配色与形状'}
+        </p>
         <div className="theme-presets" aria-label="主题配色预设">
           {[
             { name: '紫霄', primary: '#8b5cf6', secondary: '#fcd34d' },
@@ -96,7 +109,9 @@ export function ThemePanel() {
               key={preset.name}
               aria-label={`${preset.name}配色`}
               aria-pressed={
-                settings.primary === preset.primary && settings.secondary === preset.secondary
+                settings.customized &&
+                settings.primary === preset.primary &&
+                settings.secondary === preset.secondary
               }
               style={
                 {
@@ -147,7 +162,9 @@ export function ThemePanel() {
           <span />
           <span />
         </div>
-        <span className="tonal-caption">HCT 色阶 · 自动适配明暗</span>
+        <span className="tonal-caption">
+          {settings.customized ? 'HCT 色阶 · 自动适配明暗' : '原生风格 · 明暗配色'}
+        </span>
         <button
           className="theme-export"
           type="button"

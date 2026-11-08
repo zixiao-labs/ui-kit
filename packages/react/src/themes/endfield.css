@@ -1,0 +1,68 @@
+/*
+ * Original Endfield-inspired field engineering adapter.
+ * Evidence: https://endfield.hypergryph.com/ (pale rail, charcoal dock,
+ * signal-yellow actions, rectangular geometry). No production assets are used.
+ * Every rule targets the scope itself so nested styles cannot leak into peers.
+ */
+[data-zx-style='endfield'] {
+  --zx-surface: #f2f2f0;
+  --zx-surface-subtle: #e6e6e2;
+  --zx-surface-raised: #ffffff;
+  --zx-text: #191919;
+  --zx-muted: #5c5c56;
+  --zx-border: #cececa;
+  --zx-control-border: #777770;
+  --zx-accent: #fffa00;
+  --zx-accent-hover: #e8e300;
+  --zx-on-accent: #191919;
+  --zx-accent-ink: #343430;
+  --zx-secondary: #191919;
+  --zx-on-secondary: #f2f2f0;
+  --zx-tonal: #deded8;
+  --zx-on-tonal: #191919;
+  --zx-focus: #191919;
+  --zx-solid-border: #191919;
+  --zx-selection-border: #191919;
+  --zx-selection-shadow: inset 0 0 0 1px var(--zx-selection-border);
+  --zx-indicator: #565650;
+  --zx-radius: 0px;
+  --zx-radius-sm: 2px;
+  --zx-radius-md: 2px;
+  --zx-radius-lg: 2px;
+  --zx-radius-full: 2px;
+  --zx-switch-radius: 2px;
+  --zx-slider-thumb-radius: 2px;
+  --zx-font: 'Space Grotesk', 'DIN Alternate', 'Segoe UI', 'PingFang SC', sans-serif;
+  --zx-label-weight: 500;
+  --zx-label-line-height: 1.5;
+  --zx-button-height: 48px;
+  --zx-button-height-lg: 56px;
+  --zx-button-padding: 24px;
+  --zx-button-hover-transform: none;
+  --zx-button-active-transform: translateY(1px);
+  --zx-motion-duration-short: 160ms;
+  --zx-motion-duration-medium: 240ms;
+  --zx-motion-duration-long: 320ms;
+  --zx-motion-duration-exit: 120ms;
+  --zx-motion-easing: cubic-bezier(0.2, 0, 0, 1);
+  --zx-scrim: rgb(25 25 25 / 32%);
+}
+
+[data-zx-style='endfield'][data-zx-color-mode='dark'] {
+  --zx-surface: #191919;
+  --zx-surface-subtle: #30302d;
+  --zx-surface-raised: #242423;
+  --zx-text: #f2f2f0;
+  --zx-muted: #b8b8af;
+  --zx-border: #494944;
+  --zx-control-border: #96968c;
+  --zx-accent-ink: #fffa00;
+  --zx-secondary: #e6e6e2;
+  --zx-on-secondary: #191919;
+  --zx-tonal: #3c3c36;
+  --zx-on-tonal: #f2f2f0;
+  --zx-focus: #fffa00;
+  --zx-selection-border: #fffa00;
+  --zx-indicator: #fffa00;
+  --zx-scrim: rgb(25 25 25 / 56%);
+}

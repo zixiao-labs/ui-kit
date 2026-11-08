@@ -1,1 +1,7 @@
-pnpm-*
+# pnpm
+/migrate-from-nextjs
+/migrate-from-react-router
+/react-router
+/react-start
+/router-query
+# pnpm end

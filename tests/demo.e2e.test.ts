@@ -45,17 +45,17 @@ afterEach(async () => {
   }
 })
 
-test('keeps component behavior across all four expressions', async () => {
+test('keeps component behavior across all five expressions', async () => {
   expect(await page.title()).toContain('Zixiao Laboratories UI Kits')
   expect(await page.getByRole('heading', { level: 1 }).textContent()).toBe('Button')
   const action = page.getByRole('button', { name: '触发交互' })
   expect(await action.getAttribute('type')).toBe('button')
 
-  for (const [index, style] of ['soft', 'brutalist', 'minimal', 'clean'].entries()) {
+  for (const [index, style] of ['soft', 'brutalist', 'minimal', 'endfield', 'clean'].entries()) {
     await page.getByLabel('设计风格').selectOption(style)
     await expect.poll(() => page.getByTestId('preview').getAttribute('data-zx-style')).toBe(style)
     expect(await page.locator('.preview-style-label').textContent()).toBe(
-      `${{ clean: 'Clean', minimal: 'Minimal', soft: 'Soft', brutalist: 'Brutalist' }[style]} / Button`,
+      `${{ clean: 'Clean', minimal: 'Minimal', soft: 'Soft', brutalist: 'Brutalist', endfield: 'Endfield' }[style]} / Button`,
     )
     await action.click()
     await expect.poll(() => page.locator('output').textContent()).toBe(`已触发 ${index + 1} 次交互`)
@@ -109,7 +109,7 @@ test('reflects variant selection in the samples, preview and current code', asyn
 
 test('shares light and dark colors between every expression and the page theme', async () => {
   const preview = page.getByTestId('preview')
-  for (const style of ['clean', 'minimal', 'soft', 'brutalist']) {
+  for (const style of ['clean', 'minimal', 'soft', 'brutalist', 'endfield']) {
     await page.getByLabel('设计风格').selectOption(style)
     await page.getByLabel('页面主题', { exact: true }).selectOption('light')
     const light = await preview.evaluate((element) =>
@@ -233,9 +233,13 @@ test('resets nested clean and legacy scopes instead of inheriting dark or brutal
 
 test('renders non-Material and new design languages without loading Clean', async () => {
   const styles = await Promise.all(
-    ['base.css', 'themes/minimal.css', 'themes/soft.css', 'themes/brutalist.css'].map((path) =>
-      readFile(`packages/react/src/${path}`, 'utf8'),
-    ),
+    [
+      'base.css',
+      'themes/minimal.css',
+      'themes/soft.css',
+      'themes/brutalist.css',
+      'themes/endfield.css',
+    ].map((path) => readFile(`packages/react/src/${path}`, 'utf8')),
   )
   const independent = await context.newPage()
   independent.on('pageerror', (error) => errors.push(error.message))
@@ -255,7 +259,7 @@ test('renders non-Material and new design languages without loading Clean', asyn
           --zx-button-height: 60px;
         }
       </style></head><body>
-        ${['minimal', 'soft', 'brutalist', 'custom']
+        ${['minimal', 'soft', 'brutalist', 'endfield', 'custom']
           .map(
             (style) =>
               `<div data-zx-style="${style}">
@@ -274,6 +278,13 @@ test('renders non-Material and new design languages without loading Clean', asyn
         .locator('html')
         .evaluate((root) => getComputedStyle(root).getPropertyValue('--md-sys-color-primary')),
     ).toBe('')
+    const endfield = await independent
+      .getByRole('button', { name: 'endfield', exact: true })
+      .evaluate((element) => {
+        const style = getComputedStyle(element)
+        return { color: style.backgroundColor, radius: style.borderRadius, height: style.minHeight }
+      })
+    expect(endfield).toEqual({ color: 'rgb(255, 250, 0)', radius: '0px', height: '48px' })
 
     for (const [style, color] of Object.entries({
       minimal: 'rgb(37, 86, 63)',
@@ -440,7 +451,7 @@ test('captures the real desktop, mobile, dark and zoomed layouts with Playwright
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
     if (directory) await page.screenshot({ path: join(directory, `${name}.png`), fullPage })
   }
-  expect((await page.getByTestId('preview').boundingBox())!.y).toBeLessThan(300)
+  expect((await page.getByTestId('preview').boundingBox())!.y).toBeLessThan(420)
   await capture('desktop')
   await capture('desktop-full', true)
   await page.getByLabel('预览主题', { exact: true }).selectOption('dark')
@@ -455,7 +466,7 @@ test('captures the real desktop, mobile, dark and zoomed layouts with Playwright
   }
   await page.getByLabel('设计风格').selectOption('clean')
   await page.setViewportSize({ width: 390, height: 844 })
-  expect((await page.getByTestId('preview').boundingBox())!.y).toBeLessThan(360)
+  expect((await page.getByTestId('preview').boundingBox())!.y).toBeLessThan(480)
   await capture('mobile')
   await capture('mobile-full', true)
   // A 1440×900 window at 200% zoom has a 720×450 CSS viewport.

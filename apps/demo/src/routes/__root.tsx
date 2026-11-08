@@ -6,6 +6,7 @@ import '@zixiao-labs/ui-kits-react/styles.css'
 import '../styles.css'
 import '../catalog.css'
 import '../docs.css'
+import '../theme-workbench.css'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -16,7 +17,7 @@ export const Route = createRootRoute({
       {
         name: 'description',
         content:
-          'Zixiao Laboratories UI Kits：一套 React 组件 API，多种设计表达。从 Clean 开始，探索 Minimal、Soft 与 Brutalist。',
+          'Zixiao Laboratories UI Kits：一套 React 组件 API，Clean、Endfield、Minimal、Soft 与 Brutalist 五种风格，支持切换与局部混用。',
       },
     ],
   }),

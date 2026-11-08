@@ -141,7 +141,7 @@
   bottom: 0;
   left: 16px;
   height: 3px;
-  background: var(--zx-accent);
+  background: var(--zx-indicator);
   border-radius: var(--zx-radius-sm) var(--zx-radius-sm) 0 0;
   z-index: -1;
   /* RAC's shared element measures unequal tabs and handles RTL/vertical movement. */
@@ -357,7 +357,7 @@
 }
 
 .zx-tag[data-selected] {
-  border-color: var(--zx-accent);
+  border-color: var(--zx-selection-border);
   color: var(--zx-on-tonal);
   background: var(--zx-tonal);
 }

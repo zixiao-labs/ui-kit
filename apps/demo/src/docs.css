@@ -18,7 +18,7 @@ main,
 .brand-mark {
   color: var(--zx-on-accent);
   background: var(--zx-accent);
-  border-radius: 12px;
+  border-radius: var(--zx-radius-md);
   position: relative;
 }
 .brand-mark::after {
@@ -92,7 +92,7 @@ main,
 }
 .directory-search {
   border-color: var(--line);
-  border-radius: 8px;
+  border-radius: var(--zx-radius-sm);
   background: var(--zx-surface-raised);
   min-height: 40px;
 }
@@ -113,7 +113,7 @@ main,
 .directory-group button {
   min-height: 32px;
   padding: 6px 8px;
-  border-radius: 6px;
+  border-radius: var(--zx-radius-sm);
 }
 .directory-group button:hover {
   background: var(--zx-surface-subtle);
@@ -189,7 +189,7 @@ h1 {
 .preview {
   min-height: 360px;
   border: 1px solid var(--zx-border);
-  border-radius: 12px;
+  border-radius: var(--zx-radius-md);
   background: var(--zx-surface-raised);
   padding: 12px;
 }
@@ -202,7 +202,7 @@ h1 {
   padding: 4px 8px;
   font-size: 12px;
   background: var(--zx-surface-subtle);
-  border-radius: 6px;
+  border-radius: var(--zx-radius-sm);
 }
 .theme-mode-control {
   position: relative;
@@ -245,7 +245,7 @@ h1 {
 .lab-controls {
   padding: 16px;
   background: var(--zx-surface-subtle);
-  border-radius: 12px;
+  border-radius: var(--zx-radius-md);
 }
 .controls-heading {
   margin-bottom: 12px;
@@ -261,7 +261,7 @@ h1 {
 .select-control select {
   min-height: 36px;
   border-color: var(--zx-control-border);
-  border-radius: 6px;
+  border-radius: var(--zx-radius-sm);
   background: var(--page);
   font-size: 12px;
   padding: 4px 8px;
@@ -275,11 +275,11 @@ h1 {
   margin-bottom: 4px;
 }
 .segmented-control {
-  border-radius: 8px;
+  border-radius: var(--zx-radius-sm);
 }
 .segment-indicator {
   background: var(--zx-surface-raised);
-  border-radius: 4px;
+  border-radius: var(--zx-radius-sm);
 }
 .segmented-control label {
   min-height: 28px;
@@ -309,7 +309,7 @@ h1 {
 }
 .switch-control input:checked + .switch-track {
   background: var(--zx-accent);
-  border-color: var(--zx-accent);
+  border-color: var(--zx-selection-border);
 }
 .switch-control input:checked + .switch-track::after {
   background: var(--zx-on-accent);
@@ -321,7 +321,7 @@ h1 {
 .component-demo {
   background: var(--zx-surface-raised);
   border-color: var(--zx-border);
-  border-radius: 12px;
+  border-radius: var(--zx-radius-md);
 }
 .demo-heading {
   padding: 12px 20px;
@@ -334,7 +334,7 @@ h1 {
 .code-panel {
   background: var(--zx-surface-raised);
   border-color: var(--line);
-  border-radius: 12px;
+  border-radius: var(--zx-radius-md);
   margin-top: 16px;
 }
 .code-heading {
@@ -360,7 +360,7 @@ h1 {
   margin-top: 40px;
 }
 .variant-grid {
-  border-radius: 12px;
+  border-radius: var(--zx-radius-md);
 }
 .variant-example {
   background: var(--zx-surface-raised);
@@ -377,7 +377,7 @@ h1 {
   gap: 12px;
 }
 .color-sample {
-  border-radius: 12px;
+  border-radius: var(--zx-radius-md);
   padding: 20px;
   gap: 24px;
 }
@@ -429,7 +429,7 @@ h1 {
 }
 .theme-panel {
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--zx-radius-md);
   padding: 16px;
   background: var(--zx-surface-raised);
   scroll-margin-top: 88px;
@@ -691,7 +691,7 @@ h1 {
   .brand-mark {
     width: 32px;
     height: 32px;
-    border-radius: 8px;
+    border-radius: var(--zx-radius-sm);
     font-size: 22px;
   }
   .brand-name {
@@ -740,7 +740,7 @@ h1 {
     background: var(--zx-surface-raised);
     border-color: var(--line);
     font-size: 14px;
-    border-radius: 8px;
+    border-radius: var(--zx-radius-sm);
   }
   .page-intro {
     min-height: 0;
