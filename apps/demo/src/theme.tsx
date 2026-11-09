@@ -6,7 +6,8 @@ import {
   useState,
   useSyncExternalStore,
 } from 'react'
-import type { CSSProperties, ReactNode } from 'react'
+import type { Context, CSSProperties, ReactNode } from 'react'
+import type {} from '@nasti-toolchain/nasti/client'
 import { brandTheme, createTheme } from '@zixiao-labs/ui-kits-react/theme'
 import { isStyleName, styleOptions, type StyleName } from './style-options'
 
@@ -89,7 +90,11 @@ interface ThemeState {
   storageError: boolean
 }
 
-const ThemeContext = createContext<ThemeState | null>(null)
+// Partial refreshes can mix old consumers with a re-evaluated provider module.
+// Persist only the Context identity in HMR data, never per-provider theme state.
+const ThemeContext: Context<ThemeState | null> =
+  import.meta.hot?.data.themeContext ?? createContext<ThemeState | null>(null)
+if (import.meta.hot) import.meta.hot.data.themeContext = ThemeContext
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState(defaults)
