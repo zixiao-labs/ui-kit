@@ -1,6 +1,7 @@
 import { afterAll, afterEach, beforeAll, beforeEach, expect, test } from '@lightning-js/lightning'
 import { chromium } from 'playwright'
 import type { Browser, Page } from 'playwright'
+import { contrastRatio, createTheme } from '../packages/react/src/theme'
 import { startDemo } from './dev-server'
 
 let app: Awaited<ReturnType<typeof startDemo>>
@@ -91,6 +92,64 @@ async function observeMotion() {
 async function sawMotion(value: string) {
   await expect.poll(() => page.locator('html').getAttribute('data-motion-log')).toContain(value)
 }
+
+test('shows bright supporting selections and exact secondary swatches in native and custom themes', async () => {
+  for (const preset of [
+    { name: null, secondary: '#fcd34d' },
+    { name: '紫霄', secondary: '#fcd34d' },
+    { name: '松林', secondary: '#e8b86d' },
+    { name: '海岸', secondary: '#edb9a2' },
+    { name: '朱砂', secondary: '#e1bb67' },
+  ]) {
+    if (preset.name) {
+      await page.getByRole('button', { name: `${preset.name}配色`, exact: true }).click()
+    }
+    for (const mode of ['light', 'dark'] as const) {
+      await page.getByLabel('页面主题', { exact: true }).selectOption(mode)
+      const expected = createTheme({ secondary: preset.secondary }, mode === 'dark')
+      expect(await token('html', '--zx-tonal')).toBe(expected['--zx-tonal'])
+      expect(await token('html', '--zx-on-tonal')).toBe(expected['--zx-on-tonal'])
+      expect(
+        contrastRatio(expected['--zx-on-tonal'], expected['--zx-tonal']),
+      ).toBeGreaterThanOrEqual(4.5)
+      const swatch = page.locator('.token-swatches [title="Secondary"]')
+      expect(await swatch.count()).toBe(1)
+      expect(
+        await swatch.evaluate((element) => {
+          const probe = document.createElement('span')
+          probe.style.background = 'var(--zx-secondary)'
+          element.append(probe)
+          const matches =
+            getComputedStyle(element).backgroundColor === getComputedStyle(probe).backgroundColor
+          probe.remove()
+          return matches
+        }),
+      ).toBe(true)
+      expect(await token('[data-testid="preview"]', '--zx-secondary')).toBe(preset.secondary)
+      await page.getByRole('button', { name: /全局风格/ }).click()
+      const menu = page.getByRole('listbox', { name: '全局风格', exact: true })
+      expect(await token('.zx-picker-option[data-selected]', '--zx-tonal')).toBe(
+        expected['--zx-tonal'],
+      )
+      expect(
+        await menu.getByRole('option', { name: 'Clean', exact: true }).evaluate((element) => {
+          const probe = document.createElement('span')
+          probe.style.background = 'var(--zx-tonal)'
+          probe.style.color = 'var(--zx-on-tonal)'
+          element.append(probe)
+          const selected = getComputedStyle(element)
+          const paired = getComputedStyle(probe)
+          const matches =
+            selected.backgroundColor === paired.backgroundColor && selected.color === paired.color
+          probe.remove()
+          return matches
+        }),
+      ).toBe(true)
+      await page.keyboard.press('Escape')
+      await menu.waitFor({ state: 'detached' })
+    }
+  }
+})
 
 test('adapts shell and preview, persists settings, exports both modes and resets', async () => {
   const before = await token('html', '--zx-surface')

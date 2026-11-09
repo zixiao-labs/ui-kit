@@ -395,8 +395,8 @@ h2 {
 .token-accent {
   background: var(--zx-accent);
 }
-.token-tonal {
-  background: var(--zx-tonal);
+.token-secondary {
+  background: var(--zx-secondary);
 }
 .token-text {
   background: var(--zx-text);

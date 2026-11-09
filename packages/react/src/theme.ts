@@ -63,8 +63,9 @@ export function createTheme(
     '--zx-accent-ink': tone(accent, dark ? 80 : 35),
     '--zx-secondary': secondary.toLowerCase(),
     '--zx-on-secondary': foreground(secondary),
-    '--zx-tonal': tone(supporting, dark ? 30 : 90),
-    '--zx-on-tonal': tone(supporting, dark ? 95 : 10),
+    // Keep supporting fills recognizable on dark surfaces; low-tone gold turns brown.
+    '--zx-tonal': tone(supporting, dark ? 80 : 90),
+    '--zx-on-tonal': tone(supporting, 10),
     '--zx-surface': tone(neutral, dark ? 6 : 98),
     '--zx-surface-subtle': tone(neutral, dark ? 17 : 94),
     '--zx-surface-raised': tone(neutral, dark ? 12 : 100),

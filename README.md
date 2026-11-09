@@ -122,6 +122,8 @@ export function SoftExample() {
 
 Clean 默认采用公司品牌主色 **`#8B5CF6`** 和辅助色 **`#FCD34D`**。色彩保留原值，实心色上的文字按 WCAG 对比度选择黑或白；链接、选中标签文字使用独立的 `--zx-accent-ink` 深浅色阶，不直接把浅亮品牌色当正文。
 
+辅助色本身（`--zx-secondary`）与辅助色容器（`--zx-tonal`）分开：容器采用浅色 HCT tone 90 / 深色 tone 80，均配 tone 10 文字，避免黄色、金色在深色模式下压成棕褐色。Clean 原生深色配色与 `createTheme` 的品牌配色遵循同一规则；Demo 底部色板展示有效的辅助色，而不是容器色。
+
 可选的 `theme` 入口使用 Material Color Utilities 的 HCT 色阶生成低彩度表面、文字、边界与明暗主题，输出仍然只有设计语言无关的 `--zx-*`。不会把 Material tokens 注入其他风格，也不修改全局 DOM：
 
 ```tsx

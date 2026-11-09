@@ -1,4 +1,5 @@
 import { expect, test } from '@lightning-js/lightning'
+import { argbFromHex, Hct } from '@material/material-color-utilities'
 import { brandTheme, contrastRatio, createTheme, themeToCSS } from './theme'
 
 test('keeps the exact company fills and generates tonal light and dark surfaces', () => {
@@ -21,6 +22,30 @@ test('keeps the exact company fills and generates tonal light and dark surfaces'
     ).toBeGreaterThanOrEqual(3)
   }
   expect(createTheme()['--zx-surface']).not.toBe(createTheme({}, true)['--zx-surface'])
+})
+
+test('keeps supporting colors bright in dark mode, including brand yellow and cinnabar gold', () => {
+  for (const secondary of [
+    '#fcd34d',
+    '#e8b86d',
+    '#edb9a2',
+    '#e1bb67',
+    '#ffffff',
+    '#000000',
+    '#0000ff',
+    '#777777',
+  ]) {
+    for (const dark of [false, true]) {
+      const tokens = createTheme({ secondary }, dark)
+      expect(tokens['--zx-secondary']).toBe(secondary)
+      expect(
+        Math.abs(Hct.fromInt(argbFromHex(tokens['--zx-tonal'])).tone - (dark ? 80 : 90)),
+      ).toBeLessThan(0.5)
+      expect(contrastRatio(tokens['--zx-on-tonal'], tokens['--zx-tonal'])).toBeGreaterThanOrEqual(
+        4.5,
+      )
+    }
+  }
 })
 
 test('adapts the full neutral ramp, handles extreme seeds and rejects invalid inputs', () => {

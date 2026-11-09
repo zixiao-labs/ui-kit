@@ -68,6 +68,17 @@ async function token(selector: string, property: string) {
     .evaluate((element, name) => getComputedStyle(element).getPropertyValue(name).trim(), property)
 }
 
+test('reserves condensed type for display headings rather than Endfield controls', async () => {
+  const fonts = await page
+    .locator('h1, .workspace-toolbar .zx-select-trigger')
+    .evaluateAll((elements) => elements.map((element) => getComputedStyle(element).fontFamily))
+  expect(fonts[0]).toContain('Condensed')
+  expect(fonts[1]).toContain('Space Grotesk')
+  expect(fonts[1]).toContain('system-ui')
+  expect(fonts[1]).not.toContain('DIN Alternate')
+  expect(fonts[1]).not.toContain('Condensed')
+})
+
 for (const mode of ['light', 'dark'] as const) {
   for (const width of [1440, 390]) {
     test(`covers every Endfield catalogue entry at ${width}px in ${mode} mode`, async () => {

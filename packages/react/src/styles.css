@@ -2806,8 +2806,9 @@
   --md-sys-color-on-primary-container: #e9ddff;
   --md-sys-color-secondary: #fcd34d;
   --md-sys-color-on-secondary: #000000;
-  --md-sys-color-secondary-container: #574500;
-  --md-sys-color-on-secondary-container: #fff0cb;
+  /* Match createTheme's bright supporting fill instead of a brown tone-30 gold. */
+  --md-sys-color-secondary-container: #eac33e;
+  --md-sys-color-on-secondary-container: #231b00;
   --md-sys-color-surface: #141218;
   --md-sys-color-on-surface: #e6e0e9;
   --md-sys-color-on-surface-variant: #cbc4d2;
@@ -2903,7 +2904,8 @@
   --zx-radius-full: 2px;
   --zx-switch-radius: 2px;
   --zx-slider-thumb-radius: 2px;
-  --zx-font: 'Space Grotesk', 'DIN Alternate', 'Segoe UI', 'PingFang SC', sans-serif;
+  --zx-font:
+    'Space Grotesk', 'IBM Plex Sans', system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   --zx-label-weight: 500;
   --zx-label-line-height: 1.5;
   --zx-button-height: 48px;

@@ -32,7 +32,8 @@
   --zx-radius-full: 2px;
   --zx-switch-radius: 2px;
   --zx-slider-thumb-radius: 2px;
-  --zx-font: 'Space Grotesk', 'DIN Alternate', 'Segoe UI', 'PingFang SC', sans-serif;
+  --zx-font:
+    'Space Grotesk', 'IBM Plex Sans', system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   --zx-label-weight: 500;
   --zx-label-line-height: 1.5;
   --zx-button-height: 48px;

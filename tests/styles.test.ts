@@ -2,6 +2,7 @@ import { readFileSync, readdirSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
 import { expect, test } from '@lightning-js/lightning'
+import { createTheme } from '../packages/react/src/theme'
 
 const readStyle = (path: string) => readFileSync(`packages/react/src/${path}`, 'utf8')
 
@@ -17,6 +18,19 @@ test('keeps the shared contract and non-Material adapters free of Material depen
     expect(readStyle(path)).not.toContain('--md-')
   }
   expect(readStyle('themes/clean.css')).toContain('--md-sys-color-primary')
+})
+
+test('Clean native dark supporting colors match the custom brand theme', () => {
+  const dark = readStyle('themes/clean.css').split(
+    ":root:not([data-zx-style])[data-zx-color-mode='dark']",
+  )[1]
+  const tokens = createTheme({}, true)
+  expect(dark.match(/--md-sys-color-secondary-container:\s*([^;]+)/)?.[1]).toBe(
+    tokens['--zx-tonal'],
+  )
+  expect(dark.match(/--md-sys-color-on-secondary-container:\s*([^;]+)/)?.[1]).toBe(
+    tokens['--zx-on-tonal'],
+  )
 })
 
 test('loads base rules before independently selectable style adapters', () => {

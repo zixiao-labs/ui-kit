@@ -92,7 +92,7 @@ import '@zixiao-labs/ui-kits-react/styles.css'${settings.customized && previewSt
                 </span>
                 <div className="token-swatches" aria-label="当前主题色板">
                   <span className="token-accent" title="Primary" />
-                  <span className="token-tonal" title="Secondary container" />
+                  <span className="token-secondary" title="Secondary" />
                   <span className="token-text" title="On surface" />
                   <span className="token-surface" title="Surface" />
                 </div>
