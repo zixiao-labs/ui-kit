@@ -4,6 +4,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, expect, test } from '@light
 import { chromium } from 'playwright'
 import type { Browser, Page } from 'playwright'
 import { startDemo } from './dev-server'
+import { chooseDemoSelect } from './select-helpers'
 
 let app: Awaited<ReturnType<typeof startDemo>>
 let browser: Browser
@@ -51,7 +52,7 @@ afterEach(async () => {
 
 for (const mode of ['light', 'dark']) {
   test(`keeps skeleton placeholders visible on each theme's surfaces in ${mode} mode`, async () => {
-    await page.getByLabel('样本主题', { exact: true }).selectOption(mode)
+    await chooseDemoSelect(page, '样本主题', mode)
     const blocks = page.locator('.demo-stage .zx-skeleton')
     expect(await blocks.count()).toBe(4)
     expect(await blocks.first().getAttribute('aria-hidden')).toBe('true')

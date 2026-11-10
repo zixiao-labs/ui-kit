@@ -56,6 +56,10 @@
   --zx-error-container: #ffdad6;
   --zx-on-error-container: #410002;
   --zx-scrim: rgb(0 0 0 / 40%);
+  --zx-effect-shadow-opacity: 0.18;
+  --zx-effect-backlight-opacity: 0;
+  --zx-effect-backlight-color: #edb777;
+  --zx-effect-glass-tint: 70%;
 }
 
 [data-zx-color-mode='dark'] {
@@ -72,6 +76,8 @@
   --zx-on-error: #690005;
   --zx-error-container: #93000a;
   --zx-on-error-container: #ffdad6;
+  --zx-effect-shadow-opacity: 0.38;
+  --zx-effect-backlight-opacity: 0.85;
 }
 
 .zx-button {

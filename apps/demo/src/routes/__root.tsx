@@ -7,6 +7,7 @@ import '../styles.css'
 import '../catalog.css'
 import '../docs.css'
 import '../theme-workbench.css'
+import '../effects-workbench.css'
 
 export const Route = createRootRoute({
   head: () => ({

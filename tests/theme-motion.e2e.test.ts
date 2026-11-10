@@ -3,6 +3,7 @@ import { chromium } from 'playwright'
 import type { Browser, Page } from 'playwright'
 import { contrastRatio, createTheme } from '../packages/react/src/theme'
 import { startDemo } from './dev-server'
+import { chooseDemoSelect, demoSelectValue } from './select-helpers'
 
 let app: Awaited<ReturnType<typeof startDemo>>
 let browser: Browser
@@ -107,7 +108,7 @@ test('shows bright supporting selections and exact secondary swatches in native 
       await page.getByRole('button', { name: `${preset.name}配色`, exact: true }).click()
     }
     for (const mode of ['light', 'dark'] as const) {
-      await page.getByLabel('页面主题', { exact: true }).selectOption(mode)
+      await chooseDemoSelect(page, '页面主题', mode)
       const expected = createTheme({ secondary: preset.secondary }, mode === 'dark')
       expect(await token('html', '--zx-tonal')).toBe(expected['--zx-tonal'])
       expect(await token('html', '--zx-on-tonal')).toBe(expected['--zx-on-tonal'])
@@ -162,7 +163,7 @@ test('adapts shell and preview, persists settings, exports both modes and resets
   await page.getByLabel('主色', { exact: true }).fill('#3269b1')
   await page.getByLabel('辅助色', { exact: true }).fill('#fcd34d')
   await page.getByLabel('主题圆角', { exact: true }).fill('20')
-  await page.getByLabel('页面主题', { exact: true }).selectOption('dark')
+  await chooseDemoSelect(page, '页面主题', 'dark')
   await page.reload()
   await expect.poll(() => token('html', '--zx-accent')).toBe('#3269b1')
   expect(await page.getByLabel('主色', { exact: true }).inputValue()).toBe('#3269b1')
@@ -184,14 +185,18 @@ test('defaults to the system theme and updates every preview and custom token li
   await page.emulateMedia({ colorScheme: 'dark' })
   await page.reload()
   await expectMode('dark')
-  expect(await page.getByLabel('页面主题', { exact: true }).inputValue()).toBe('system')
-  expect(await page.getByLabel('预览主题', { exact: true }).inputValue()).toBe('system')
-  expect(await page.getByRole('code').textContent()).toContain('data-zx-color-mode="dark"')
+  expect(await demoSelectValue(page, '页面主题')).toBe('system')
+  expect(await demoSelectValue(page, '预览主题')).toBe('system')
+  expect(await page.getByLabel('当前组件代码', { exact: true }).textContent()).toContain(
+    'data-zx-color-mode="dark"',
+  )
   const darkSurface = await token('[data-testid="preview"]', '--zx-surface')
   await page.emulateMedia({ colorScheme: 'light' })
   await expectMode('light')
   expect(await token('[data-testid="preview"]', '--zx-surface')).not.toBe(darkSurface)
-  expect(await page.getByRole('code').textContent()).toContain('data-zx-color-mode="light"')
+  expect(await page.getByLabel('当前组件代码', { exact: true }).textContent()).toContain(
+    'data-zx-color-mode="light"',
+  )
 
   await page.getByRole('button', { name: '松林配色', exact: true }).click()
   const lightSurface = await token('html', '--zx-surface')
@@ -204,7 +209,7 @@ test('defaults to the system theme and updates every preview and custom token li
   }
   await page.reload()
   await expectMode('dark')
-  expect(await page.getByLabel('页面主题', { exact: true }).inputValue()).toBe('system')
+  expect(await demoSelectValue(page, '页面主题')).toBe('system')
   await page.emulateMedia({ colorScheme: 'light' })
   await expectMode('light')
   expect(await token('html', '--zx-surface')).toBe(lightSurface)
@@ -213,48 +218,48 @@ test('defaults to the system theme and updates every preview and custom token li
 test('persists explicit modes, ignores system changes until reselected and resets to system', async () => {
   for (const mode of ['dark', 'light'] as const) {
     const opposite = mode === 'dark' ? 'light' : 'dark'
-    await page.getByLabel('页面主题', { exact: true }).selectOption(mode)
+    await chooseDemoSelect(page, '页面主题', mode)
     await expectMode(mode)
     await page.emulateMedia({ colorScheme: opposite })
     await expectMode(mode)
     await page.reload()
     await expectMode(mode)
-    expect(await page.getByLabel('预览主题', { exact: true }).inputValue()).toBe(mode)
-    await page.getByLabel('预览主题', { exact: true }).selectOption('system')
+    expect(await demoSelectValue(page, '预览主题')).toBe(mode)
+    await chooseDemoSelect(page, '预览主题', 'system')
     await expectMode(opposite)
-    expect(await page.getByLabel('页面主题', { exact: true }).inputValue()).toBe('system')
+    expect(await demoSelectValue(page, '页面主题')).toBe('system')
     await page.emulateMedia({ colorScheme: mode })
     await expectMode(mode)
   }
-  await page.getByLabel('页面主题', { exact: true }).selectOption('system')
+  await chooseDemoSelect(page, '页面主题', 'system')
   await page.reload()
   await expectMode('light')
   await page.emulateMedia({ colorScheme: 'dark' })
   await expectMode('dark')
-  await page.getByLabel('页面主题', { exact: true }).selectOption('light')
+  await chooseDemoSelect(page, '页面主题', 'light')
   await page.getByRole('button', { name: '恢复默认主题', exact: true }).click()
   await expectMode('dark')
-  expect(await page.getByLabel('页面主题', { exact: true }).inputValue()).toBe('system')
+  expect(await demoSelectValue(page, '页面主题')).toBe('system')
 })
 
 test('shares theme selection across component navigation and the mobile controls', async () => {
-  await page.getByLabel('页面主题', { exact: true }).selectOption('dark')
+  await chooseDemoSelect(page, '页面主题', 'dark')
   await select('TextField')
   await expectMode('dark')
-  expect(await page.getByLabel('样本主题', { exact: true }).inputValue()).toBe('dark')
-  await page.getByLabel('样本主题', { exact: true }).selectOption('light')
+  expect(await demoSelectValue(page, '样本主题')).toBe('dark')
+  await chooseDemoSelect(page, '样本主题', 'light')
   await expectMode('light')
-  expect(await page.getByLabel('页面主题', { exact: true }).inputValue()).toBe('light')
+  expect(await demoSelectValue(page, '页面主题')).toBe('light')
   await select('Button')
   await expectMode('light')
   await page.setViewportSize({ width: 390, height: 844 })
-  await page.getByLabel('预览主题', { exact: true }).selectOption('system')
+  await chooseDemoSelect(page, '预览主题', 'system')
   await page.emulateMedia({ colorScheme: 'dark' })
   await expectMode('dark')
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
-  await page.getByLabel('选择组件', { exact: true }).selectOption('TextField')
+  await chooseDemoSelect(page, '选择组件', 'TextField')
   await expectMode('dark')
-  expect(await page.getByLabel('样本主题', { exact: true }).inputValue()).toBe('system')
+  expect(await demoSelectValue(page, '样本主题')).toBe('system')
 })
 
 test('preserves legacy light and dark preferences with their custom theme settings', async () => {
@@ -274,9 +279,7 @@ test('preserves legacy light and dark preferences with their custom theme settin
     await page.emulateMedia({ colorScheme: dark ? 'light' : 'dark' })
     await page.reload()
     await expectMode(dark ? 'dark' : 'light')
-    expect(await page.getByLabel('页面主题', { exact: true }).inputValue()).toBe(
-      dark ? 'dark' : 'light',
-    )
+    expect(await demoSelectValue(page, '页面主题')).toBe(dark ? 'dark' : 'light')
     expect(await token('html', '--zx-accent')).toBe('#28745b')
     expect(await token('[data-testid="preview"]', '--zx-radius')).toBe('20px')
   }
@@ -385,7 +388,7 @@ test('animates disclosure geometry, tab indicator and selection feedback without
 test('propagates dynamic tokens into nested portals and respects reduced motion', async () => {
   await page.getByRole('button', { name: '松林配色', exact: true }).click()
   await select('Modal')
-  await page.getByLabel('样本主题', { exact: true }).selectOption('dark')
+  await chooseDemoSelect(page, '样本主题', 'dark')
   await page.emulateMedia({ reducedMotion: 'reduce' })
   const trigger = page.getByRole('button', { name: '项目详情', exact: true })
   await trigger.click()

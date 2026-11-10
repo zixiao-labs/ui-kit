@@ -172,6 +172,9 @@ importers:
       '@types/node':
         specifier: ^22.0.0
         version: 22.20.5
+      '@types/pngjs':
+        specifier: ^6.0.5
+        version: 6.0.5
       oxfmt:
         specifier: ^0.76.0
         version: 0.76.0
@@ -181,6 +184,9 @@ importers:
       playwright:
         specifier: 1.64.1
         version: 1.64.1
+      pngjs:
+        specifier: ^7.0.0
+        version: 7.0.0
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
@@ -245,6 +251,9 @@ importers:
       react-aria-components:
         specifier: ^1.22.1
         version: 1.22.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      vgpu:
+        specifier: ^0.6.0
+        version: 0.6.0(supports-color@7.2.0)
     devDependencies:
       '@types/react':
         specifier: ^19.0.0
@@ -252,6 +261,9 @@ importers:
       '@types/react-dom':
         specifier: ^19.0.0
         version: 19.3.0(@types/react@19.3.0)
+      '@vgpu/wgsl':
+        specifier: 0.6.0
+        version: 0.6.0(@vgpu/adapter-node@0.6.0(supports-color@7.2.0))
       react:
         specifier: ^19.2.8
         version: 19.3.1
@@ -383,6 +395,14 @@ packages:
 
   '@material/material-color-utilities@0.3.0':
     resolution: {integrity: sha512-ztmtTd6xwnuh2/xu+Vb01btgV8SQWYCaK56CkRK8gEkWe5TuDyBcYJ0wgkMRn+2VcE9KUmhvkz+N9GHrqw/C0g==}
+
+  '@modelcontextprotocol/core@2.0.0':
+    resolution: {integrity: sha512-pJCEwGG7Lfr/+PQp9ZTwKXNeO5wzbfKL7H3MYpCorM4oFBoQrdjnBgEoqG+RjhsvS1FKrDbKux+M1HhlnGWqcA==}
+    engines: {node: '>=20'}
+
+  '@modelcontextprotocol/server@2.0.0':
+    resolution: {integrity: sha512-YhHWdHfpFMQfd0prsEnxKeS3Qz3ytIGmsS0sth4KDjnacIT7hxk6hXHkJ9KysxlkvTM+WZAtQbbcUhdoP4Hvtw==}
+    engines: {node: '>=20'}
 
   '@nasti-toolchain/nasti@2.6.5':
     resolution: {integrity: sha512-B1mbES1Lm+c/bHMD+U8XseSfe20zx8IyxhcSK2GxDv26VOo1oSzKDlVLXErr0VRmhePEsDN2rHmasvoLMChUsw==}
@@ -1405,6 +1425,9 @@ packages:
   '@types/node@22.20.5':
     resolution: {integrity: sha512-U2+DNr+wSjpsTS/wZGYHq7GcwfuSmKiKvoPvK22zwTlRhU91yOniN4qRR5KhIjvif7ysw/dz/hKmfDH0Ris4aA==}
 
+  '@types/pngjs@6.0.5':
+    resolution: {integrity: sha512-0k5eKfrA83JOZPppLtS2C7OUtyNAl2wKNxfyYl9Q5g9lPkgBl/9hNyAu6HuEH2J4XmIv2znEpkDd0SaZVxW6iQ==}
+
   '@types/react-dom@19.3.0':
     resolution: {integrity: sha512-ZI7bU42mZXXKHn/qNLEw2IrbiINU7X5+vfgdixBHkCNpYWXjKgfQ/P+uyGb5CjOLB9UcnTeg3rylQtV2hym44Q==}
     peerDependencies:
@@ -1533,6 +1556,26 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@vgpu/adapter-mock@0.6.0':
+    resolution: {integrity: sha512-xLzDbi0satAaY1z8a+9mVLBX5XXsoaGFiyPqR+T/QWKTXeYWLKloMHzJ2eIhHWeGEJJmpqhpYM/TMssjZjXbNA==}
+
+  '@vgpu/adapter-node@0.6.0':
+    resolution: {integrity: sha512-A/ZvkZV+vWMQOtaKyK+G2VlYWMwr7hce2AlpnkVouLKfsJ3TR+VeIKZC/OXgDYtEQ6fANmHEmHuTFge5kjSyaA==}
+
+  '@vgpu/core@0.6.0':
+    resolution: {integrity: sha512-0ihBJl1kiFl5sBidv4dmoDepR7TCCaeSxy+EzJWz8zX/C4lw4jDGsN/ThgO/p79QGRUgRSW5J21erG2a6AtuWg==}
+
+  '@vgpu/wgsl-std@0.6.0':
+    resolution: {integrity: sha512-C2C52G40p+54FKPAVzaXlffi4hLKK5xViTuINVH/CfBWb70qOL2WJ7cBiEpY5guvXAWHCJ1wyg+n6RSy92XnsA==}
+
+  '@vgpu/wgsl@0.6.0':
+    resolution: {integrity: sha512-/TlncdEz8hS5JvUI4lKDOK4irYgnfWrrox9sspc5Kt8xl6E3nqHjWfJw9iaAT9nDir8RuzPUNSxrCV8t3IDNmw==}
+    peerDependencies:
+      '@vgpu/adapter-node': '>=0.1.6 <1.0.0 || ^0.5.0-rc.0 || ^0.6.0-rc.0'
+    peerDependenciesMeta:
+      '@vgpu/adapter-node':
+        optional: true
+
   '@vue/compiler-core@3.6.0-rc.10':
     resolution: {integrity: sha512-czMdf4W0SiBDwny2lG77z7yLTtfz980CLf8Dbqw3mTTRZebtvYUAfrEfsFQVm+ZTKXscLZVzOsGtRsdMgRM8Rg==}
 
@@ -1550,6 +1593,9 @@ packages:
 
   '@vue/shared@3.6.0-rc.10':
     resolution: {integrity: sha512-/0D5WQhWeZGVYZ8nGI4QMtetPdDM6rIJMgODqt3yJ/KAmoO0PTTUB6pbzK7ecTOxG3hbImhhPq8Ml9cXXzDk+Q==}
+
+  '@webgpu/types@0.1.74':
+    resolution: {integrity: sha512-lgiI4hbuLcI9unnm2cL/tvCaQU45dp0xcLWJh5uB/9MBGvIA4F8XIk7nSiBeg+K4xWGYwgZKn80LmERI5CxoTA==}
 
   ansis@4.5.0:
     resolution: {integrity: sha512-KwIVkfFfJSSzBmZhDGuTmkhWqTdyB5oNVzzznBJbBZ5bZtHiqSrcugRF0RKJKT4Ss3d7ZrcjnlFVDlQNmtWfWw==}
@@ -1904,6 +1950,10 @@ packages:
     resolution: {integrity: sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA==}
     engines: {node: '>=12'}
 
+  pixelmatch@7.2.0:
+    resolution: {integrity: sha512-xhcb4yHu9sM/G7foGzoLtXYcC0zHEaOXXjRKhGup0fw78Nf2Tkiapv4EQyMzrbcmQPsllAI7DbFY2UT7PlI9Pg==}
+    hasBin: true
+
   playwright-core@1.64.1:
     resolution: {integrity: sha512-BC4s8y6SEVA6Q1rSxZTto8hI1KUI3xXlHGZgvGqP4IqPdI/a6FX9H29IDNz7vKo9l21b6LfYosScPL6M3xxyDQ==}
     engines: {node: '>=20'}
@@ -1913,6 +1963,10 @@ packages:
     resolution: {integrity: sha512-HCrVhHr5QQuwYoswEUGTb7gGp522yflbv/ST8nF4sFWGuLjQCt17Q/EubpGGSNKYn1tsTCPZxqHhHCfVURu7UA==}
     engines: {node: '>=20'}
     hasBin: true
+
+  pngjs@7.0.0:
+    resolution: {integrity: sha512-LKWqWJRhstyYo9pGvgor/ivk2w94eSjE3RGVuzLGlr3NmD8bf7RcYGze1mNdEHRP6TRP6rMuDHk5t44hnTRyow==}
+    engines: {node: '>=14.19.0'}
 
   postcss@8.5.32:
     resolution: {integrity: sha512-LJlKCCAUFKOuZxipUdYw1NzIITEsPcgyOG9LkvRJvuKj/bRzbuRY0ARXvL0pWGpsZvn8jku+LMep2eU0seHp8g==}
@@ -2112,6 +2166,15 @@ packages:
     resolution: {integrity: sha512-kiGUalWN+rgBJ/1OHZsBtU4rXZOfj/7rKQxULKlIzwzQSvMJUUNgPwJEEh7gU6xEVxC0ahoOBvN2YI8GH6FNgA==}
     engines: {node: '>=10.12.0'}
 
+  vgpu@0.6.0:
+    resolution: {integrity: sha512-st7Sc40nNnRHoWFguP7sGOeziLtO/bF+YL/Tn1fn2h9cGmSpWq4gxEQp0/T6Z7Xz3zH66ZS3qBp+ZLMBrUSxug==}
+    hasBin: true
+    peerDependencies:
+      three: '>=0.180.0 <0.200.0'
+    peerDependenciesMeta:
+      three:
+        optional: true
+
   vitefu@1.1.3:
     resolution: {integrity: sha512-ub4okH7Z5KLjb6hDyjqrGXqWtWvoYdU3IGm/NorpgHncKoLTCfRIbvlhBm7r0YstIaQRYlp4yEbFqDcKSzXSSg==}
     peerDependencies:
@@ -2120,8 +2183,14 @@ packages:
       vite:
         optional: true
 
+  webgpu@0.4.0:
+    resolution: {integrity: sha512-F5pimn3Aoi0zWjuRdiVs5TnrUwSzD2lESBohsIUsqyitWkGRQlXU2fhV6ycXlQTa1bvAf3sjqiUpBEpmSQ5ptA==}
+
   webpack-virtual-modules@0.6.2:
     resolution: {integrity: sha512-66/V2i5hQanC51vBQKPH4aI8NMAcBW59FVBs+rC7eGHupMyfn34q7rZIE+ETlJ+XTevqfUhVVBgSUNSW2flEUQ==}
+
+  wgpu-matrix@3.4.2:
+    resolution: {integrity: sha512-IfZFbG7olEYBD76VCZy2TzqM57GKy3LT++AZh37tMHPPByO6R2h61zXGBZFNPi2IzxNivNi8y5dvze5PjaczjA==}
 
   ws@8.22.1:
     resolution: {integrity: sha512-oyL6OPYme/CmiFvNuGzeoxCJ4nOrZE2O1FwM9MWM1AsGri6nLXB2pg+lNA8aLeXMSav0J6eIVS1j6vUPzUtK9g==}
@@ -2317,6 +2386,15 @@ snapshots:
       - utf-8-validate
 
   '@material/material-color-utilities@0.3.0': {}
+
+  '@modelcontextprotocol/core@2.0.0':
+    dependencies:
+      zod: 4.6.7
+
+  '@modelcontextprotocol/server@2.0.0':
+    dependencies:
+      '@modelcontextprotocol/core': 2.0.0
+      zod: 4.6.7
 
   '@nasti-toolchain/nasti@2.6.5(supports-color@7.2.0)':
     dependencies:
@@ -2985,6 +3063,10 @@ snapshots:
     dependencies:
       undici-types: 6.21.0
 
+  '@types/pngjs@6.0.5':
+    dependencies:
+      '@types/node': 22.20.5
+
   '@types/react-dom@19.3.0(@types/react@19.3.0)':
     dependencies:
       '@types/react': 19.3.0
@@ -3053,6 +3135,33 @@ snapshots:
   '@typescript/typescript-win32-x64@7.0.2':
     optional: true
 
+  '@vgpu/adapter-mock@0.6.0(@vgpu/adapter-node@0.6.0(supports-color@7.2.0))':
+    dependencies:
+      '@vgpu/core': 0.6.0(@vgpu/adapter-node@0.6.0(supports-color@7.2.0))
+    transitivePeerDependencies:
+      - '@vgpu/adapter-node'
+
+  '@vgpu/adapter-node@0.6.0(supports-color@7.2.0)':
+    dependencies:
+      '@vgpu/core': 0.6.0(@vgpu/adapter-node@0.6.0(supports-color@7.2.0))
+      webgpu: 0.4.0(supports-color@7.2.0)
+    transitivePeerDependencies:
+      - supports-color
+
+  '@vgpu/core@0.6.0(@vgpu/adapter-node@0.6.0(supports-color@7.2.0))':
+    dependencies:
+      '@vgpu/wgsl': 0.6.0(@vgpu/adapter-node@0.6.0(supports-color@7.2.0))
+    transitivePeerDependencies:
+      - '@vgpu/adapter-node'
+
+  '@vgpu/wgsl-std@0.6.0': {}
+
+  '@vgpu/wgsl@0.6.0(@vgpu/adapter-node@0.6.0(supports-color@7.2.0))':
+    dependencies:
+      '@vgpu/wgsl-std': 0.6.0
+    optionalDependencies:
+      '@vgpu/adapter-node': 0.6.0(supports-color@7.2.0)
+
   '@vue/compiler-core@3.6.0-rc.10':
     dependencies:
       '@babel/parser': 7.29.13
@@ -3099,6 +3208,8 @@ snapshots:
 
   '@vue/shared@3.6.0-rc.10':
     optional: true
+
+  '@webgpu/types@0.1.74': {}
 
   ansis@4.5.0: {}
 
@@ -3455,11 +3566,17 @@ snapshots:
 
   picomatch@4.0.7: {}
 
+  pixelmatch@7.2.0:
+    dependencies:
+      pngjs: 7.0.0
+
   playwright-core@1.64.1: {}
 
   playwright@1.64.1:
     dependencies:
       playwright-core: 1.64.1
+
+  pngjs@7.0.0: {}
 
   postcss@8.5.32:
     dependencies:
@@ -3663,9 +3780,34 @@ snapshots:
       '@types/istanbul-lib-coverage': 2.0.6
       convert-source-map: 2.0.0
 
+  vgpu@0.6.0(supports-color@7.2.0):
+    dependencies:
+      '@modelcontextprotocol/server': 2.0.0
+      '@vgpu/adapter-mock': 0.6.0(@vgpu/adapter-node@0.6.0(supports-color@7.2.0))
+      '@vgpu/adapter-node': 0.6.0(supports-color@7.2.0)
+      '@vgpu/core': 0.6.0(@vgpu/adapter-node@0.6.0(supports-color@7.2.0))
+      '@vgpu/wgsl': 0.6.0(@vgpu/adapter-node@0.6.0(supports-color@7.2.0))
+      '@vgpu/wgsl-std': 0.6.0
+      '@webgpu/types': 0.1.74
+      pixelmatch: 7.2.0
+      pngjs: 7.0.0
+      wgpu-matrix: 3.4.2
+      zod: 4.6.7
+    transitivePeerDependencies:
+      - supports-color
+
   vitefu@1.1.3: {}
 
+  webgpu@0.4.0(supports-color@7.2.0):
+    dependencies:
+      '@webgpu/types': 0.1.74
+      debug: 4.4.3(supports-color@7.2.0)
+    transitivePeerDependencies:
+      - supports-color
+
   webpack-virtual-modules@0.6.2: {}
+
+  wgpu-matrix@3.4.2: {}
 
   ws@8.22.1: {}
 

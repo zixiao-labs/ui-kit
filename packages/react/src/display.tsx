@@ -4,6 +4,8 @@ import * as Aria from 'react-aria-components'
 import { Xmark } from '@gravity-ui/icons'
 import { Button } from './button'
 import type { ButtonProps } from './button'
+import { EffectLayers, useSurfaceEffects } from './effects'
+import type { SurfaceEffects } from './effects'
 
 function cx(base: string, extra?: string) {
   return [base, extra].filter(Boolean).join(' ')
@@ -41,10 +43,24 @@ export function ToggleButtonGroup({ className, ...props }: Aria.ToggleButtonGrou
 
 export interface SurfaceProps extends ComponentProps<'div'> {
   variant?: 'flat' | 'tonal' | 'outline'
+  effects?: SurfaceEffects
 }
 
-export function Surface({ variant = 'flat', className, ...props }: SurfaceProps) {
-  return <div {...props} className={cx('zx-surface', className)} data-variant={variant} />
+export function Surface({
+  variant = 'flat',
+  className,
+  effects,
+  children,
+  ref,
+  ...props
+}: SurfaceProps) {
+  const effectProps = useSurfaceEffects(effects, ref)
+  return (
+    <div {...props} {...effectProps} className={cx('zx-surface', className)} data-variant={variant}>
+      <EffectLayers effects={effects} />
+      {children}
+    </div>
+  )
 }
 
 export function Card({ variant = 'outline', className, ...props }: SurfaceProps) {

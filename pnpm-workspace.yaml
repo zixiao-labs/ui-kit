@@ -2,6 +2,9 @@ packages:
   - 'apps/*'
   - 'packages/*'
 
+allowBuilds:
+  '@vgpu/adapter-node': false
+  webgpu: false
 permissions:
   '@tanstack/react-router':
     skills: true

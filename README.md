@@ -168,6 +168,12 @@ Demo 参考 HeroUI docs 组织为目录、交互预览、用法代码与主题�
 
 `--zx-motion-duration-short / medium / long / exit` 与 `--zx-motion-easing` 控制节奏。`prefers-reduced-motion: reduce` 关闭这些过渡和动画，不改变交互结果与焦点管理。
 
+### 可选材质与光影
+
+`Card`、`Surface` 提供 `effects={{ shadow: 'gpu', tilt: true, backlight: true, glass: true }}`，`Button` 支持其中的阴影、背光和玻璃。每项均独立 opt-in，可与原有 `variant` 组合；默认组件不改变外观，也不申请 GPU。
+
+GPU 阴影按需使用 vgpu，缺少 WebGPU 或 device 丢失时退回 CSS 阴影；倾斜在触屏、粗指针与减少动态效果模式下关闭；背光只在当前深色主题作用域点亮；玻璃只折射背景，不扭曲文字，并保留原生按钮语义。工作台三个组件页的「材质与光影」可实际切换、操作和复制代码。完整 API、成本、浏览器降级与 Unslop 自检见 [可选效果验收](docs/effects-review.md)。
+
 新增设计语言时，在自己的 CSS 中为 `[data-zx-style="你的风格"]` 实现 `--zx-*`，需要明暗配色时再增加同作用域的 `data-zx-color-mode` 规则：
 
 | 共享角色                                                                                           | 控制内容             |

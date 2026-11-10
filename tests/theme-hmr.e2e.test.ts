@@ -2,6 +2,7 @@ import { afterAll, beforeAll, expect, test } from '@lightning-js/lightning'
 import { chromium } from 'playwright'
 import type { Browser, WebSocketRoute } from 'playwright'
 import { startDemo } from './dev-server'
+import { chooseDemoSelect, demoSelectValue } from './select-helpers'
 
 let app: Awaited<ReturnType<typeof startDemo>>
 let browser: Browser
@@ -79,8 +80,8 @@ test('keeps old and refreshed theme consumers connected across repeated partial 
       expect(await page.locator('.click-count').textContent()).toBe('已触发 1 次交互')
       expect(await page.getByLabel('主色', { exact: true }).inputValue()).toBe('#28745b')
       expect(await page.getByLabel('主题圆角', { exact: true }).inputValue()).toBe('20')
-      await page.getByLabel('页面主题', { exact: true }).selectOption(mode)
-      await expect.poll(() => page.getByLabel('预览主题', { exact: true }).inputValue()).toBe(mode)
+      await chooseDemoSelect(page, '页面主题', mode)
+      await expect.poll(() => demoSelectValue(page, '预览主题')).toBe(mode)
       await expect
         .poll(() => page.locator('html').getAttribute('data-zx-color-mode'))
         .toBe(mode === 'dark' ? 'dark' : 'light')
@@ -93,9 +94,7 @@ test('keeps old and refreshed theme consumers connected across repeated partial 
       .poll(() => page.getByRole('heading', { level: 1 }).textContent())
       .toBe('先统一行为，再表达风格。')
     await page.getByRole('link', { name: '组件', exact: true }).click()
-    await expect
-      .poll(() => page.getByLabel('预览主题', { exact: true }).inputValue())
-      .toBe('system')
+    await expect.poll(() => demoSelectValue(page, '预览主题')).toBe('system')
     expect(await page.getByLabel('主色', { exact: true }).inputValue()).toBe('#28745b')
     expect(errors).toEqual([])
   } finally {

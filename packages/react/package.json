@@ -16,6 +16,7 @@
   },
   "scripts": {
     "styles:generate": "node scripts/generate-styles.mjs",
+    "shaders:generate": "node scripts/generate-shadow.mjs && oxfmt --write src/shadow.shader.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -23,11 +24,13 @@
     "@internationalized/date": "^3.12.4",
     "@material/material-color-utilities": "0.3.0",
     "react-aria": "3.53.1",
-    "react-aria-components": "^1.22.1"
+    "react-aria-components": "^1.22.1",
+    "vgpu": "^0.6.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@vgpu/wgsl": "0.6.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "typescript": "^7.0.2"

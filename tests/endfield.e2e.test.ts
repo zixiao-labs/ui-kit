@@ -6,6 +6,7 @@ import type { Browser, Page } from 'playwright'
 import { contrastRatio } from '../packages/react/src/theme'
 import { styleOptions } from '../apps/demo/src/style-options'
 import { startDemo } from './dev-server'
+import { chooseDemoSelect } from './select-helpers'
 
 let app: Awaited<ReturnType<typeof startDemo>>
 let browser: Browser
@@ -57,7 +58,7 @@ async function chooseStyle(label: string, value: string) {
 
 async function select(name: string) {
   const mobile = page.viewportSize()!.width <= 800
-  if (mobile) await page.getByLabel('选择组件', { exact: true }).selectOption(name)
+  if (mobile) await chooseDemoSelect(page, '选择组件', name)
   else await page.locator('.directory-groups').getByRole('button', { name, exact: true }).click()
   await expect.poll(() => page.locator('h1').textContent()).toBe(name)
 }
@@ -85,7 +86,7 @@ for (const mode of ['light', 'dark'] as const) {
       const names = await page.locator('.directory-groups button').allTextContents()
       expect(names.length).toBe(74)
       await page.setViewportSize({ width, height: width === 390 ? 844 : 1000 })
-      await page.getByLabel('页面主题', { exact: true }).selectOption(mode)
+      await chooseDemoSelect(page, '页面主题', mode)
       for (const name of names) {
         await select(name)
         const sample = name === 'Button' ? '[data-testid="preview"]' : '.component-demo'
@@ -144,8 +145,8 @@ test('keeps nested styles, modes, live changes and portal focus isolated in both
     ['endfield', 'clean'],
   ]) {
     await chooseStyle('全局风格', outer)
-    await page.getByLabel('嵌套风格', { exact: true }).selectOption(inner)
-    await page.getByLabel('嵌套明暗', { exact: true }).selectOption('dark')
+    await chooseDemoSelect(page, '嵌套风格', inner)
+    await chooseDemoSelect(page, '嵌套明暗', 'dark')
     expect(await token('.composition-outer', '--zx-radius')).toBe(
       outer === 'clean' ? '9999px' : '0px',
     )
@@ -189,8 +190,8 @@ test('keeps nested styles, modes, live changes and portal focus isolated in both
       .poll(() => trigger.evaluate((element) => element === document.activeElement))
       .toBe(true)
     // Restore the React-owned boundary before the next combination.
-    await page.getByLabel('嵌套明暗', { exact: true }).selectOption('light')
-    await page.getByLabel('嵌套风格', { exact: true }).selectOption('soft')
+    await chooseDemoSelect(page, '嵌套明暗', 'light')
+    await chooseDemoSelect(page, '嵌套风格', 'soft')
   }
 })
 
@@ -201,7 +202,7 @@ test('exports native Endfield CSS separately from custom tokens and restores sav
   expect(native).toContain('/themes/endfield.css')
   expect(native).not.toContain('--zx-radius: 4px')
   await chooseStyle('设计风格', 'minimal')
-  await page.getByLabel('页面主题', { exact: true }).selectOption('dark')
+  await chooseDemoSelect(page, '页面主题', 'dark')
   await page.reload()
   await expect.poll(() => page.locator('html').getAttribute('data-zx-style')).toBe('endfield')
   expect(await page.getByTestId('preview').getAttribute('data-zx-style')).toBe('minimal')
@@ -213,7 +214,7 @@ test('exports native Endfield CSS separately from custom tokens and restores sav
 
 test('keeps Endfield text, focus, small indicators and control boundaries contrast-safe', async () => {
   for (const mode of ['light', 'dark']) {
-    await page.getByLabel('页面主题', { exact: true }).selectOption(mode)
+    await chooseDemoSelect(page, '页面主题', mode)
     for (const [foreground, background] of [
       ['--zx-text', '--zx-surface'],
       ['--zx-muted', '--zx-surface-subtle'],
@@ -253,9 +254,9 @@ test('captures Endfield desktop, portrait, dark, nested and 200% reflow evidence
     await capture(`endfield-${name.toLowerCase()}`)
   }
   await select('Button')
-  await page.getByLabel('页面主题', { exact: true }).selectOption('dark')
+  await chooseDemoSelect(page, '页面主题', 'dark')
   await capture('endfield-dark')
-  await page.getByLabel('页面主题', { exact: true }).selectOption('light')
+  await chooseDemoSelect(page, '页面主题', 'light')
   await page.setViewportSize({ width: 390, height: 844 })
   await capture('endfield-mobile')
   await page.setViewportSize({ width: 720, height: 450 })

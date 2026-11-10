@@ -228,7 +228,15 @@
   stroke-linecap: round;
 }
 .zx-progress-circle svg[data-indeterminate] {
-  animation: zx-spin 1s linear infinite;
+  animation: zx-progress-circle-spin 1s linear infinite;
+}
+@keyframes zx-progress-circle-spin {
+  from {
+    transform: rotate(-90deg);
+  }
+  to {
+    transform: rotate(270deg);
+  }
 }
 .zx-spinner {
   display: inline-block;

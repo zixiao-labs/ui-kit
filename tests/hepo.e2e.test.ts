@@ -6,6 +6,7 @@ import type { Browser, Page } from 'playwright'
 import { contrastRatio } from '../packages/react/src/theme'
 import { styleOptions } from '../apps/demo/src/style-options'
 import { startDemo } from './dev-server'
+import { chooseDemoSelect } from './select-helpers'
 
 let app: Awaited<ReturnType<typeof startDemo>>
 let browser: Browser
@@ -57,7 +58,7 @@ async function chooseStyle(label: string, value: string) {
 
 async function select(name: string) {
   if (page.viewportSize()!.width <= 800) {
-    await page.getByLabel('选择组件', { exact: true }).selectOption(name)
+    await chooseDemoSelect(page, '选择组件', name)
   } else {
     await page.locator('.directory-groups').getByRole('button', { name, exact: true }).click()
   }
@@ -80,7 +81,7 @@ for (const mode of ['light', 'dark'] as const) {
       const names = await page.locator('.directory-groups button').allTextContents()
       expect(names.length).toBe(74)
       await page.setViewportSize({ width, height: width === 390 ? 844 : 1000 })
-      await page.getByLabel('页面主题', { exact: true }).selectOption(mode)
+      await chooseDemoSelect(page, '页面主题', mode)
       for (const name of names) {
         await select(name)
         const sample = name === 'Button' ? '[data-testid="preview"]' : '.component-demo'
@@ -113,8 +114,8 @@ test('pairs Song display with sans controls and isolates nested fonts and body p
     ['hepo', 'clean'],
   ]) {
     await chooseStyle('全局风格', outer)
-    await page.getByLabel('嵌套风格', { exact: true }).selectOption(inner)
-    await page.getByLabel('嵌套明暗', { exact: true }).selectOption('dark')
+    await chooseDemoSelect(page, '嵌套风格', inner)
+    await chooseDemoSelect(page, '嵌套明暗', 'dark')
     const trigger = page.getByRole('button', { name: '打开嵌套浮层', exact: true })
     await trigger.click()
     expect(await page.locator('.zx-modal-overlay').getAttribute('data-zx-style')).toBe(inner)
@@ -148,7 +149,7 @@ test('exports the native theme, persists selections and keeps color-only presets
   await page.getByRole('button', { name: '复制主题 CSS', exact: true }).click()
   expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('/themes/hepo.css')
   await chooseStyle('设计风格', 'soft')
-  await page.getByLabel('页面主题', { exact: true }).selectOption('dark')
+  await chooseDemoSelect(page, '页面主题', 'dark')
   await page.reload()
   await expect.poll(() => token('html', '--zx-accent')).toBe('#b8cccf')
   expect(await page.getByTestId('preview').getAttribute('data-zx-style')).toBe('soft')
@@ -172,7 +173,7 @@ test('exports the native theme, persists selections and keeps color-only presets
 
 test('keeps text and state boundaries readable and dark wood fills bright through interaction', async () => {
   for (const mode of ['light', 'dark']) {
-    await page.getByLabel('页面主题', { exact: true }).selectOption(mode)
+    await chooseDemoSelect(page, '页面主题', mode)
     for (const background of ['--zx-surface', '--zx-surface-subtle', '--zx-surface-raised']) {
       for (const foreground of ['--zx-text', '--zx-muted', '--zx-accent-ink']) {
         expect(
@@ -253,11 +254,11 @@ test('captures Hepo light, dark, Chinese type, mobile, reflow and nested portal 
   expect(new Set(rows).size).toBe(2)
   for (const top of new Set(rows)) expect(rows.filter((row) => row === top).length).toBe(3)
   await capture('hepo-light')
-  await page.getByLabel('页面主题', { exact: true }).selectOption('dark')
+  await chooseDemoSelect(page, '页面主题', 'dark')
   await capture('hepo-dark')
   await select('Typography')
   await capture('hepo-type-dark')
-  await page.getByLabel('页面主题', { exact: true }).selectOption('light')
+  await chooseDemoSelect(page, '页面主题', 'light')
   await capture('hepo-type-light')
   await select('Button')
   await page.setViewportSize({ width: 390, height: 844 })
@@ -265,10 +266,10 @@ test('captures Hepo light, dark, Chinese type, mobile, reflow and nested portal 
   await page.locator('.theme-panel').scrollIntoViewIfNeeded()
   await capture('hepo-mobile-theme')
   await select('Typography')
-  await page.getByLabel('页面主题', { exact: true }).selectOption('dark')
+  await chooseDemoSelect(page, '页面主题', 'dark')
   await page.locator('#interactive').scrollIntoViewIfNeeded()
   await capture('hepo-mobile-type-dark')
-  await page.getByLabel('页面主题', { exact: true }).selectOption('light')
+  await chooseDemoSelect(page, '页面主题', 'light')
   await page.setViewportSize({ width: 720, height: 450 })
   await select('Tabs')
   await page
@@ -278,7 +279,7 @@ test('captures Hepo light, dark, Chinese type, mobile, reflow and nested portal 
   await page.setViewportSize({ width: 1440, height: 1000 })
   await chooseStyle('全局风格', 'clean')
   await page.locator('.theme-composition > summary').click()
-  await page.getByLabel('嵌套风格', { exact: true }).selectOption('hepo')
+  await chooseDemoSelect(page, '嵌套风格', 'hepo')
   await page.getByRole('button', { name: '打开嵌套浮层', exact: true }).click()
   await page.locator('.zx-modal .zx-select-trigger').click()
   await capture('hepo-portal')

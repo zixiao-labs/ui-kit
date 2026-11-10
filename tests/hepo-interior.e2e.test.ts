@@ -6,6 +6,7 @@ import type { Browser, Page } from 'playwright'
 import { contrastRatio } from '../packages/react/src/theme'
 import { styleOptions } from '../apps/demo/src/style-options'
 import { startDemo } from './dev-server'
+import { chooseDemoSelect } from './select-helpers'
 
 let app: Awaited<ReturnType<typeof startDemo>>
 let browser: Browser
@@ -60,7 +61,7 @@ async function chooseStyle(label: string, value: string) {
 
 async function select(name: string) {
   if (page.viewportSize()!.width <= 800) {
-    await page.getByLabel('选择组件', { exact: true }).selectOption(name)
+    await chooseDemoSelect(page, '选择组件', name)
   } else {
     await page.locator('.directory-groups').getByRole('button', { name, exact: true }).click()
   }
@@ -79,7 +80,7 @@ for (const mode of ['light', 'dark'] as const) {
       const names = await page.locator('.directory-groups button').allTextContents()
       expect(names.length).toBe(74)
       await page.setViewportSize({ width, height: width === 390 ? 844 : 1000 })
-      await page.getByLabel('页面主题', { exact: true }).selectOption(mode)
+      await chooseDemoSelect(page, '页面主题', mode)
       for (const name of names) {
         await select(name)
         const sample = name === 'Button' ? '[data-testid="preview"]' : '.component-demo'
@@ -108,8 +109,8 @@ test('isolates interior, original Hepo and Clean scopes through nested body port
     ['hepo-interior', 'clean', '#8b5cf6', 'Roboto'],
   ]) {
     await chooseStyle('全局风格', outer)
-    await page.getByLabel('嵌套风格', { exact: true }).selectOption(inner)
-    await page.getByLabel('嵌套明暗', { exact: true }).selectOption('dark')
+    await chooseDemoSelect(page, '嵌套风格', inner)
+    await chooseDemoSelect(page, '嵌套明暗', 'dark')
     const trigger = page.getByRole('button', { name: '打开嵌套浮层', exact: true })
     await trigger.click()
     expect(await page.locator('.zx-modal-overlay').getAttribute('data-zx-style')).toBe(inner)
@@ -142,7 +143,7 @@ test('persists and exports the interior style separately from its color-only pre
     '/themes/hepo-interior.css',
   )
   await chooseStyle('设计风格', 'hepo')
-  await page.getByLabel('页面主题', { exact: true }).selectOption('dark')
+  await chooseDemoSelect(page, '页面主题', 'dark')
   await page.reload()
   await expect.poll(() => token('html', '--zx-accent')).toBe('#e6b993')
   expect(await token('[data-testid="preview"]', '--zx-accent')).toBe('#b8cccf')
@@ -167,7 +168,7 @@ test('persists and exports the interior style separately from its color-only pre
 
 test('keeps text and boundaries readable without dark yellow-brown interaction fills', async () => {
   for (const mode of ['light', 'dark']) {
-    await page.getByLabel('页面主题', { exact: true }).selectOption(mode)
+    await chooseDemoSelect(page, '页面主题', mode)
     for (const background of ['--zx-surface', '--zx-surface-subtle', '--zx-surface-raised']) {
       for (const foreground of ['--zx-text', '--zx-muted', '--zx-accent-ink']) {
         expect(
@@ -246,11 +247,11 @@ test('captures interior desktop, mobile, typography, inputs, reflow and portal e
     if (directory) await page.screenshot({ path: join(directory, `hepo-interior-${name}.png`) })
   }
   await capture('light')
-  await page.getByLabel('页面主题', { exact: true }).selectOption('dark')
+  await chooseDemoSelect(page, '页面主题', 'dark')
   await capture('dark')
   await select('Typography')
   await capture('type-dark')
-  await page.getByLabel('页面主题', { exact: true }).selectOption('light')
+  await chooseDemoSelect(page, '页面主题', 'light')
   await capture('type-light')
   await select('Button')
   await page.setViewportSize({ width: 390, height: 844 })
@@ -264,7 +265,7 @@ test('captures interior desktop, mobile, typography, inputs, reflow and portal e
   expect(new Set(tops).size).toBe(2)
   for (const top of new Set(tops)) expect(tops.filter((row) => row === top).length).toBe(3)
   await capture('mobile-theme')
-  await page.getByLabel('页面主题', { exact: true }).selectOption('dark')
+  await chooseDemoSelect(page, '页面主题', 'dark')
   await select('Input')
   const input = page.getByRole('textbox', { name: '协作成员', exact: true })
   await input.fill('林舒')
@@ -281,8 +282,8 @@ test('captures interior desktop, mobile, typography, inputs, reflow and portal e
   await page.setViewportSize({ width: 1440, height: 1000 })
   await chooseStyle('全局风格', 'hepo')
   await page.locator('.theme-composition > summary').click()
-  await page.getByLabel('嵌套风格', { exact: true }).selectOption('hepo-interior')
-  await page.getByLabel('嵌套明暗', { exact: true }).selectOption('light')
+  await chooseDemoSelect(page, '嵌套风格', 'hepo-interior')
+  await chooseDemoSelect(page, '嵌套明暗', 'light')
   await page.getByRole('button', { name: '打开嵌套浮层', exact: true }).click()
   await page.locator('.zx-modal .zx-select-trigger').click()
   await capture('portal')

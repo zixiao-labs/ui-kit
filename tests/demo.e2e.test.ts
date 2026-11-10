@@ -4,6 +4,8 @@ import { afterAll, afterEach, beforeAll, beforeEach, expect, test } from '@light
 import { chromium } from 'playwright'
 import type { Browser, BrowserContext, Page } from 'playwright'
 import { startDemo } from './dev-server'
+import { chooseDemoSelect, demoSelectValue } from './select-helpers'
+import { styleOptions } from '../apps/demo/src/style-options'
 
 let app: Awaited<ReturnType<typeof startDemo>> | undefined
 let browser: Browser
@@ -33,7 +35,7 @@ beforeEach(async () => {
   await page.goto('/')
   // Wait for a real hydrated action, not for a fixed delay after navigation.
   await page.getByRole('button', { name: '触发交互' }).click()
-  await expect.poll(() => page.locator('output').textContent()).toBe('已触发 1 次交互')
+  await expect.poll(() => page.locator('.click-count').textContent()).toBe('已触发 1 次交互')
   await page.getByRole('button', { name: '重置计数' }).click()
 })
 
@@ -77,10 +79,12 @@ test('keeps component behavior across all five expressions', async () => {
       `${styleLabels[style]} / Button`,
     )
     await action.click()
-    await expect.poll(() => page.locator('output').textContent()).toBe(`已触发 ${index + 1} 次交互`)
+    await expect
+      .poll(() => page.locator('.click-count').textContent())
+      .toBe(`已触发 ${index + 1} 次交互`)
   }
   await page.getByRole('button', { name: '重置计数' }).click()
-  await expect.poll(() => page.locator('output').textContent()).toBe('已触发 0 次交互')
+  await expect.poll(() => page.locator('.click-count').textContent()).toBe('已触发 0 次交互')
 })
 
 test('updates variants, sizes, loading and disabled without losing keyboard behavior', async () => {
@@ -92,7 +96,7 @@ test('updates variants, sizes, loading and disabled without losing keyboard beha
   await page.getByRole('checkbox', { name: /加载状态/ }).check()
   await expect.poll(() => action.getAttribute('aria-busy')).toBe('true')
   expect(await action.isDisabled()).toBe(true)
-  expect(await page.getByRole('code').textContent()).toContain(' loading')
+  expect(await page.getByLabel('当前组件代码', { exact: true }).textContent()).toContain(' loading')
   await page.getByRole('checkbox', { name: /禁用状态/ }).check()
   await page.getByRole('checkbox', { name: /加载状态/ }).uncheck()
   expect(await action.isDisabled()).toBe(true)
@@ -101,7 +105,7 @@ test('updates variants, sizes, loading and disabled without losing keyboard beha
   await action.focus()
   await page.keyboard.press('Enter')
   await page.keyboard.press('Space')
-  await expect.poll(() => page.locator('output').textContent()).toBe('已触发 2 次交互')
+  await expect.poll(() => page.locator('.click-count').textContent()).toBe('已触发 2 次交互')
   expect(await action.evaluate((element) => getComputedStyle(element).outlineStyle)).toBe('solid')
 })
 
@@ -115,7 +119,9 @@ test('reflects variant selection in the samples, preview and current code', asyn
   )
   expect(await page.locator('.variant-example[data-selected="true"]').count()).toBe(1)
   expect(await page.locator('.preview-properties').textContent()).toBe('outline / md')
-  expect(await page.getByRole('code').textContent()).toContain('variant="outline"')
+  expect(await page.getByLabel('当前组件代码', { exact: true }).textContent()).toContain(
+    'variant="outline"',
+  )
 
   await chooseConfig('变体', 'Text')
   await page.getByRole('radio', { name: '小', exact: true }).check()
@@ -138,7 +144,7 @@ test('uses aligned themed configuration menus instead of native system popups', 
   for (const style of ['clean', 'endfield', 'minimal', 'soft', 'brutalist']) {
     await chooseConfig('全局风格', styleLabels[style])
     for (const mode of ['light', 'dark']) {
-      await page.getByLabel('页面主题', { exact: true }).selectOption(mode)
+      await chooseDemoSelect(page, '页面主题', mode)
       await styleTrigger.click()
       const menu = page.getByRole('listbox', { name: '设计风格' })
       await menu.waitFor()
@@ -164,11 +170,7 @@ test('uses aligned themed configuration menus instead of native system popups', 
       )
       expect(await menu.getByRole('option').allTextContents()).toEqual([
         '跟随全局',
-        'Clean',
-        'Endfield',
-        'Minimal',
-        'Soft',
-        'Brutalist',
+        ...styleOptions.map((item) => item.name),
       ])
       expect(await menu.getByRole('option', { selected: true }).textContent()).toBe('跟随全局')
       expect(await menu.locator('.zx-picker-option-check').count()).toBe(1)
@@ -192,7 +194,9 @@ test('supports keyboard selection, cancellation and focus return in configuratio
   expect(await page.getByRole('button', { name: '触发交互' }).getAttribute('data-variant')).toBe(
     'ghost',
   )
-  expect(await page.getByRole('code').textContent()).toContain('variant="ghost"')
+  expect(await page.getByLabel('当前组件代码', { exact: true }).textContent()).toContain(
+    'variant="ghost"',
+  )
   await expect
     .poll(() => trigger.evaluate((element) => element === document.activeElement))
     .toBe(true)
@@ -272,22 +276,24 @@ test('shares light and dark colors between every expression and the page theme',
   const preview = page.getByTestId('preview')
   for (const style of ['clean', 'minimal', 'soft', 'brutalist', 'endfield']) {
     await chooseConfig('设计风格', styleLabels[style])
-    await page.getByLabel('页面主题', { exact: true }).selectOption('light')
+    await chooseDemoSelect(page, '页面主题', 'light')
     const light = await preview.evaluate((element) =>
       getComputedStyle(element).getPropertyValue('--zx-surface'),
     )
-    await page.getByLabel('页面主题', { exact: true }).selectOption('dark')
+    await chooseDemoSelect(page, '页面主题', 'dark')
     await expect.poll(() => preview.getAttribute('data-zx-color-mode')).toBe('dark')
-    expect(await page.getByLabel('预览主题', { exact: true }).inputValue()).toBe('dark')
+    expect(await demoSelectValue(page, '预览主题')).toBe('dark')
     const dark = await preview.evaluate((element) =>
       getComputedStyle(element).getPropertyValue('--zx-surface'),
     )
     expect(dark).not.toBe(light)
     expect(await page.locator('html').getAttribute('data-zx-color-mode')).toBe('dark')
-    expect(await page.getByRole('code').textContent()).toContain('data-zx-color-mode="dark"')
-    await page.getByLabel('预览主题', { exact: true }).selectOption('light')
+    expect(await page.getByLabel('当前组件代码', { exact: true }).textContent()).toContain(
+      'data-zx-color-mode="dark"',
+    )
+    await chooseDemoSelect(page, '预览主题', 'light')
     await expect.poll(() => page.locator('html').getAttribute('data-zx-color-mode')).toBe('light')
-    expect(await page.getByLabel('页面主题', { exact: true }).inputValue()).toBe('light')
+    expect(await demoSelectValue(page, '页面主题')).toBe('light')
     expect(
       await preview.evaluate((element) =>
         getComputedStyle(element).getPropertyValue('--zx-surface'),
@@ -298,7 +304,7 @@ test('shares light and dark colors between every expression and the page theme',
 
 test('keeps Clean text and control boundaries legible in both color modes', async () => {
   for (const mode of ['light', 'dark']) {
-    await page.getByLabel('预览主题', { exact: true }).selectOption(mode)
+    await chooseDemoSelect(page, '预览主题', mode)
     const contrasts = await page.getByTestId('preview').evaluate((preview) => {
       const probe = document.createElement('span')
       preview.append(probe)
@@ -542,7 +548,7 @@ test('copies the current code and reports a recoverable clipboard failure', asyn
   await expect.poll(() => page.getByRole('status').filter({ hasText: '已复制' }).count()).toBe(1)
   expect(await page.getByRole('button', { name: '已复制', exact: true }).count()).toBe(1)
   expect(await page.locator('html').getAttribute('data-copied-code')).toBe(
-    await page.getByRole('code').textContent(),
+    await page.getByLabel('当前组件代码', { exact: true }).textContent(),
   )
   await chooseConfig('变体', 'Outlined')
   await expect.poll(() => page.getByRole('status').filter({ hasText: '已复制' }).count()).toBe(0)
@@ -615,9 +621,9 @@ test('captures the real desktop, mobile, dark and zoomed layouts with Playwright
   expect((await page.getByTestId('preview').boundingBox())!.y).toBeLessThan(420)
   await capture('desktop')
   await capture('desktop-full', true)
-  await page.getByLabel('预览主题', { exact: true }).selectOption('dark')
+  await chooseDemoSelect(page, '预览主题', 'dark')
   await capture('desktop-dark')
-  await page.getByLabel('预览主题', { exact: true }).selectOption('light')
+  await chooseDemoSelect(page, '预览主题', 'light')
   for (const style of ['minimal', 'soft', 'brutalist']) {
     await chooseConfig('设计风格', styleLabels[style])
     if (directory)
@@ -642,7 +648,7 @@ test('captures the real desktop, mobile, dark and zoomed layouts with Playwright
     const zoomPage = await zoomContext.newPage()
     await zoomPage.goto('/')
     await zoomPage.getByRole('button', { name: '触发交互' }).click()
-    await expect.poll(() => zoomPage.locator('output').textContent()).toBe('已触发 1 次交互')
+    await expect.poll(() => zoomPage.locator('.click-count').textContent()).toBe('已触发 1 次交互')
     expect(await zoomPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     )

@@ -39,17 +39,6 @@
   min-width: 128px;
   border-radius: var(--zx-radius-sm);
 }
-.style-select select {
-  min-width: 0;
-  max-width: 100%;
-  min-height: 44px;
-  padding: 8px;
-  border: 1px solid var(--zx-control-border);
-  border-radius: var(--zx-radius-sm);
-  color: var(--zx-text);
-  background: var(--zx-surface-raised);
-  cursor: pointer;
-}
 .lab-controls .style-select {
   display: grid;
   gap: 4px;
@@ -216,8 +205,7 @@ html[data-zx-style='endfield'] .site-header nav .is-active {
   .section-heading:has(.preview-selectors) {
     flex-wrap: wrap;
   }
-  .style-select,
-  .style-select select {
+  .style-select {
     font-size: 14px;
   }
   .composition-outer {

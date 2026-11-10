@@ -6,6 +6,8 @@ export default defineConfig({
       'packages/*/src/**/*.test.tsx',
       'packages/*/src/**/*.test.ts',
       'tests/styles.test.ts',
+      'tests/shadow.test.ts',
+      'tests/demo-selects.test.ts',
       'tests/component-catalogue.test.ts',
     ],
     environment: 'node',

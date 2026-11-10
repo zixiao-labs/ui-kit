@@ -4,6 +4,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, expect, test } from '@light
 import { chromium } from 'playwright'
 import type { Browser, BrowserContext, Page } from 'playwright'
 import { startDemo } from './dev-server'
+import { chooseDemoSelect } from './select-helpers'
 
 let app: Awaited<ReturnType<typeof startDemo>>
 let browser: Browser
@@ -74,7 +75,9 @@ test('renders the complete catalogue, maintains deep links and filters by name',
     await select(name)
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
     if (name !== 'Button') {
-      expect((await page.getByRole('code').textContent())!.length).toBeGreaterThan(40)
+      expect(
+        (await page.getByLabel('当前组件代码', { exact: true }).textContent())!.length,
+      ).toBeGreaterThan(40)
       expect(await page.locator('.demo-stage > *').count()).toBeGreaterThan(0)
     }
   }
@@ -91,7 +94,7 @@ test('reflows every component on mobile without horizontal document overflow', a
   const names = await page.locator('.directory-groups button').allTextContents()
   await page.setViewportSize({ width: 390, height: 844 })
   for (const name of names) {
-    await page.getByLabel('选择组件', { exact: true }).selectOption(name)
+    await chooseDemoSelect(page, '选择组件', name)
     try {
       await expect
         .poll(() => page.getByRole('heading', { level: 1 }).textContent(), { timeout: 5000 })
@@ -133,17 +136,17 @@ test('captures representative light, dark, mobile and zoom-equivalent evidence',
   await capture('catalogue-button-desktop')
   await select('TextField')
   await capture('catalogue-textfield-desktop')
-  await page.getByLabel('样本主题', { exact: true }).selectOption('dark')
+  await chooseDemoSelect(page, '样本主题', 'dark')
   await capture('catalogue-textfield-dark')
-  await page.getByLabel('样本主题', { exact: true }).selectOption('light')
+  await chooseDemoSelect(page, '样本主题', 'light')
   await select('Calendar')
   await capture('catalogue-calendar-desktop')
   await select('ColorPicker')
   await capture('catalogue-color-desktop')
   await page.setViewportSize({ width: 390, height: 844 })
-  await page.getByLabel('选择组件', { exact: true }).selectOption('TextField')
+  await chooseDemoSelect(page, '选择组件', 'TextField')
   await capture('catalogue-textfield-mobile')
-  await page.getByLabel('选择组件', { exact: true }).selectOption('Calendar')
+  await chooseDemoSelect(page, '选择组件', 'Calendar')
   await capture('catalogue-calendar-mobile')
   // Equivalent CSS reflow to a 1440px desktop at 200%; not a native browser zoom claim.
   await page.setViewportSize({ width: 720, height: 450 })
@@ -192,7 +195,7 @@ test('validates forms and preserves OTP native editing and clipboard behavior', 
 
 test('keeps nested modal portals themed and restores focus to native triggers', async () => {
   await select('Modal')
-  await page.getByLabel('样本主题', { exact: true }).selectOption('dark')
+  await chooseDemoSelect(page, '样本主题', 'dark')
   const trigger = page.getByRole('button', { name: '项目详情', exact: true })
   await trigger.click()
   const dialog = page.getByRole('dialog', { name: '北岸设计', exact: true })

@@ -12,33 +12,27 @@ export function ThemeComposition() {
     <details className="theme-composition" id="theme-composition">
       <summary>风格混用实验</summary>
       <div className="composition-controls">
-        <label className="style-select">
-          <span>嵌套风格</span>
-          <select
-            aria-label="嵌套风格"
-            value={innerStyle}
-            onChange={(event) => {
-              if (isStyleName(event.target.value)) setInnerStyle(event.target.value)
-            }}
-          >
-            {styleOptions.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="style-select">
-          <span>嵌套明暗</span>
-          <select
-            aria-label="嵌套明暗"
-            value={innerMode}
-            onChange={(event) => setInnerMode(event.target.value as 'light' | 'dark')}
-          >
-            <option value="light">浅色</option>
-            <option value="dark">深色</option>
-          </select>
-        </label>
+        <Select
+          className="style-select"
+          label="嵌套风格"
+          value={innerStyle}
+          onChange={(value) => {
+            if (isStyleName(value)) setInnerStyle(value)
+          }}
+          items={styleOptions.map(({ id, name }) => ({ id, label: name }))}
+        />
+        <Select
+          className="style-select"
+          label="嵌套明暗"
+          value={innerMode}
+          onChange={(value) => {
+            if (value === 'light' || value === 'dark') setInnerMode(value)
+          }}
+          items={[
+            { id: 'light', label: '浅色' },
+            { id: 'dark', label: '深色' },
+          ]}
+        />
       </div>
       <div
         className="composition-outer"

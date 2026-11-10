@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { ArrowUpRight, ChevronRight, Copy, Magnifier } from '@gravity-ui/icons'
+import { Select } from '@zixiao-labs/ui-kits-react'
 import { useTheme } from '../theme'
 import { ThemePanel } from '../theme-panel'
 import { ThemeModeSelect } from '../theme-mode-select'
 import { GlobalStyleSelect, StyleSelect } from '../style-select'
 import { ThemeComposition } from '../theme-composition'
 import { ButtonPlayground } from '../examples/button-playground'
+import { EffectPlayground } from '../examples/effect-playground'
 import { displayExamples } from '../examples/display'
 import { formsExamples } from '../examples/forms'
 import { navigationExamples } from '../examples/navigation'
@@ -125,23 +127,16 @@ export function ThemedScope({ children }: { children: ReactNode }) {
             placeholder="检索组件"
           />
         </label>
-        <label className="mobile-component-picker">
-          <span className="zx-sr-only">选择组件</span>
-          <select
-            aria-label="选择组件"
-            value={filtered.some((item) => item.name === active.name) ? active.name : ''}
-            onChange={(event) => select(event.target.value)}
-          >
-            <option value="" disabled>
-              选择匹配组件
-            </option>
-            {filtered.map((item) => (
-              <option key={item.name} value={item.name}>
-                {item.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <Select
+          className="mobile-component-picker"
+          label="选择组件"
+          placeholder="选择匹配组件"
+          value={filtered.some((item) => item.name === active.name) ? active.name : null}
+          onChange={(value) => {
+            if (value) select(value)
+          }}
+          items={filtered.map(({ name }) => ({ id: name, label: name }))}
+        />
         <div className="directory-groups">
           {categoryOrder.map((category) => {
             const items = filtered
@@ -243,6 +238,9 @@ export function ThemedScope({ children }: { children: ReactNode }) {
               )}
             </section>
           </div>
+        )}
+        {(active.name === 'Button' || active.name === 'Card' || active.name === 'Surface') && (
+          <EffectPlayground key={`effects-${active.name}`} component={active.name} />
         )}
         <ThemeComposition />
         <div className="catalog-footnote">

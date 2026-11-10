@@ -8,6 +8,7 @@ import { inputContrastFixture } from '../packages/react/tests/input-contrast-fix
 import { contrastRatio, createTheme } from '../packages/react/src/theme'
 import { hepoColors, hepoInteriorColors, styleOptions } from '../apps/demo/src/style-options'
 import { startDemo } from './dev-server'
+import { chooseDemoSelect } from './select-helpers'
 
 let app: Awaited<ReturnType<typeof startDemo>>
 let browser: Browser
@@ -138,7 +139,7 @@ test('preserves real input editing and captures the reported Clean and Hepo dark
     .locator('.directory-groups')
     .getByRole('button', { name: 'Input', exact: true })
     .click()
-  await page.getByLabel('页面主题', { exact: true }).selectOption('dark')
+  await chooseDemoSelect(page, '页面主题', 'dark')
   const directory = process.env.UI_KITS_SCREENSHOT_DIR
   if (directory) await mkdir(directory, { recursive: true })
   for (const name of ['Clean', '鹤坡']) {
@@ -168,7 +169,7 @@ test('preserves real input editing and captures the reported Clean and Hepo dark
     await page
       .locator('.component-demo')
       .screenshot({ path: join(directory, 'input-hepo-dark-mobile.png') })
-  await page.getByLabel('选择组件', { exact: true }).selectOption('SearchField')
+  await chooseDemoSelect(page, '选择组件', 'SearchField')
   const search = page.getByRole('searchbox', { name: '搜索成员', exact: true })
   await search.fill('林舒')
   const clear = page.locator('.zx-search-field').filter({ has: search }).getByRole('button', {

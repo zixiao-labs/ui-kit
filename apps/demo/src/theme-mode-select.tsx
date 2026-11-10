@@ -1,6 +1,6 @@
 import { Display, Moon, Sun } from '@gravity-ui/icons'
+import { Select } from '@zixiao-labs/ui-kits-react'
 import { useTheme } from './theme'
-import type { ThemeMode } from './theme'
 
 const modeLabels = { system: '跟随系统', light: '浅色', dark: '深色' } as const
 
@@ -13,18 +13,15 @@ export function ThemeModeSelect({ label, compact = false }: { label: string; com
       title={`${label}：${modeLabels[settings.mode]}`}
     >
       <Icon aria-hidden="true" />
-      {!compact && <span aria-hidden="true">{modeLabels[settings.mode]}</span>}
-      <select
-        aria-label={label}
+      <Select
+        className="theme-mode-picker"
+        label={label}
         value={settings.mode}
-        onChange={(event) => update({ mode: event.target.value as ThemeMode })}
-      >
-        {Object.entries(modeLabels).map(([mode, name]) => (
-          <option key={mode} value={mode}>
-            {name}
-          </option>
-        ))}
-      </select>
+        onChange={(value) => {
+          if (value === 'system' || value === 'light' || value === 'dark') update({ mode: value })
+        }}
+        items={Object.entries(modeLabels).map(([id, name]) => ({ id, label: name }))}
+      />
     </div>
   )
 }
