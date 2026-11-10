@@ -1,0 +1,115 @@
+.effects-lab {
+  margin-top: 48px;
+}
+.effects-workbench {
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) minmax(0, 1.5fr);
+  gap: 24px;
+}
+.effects-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.effects-options label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  font: 400 14px/24px var(--zx-font);
+  cursor: pointer;
+}
+.effects-options input {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+}
+.effects-options small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 20px;
+}
+.effects-options .effects-mode {
+  justify-content: space-between;
+  margin-top: 8px;
+}
+.effects-button-states {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.effects-options > .copy-button {
+  align-self: flex-start;
+}
+.effects-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 32px;
+  min-width: 0;
+  min-height: 400px;
+  padding: 48px 32px;
+  color: var(--zx-text);
+  background: var(--zx-surface-subtle);
+  border-radius: var(--zx-radius-lg);
+}
+.effects-stage > .effects-drawing {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--zx-muted);
+  stroke: currentColor;
+  stroke-width: 2;
+  opacity: 0.24;
+  pointer-events: none;
+}
+.effects-sample {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+}
+.effects-sample h3 {
+  font-family: var(--zx-font-display);
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 500;
+}
+.effects-project-type {
+  color: var(--zx-muted);
+  font-size: 12px;
+  line-height: 20px;
+}
+.effects-sample.zx-surface:not(.zx-card) > :not([aria-hidden='true']) + :not([aria-hidden='true']) {
+  margin-top: 16px;
+}
+.effects-result {
+  position: relative;
+  color: var(--zx-muted);
+  font: 400 14px/24px var(--zx-font);
+  font-variant-numeric: tabular-nums;
+}
+.effects-lab > .section-heading {
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.effects-lab > .section-heading > .section-caption {
+  max-width: none;
+  text-align: left;
+}
+@media (max-width: 1000px) {
+  .effects-workbench {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .effects-stage {
+    padding: 48px 24px;
+  }
+}
