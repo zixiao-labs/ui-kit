@@ -17,7 +17,7 @@ export const Route = createRootRoute({
       {
         name: 'description',
         content:
-          'Zixiao Laboratories UI Kits：一套 React 组件 API，Clean、Endfield、Minimal、Soft 与 Brutalist 五种风格，支持切换与局部混用。',
+          'Zixiao Laboratories UI Kits：一套 React 组件 API，Clean、Endfield、鹤坡、Minimal、Soft 与 Brutalist 多种风格，支持切换与局部混用。',
       },
     ],
   }),

@@ -87,6 +87,15 @@
   border-color: transparent;
 }
 
+/* Placeholder text and built-in accessories use the backing surface's paired ink.
+   A transparent input inside a group inherits the group's effective foreground. */
+.zx-input[data-variant='tonal']::placeholder,
+.zx-input-group[data-variant='tonal'] > .zx-input::placeholder,
+.zx-input-group[data-variant='tonal'] > .zx-input-group__adornment,
+.zx-input-group[data-variant='tonal'] > .zx-field-button {
+  color: inherit;
+}
+
 .zx-input[data-hovered]:not([data-disabled]),
 .zx-input-group[data-hovered]:not([data-disabled]) {
   border-color: var(--zx-muted);

@@ -266,10 +266,12 @@
   font: 400 16px/24px var(--zx-font);
 }
 .zx-typography[data-variant='headline'] {
+  font-family: var(--zx-font-display);
   font-size: 32px;
   line-height: 40px;
 }
 .zx-typography[data-variant='title'] {
+  font-family: var(--zx-font-display);
   font-size: 22px;
   line-height: 28px;
 }

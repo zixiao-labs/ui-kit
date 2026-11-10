@@ -420,6 +420,7 @@
 
 .zx-dialog__title {
   margin: 0;
+  font-family: var(--zx-font-display);
   font-size: 20px;
   line-height: 1.4;
   font-weight: 600;

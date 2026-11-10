@@ -267,7 +267,7 @@ import '@zixiao-labs/ui-kits-react/styles.css'${settings.customized && previewSt
             </div>
           </div>
           <p className="foundation-note">
-            五种风格共用组件行为。预览默认跟随全局，也可独立选择；下方可验证嵌套风格与浮层隔离。
+            各风格共用组件行为。预览默认跟随全局，也可独立选择；下方可验证嵌套风格与浮层隔离。
           </p>
         </section>
         <section className="variants-section" aria-labelledby="icon-button-title">

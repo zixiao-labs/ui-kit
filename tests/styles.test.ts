@@ -14,6 +14,7 @@ test('keeps the shared contract and non-Material adapters free of Material depen
     'themes/soft.css',
     'themes/brutalist.css',
     'themes/endfield.css',
+    'themes/hepo.css',
   ]) {
     expect(readStyle(path)).not.toContain('--md-')
   }
@@ -69,7 +70,7 @@ test('exports a base-only entry and direct theme entries without requiring the b
   expect(manifest.exports['./base.css']).toBe('./src/base.css')
   expect(manifest.exports['./themes/*.css']).toBe('./src/themes/*.css')
   const fromDemo = createRequire(resolve('apps/demo/package.json'))
-  for (const path of ['base.css', 'themes/soft.css', 'themes/endfield.css']) {
+  for (const path of ['base.css', 'themes/soft.css', 'themes/endfield.css', 'themes/hepo.css']) {
     expect(readFileSync(fromDemo.resolve(`@zixiao-labs/ui-kits-react/${path}`), 'utf8')).toBe(
       readStyle(path),
     )
@@ -111,6 +112,20 @@ test('Endfield implements neutral scope tokens without descendant overrides or p
   }
   expect(css).not.toContain('url(')
   expect(css).not.toContain('--md-')
+})
+
+test('Hepo keeps its palette and display type inside independently selectable scopes', () => {
+  const css = readStyle('themes/hepo.css')
+  const selectors = [...css.matchAll(/(?:^|\n)([^{}\n]+)\s*\{/g)].map((match) => match[1].trim())
+  expect(selectors).toEqual([
+    "[data-zx-style='hepo']",
+    "[data-zx-style='hepo'][data-zx-color-mode='dark']",
+  ])
+  expect(css).toContain("--zx-font-display: 'Noto Serif SC'")
+  expect(css).toContain("--zx-font: 'Noto Sans SC'")
+  expect(css).not.toContain('url(')
+  expect(css).not.toContain('--md-')
+  expect(readStyle('foundation.css')).toContain('--zx-font-display: var(--zx-font)')
 })
 
 test('the demo shell no longer relies on a particular design language token set', () => {

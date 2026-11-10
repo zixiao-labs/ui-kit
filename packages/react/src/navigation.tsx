@@ -151,8 +151,9 @@ function themedStyle<T>(theme: ThemeSnapshot, style?: StyleOrFunction<T>): Style
 export function ThemePopover(props: ComponentProps<typeof AriaPopover>) {
   const theme = useContext(ThemeContext)
   // Select/ComboBox discover items by walking this subtree during SSR too.
-  // Keep RAC's collection tree intact, but delay the actual surface until themed.
-  if (!theme) return <AriaPopover {...props} isOpen={false} />
+  // Keep that collection-only bootstrap separate from the live instance: reusing
+  // it would switch isOpen from controlled false to the caller's uncontrolled state.
+  if (!theme) return <AriaPopover key="awaiting-theme" {...props} isOpen={false} />
   return <AriaPopover {...props} {...theme.attributes} style={themedStyle(theme, props.style)} />
 }
 

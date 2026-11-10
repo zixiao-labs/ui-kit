@@ -243,6 +243,7 @@ main,
   margin-bottom: var(--space-3);
 }
 h1 {
+  font-family: var(--zx-font-display);
   font-size: 36px;
   line-height: 44px;
   font-weight: 500;
@@ -347,7 +348,7 @@ h2 {
   font: 12px/20px var(--mono);
 }
 .preview-stage h3 {
-  font-family: var(--zx-font);
+  font-family: var(--zx-font-display);
   font-size: 24px;
   line-height: 32px;
   font-weight: 500;

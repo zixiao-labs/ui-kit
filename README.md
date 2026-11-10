@@ -2,7 +2,7 @@
 
 `@zixiao-labs` 的多风格 React 组件库。**一套组件 API，共享语义与交互，多种视觉表达。**
 
-Clean 和 Endfield 复用同一套完整组件实现。Minimal、Soft、Brutalist 保留在同一个主题机制中；后续风格继续复用组件行为，不复制组件实现。
+Clean、Endfield 和鹤坡复用同一套完整组件实现。Minimal、Soft、Brutalist 保留在同一个主题机制中；后续风格继续复用组件行为，不复制组件实现。
 
 ## 开始开发
 
@@ -53,13 +53,16 @@ export function Example() {
 | --------------- | ----------------------------------------------------------------------- | ---------------------------------------- |
 | `clean`         | 克制的 Material-inspired 风格，语义色彩、tonal surfaces、全圆角操作按钮 | 第一套重点完善的风格；也是根作用域默认值 |
 | `endfield`      | Endfield-inspired 工程风格，灰白 / 炭灰表面、信号黄操作、矩形控件       | 74 个目录条目的明暗配色与响应式覆盖      |
+| `hepo`          | 鹤坡新中式，石白 / 墨瓦表面、黛青操作、浅木色辅助面、宋体标题           | 独立明暗适配层，复用完整组件行为         |
 | `minimal`       | 简洁直观，小圆角与绿色强调                                              | 保留的基础风格                           |
 | `soft`          | 柔和紫色、圆润轮廓与轻阴影                                              | 保留的基础风格                           |
 | `brutalist`     | 高对比边界、直角与硬阴影                                                | 保留的基础风格                           |
 
-五套风格均提供显式 `light` / `dark` 配色。把 `data-zx-style` 和 `data-zx-color-mode` 放在同一个作用域元素上。不同作用域可并存；嵌套的 `data-zx-style` 会重置为该风格的浅色默认值，深色需显式指定。
+各风格均提供显式 `light` / `dark` 配色。把 `data-zx-style` 和 `data-zx-color-mode` 放在同一个作用域元素上。不同作用域可并存；嵌套的 `data-zx-style` 会重置为该风格的浅色默认值，深色需显式指定。
 
 Endfield 使用独立的 `themes/endfield.css`，不依赖 Clean 或 Material tokens。浅色背景上的细进度线、单选标记与焦点使用炭灰，信号黄保留给主要操作与选中状态；不是所有文本和边框都染成黄色。形状与状态通过中性 tokens 表达，不使用跨越嵌套边界的后代选择器。
+
+鹤坡使用独立的 `themes/hepo.css`：浅色以石白、黛青和浅木色分层，深色另配墨瓦底与浅水青操作色，不把金黄压成暗黄褐色。字体分为 `--zx-font`（黑体正文与控件）和 `--zx-font-display`（宋体标题与浮层标题）；其他风格的标题默认仍跟随正文字体。字体栈优先 Noto / 思源，其后使用系统苹方、微软雅黑、宋体等回退，不附带字体文件或发起外部字体请求；需要跨设备一致时，由应用自行加载有授权的字体。详见 [鹤坡验收](docs/hepo-review.md)。
 
 ### 全局切换与局部混用
 
@@ -89,7 +92,7 @@ import '@zixiao-labs/ui-kits-react/styles.css'
 样式分为两层：
 
 - `base.css`：设计语言无关的 `--zx-*` 默认值、作用域重置和共享组件规则。组件只读取这个中性契约，不读取任何设计语言的专属 tokens。
-- `themes/*.css`：各风格的独立适配层。只有 `themes/clean.css` 定义和映射 `--md-sys-*`；Minimal、Soft、Brutalist 直接实现 `--zx-*`。
+- `themes/*.css`：各风格的独立适配层。只有 `themes/clean.css` 定义和映射 `--md-sys-*`；其他风格直接实现 `--zx-*`。
 
 `styles.css` 是包含全部现有风格的便捷入口，默认选择 Clean。它不是必须使用的全局设计系统。由于当前 Nasti 开发模式不展开相对 CSS `@import`，基础入口与完整入口均生成为扁平 CSS：
 
@@ -140,9 +143,11 @@ const theme = { primary: '#8b5cf6', secondary: '#fcd34d', radius: 12 }
 const css = themeToCSS(theme)
 ```
 
-颜色须为六位十六进制值，圆角范围为 0–32px。自定义主题的圆角会覆盖所选风格的默认容器形状；未自定义时五种风格保留各自默认值。主题作用域里的浮层继续读取触发器的有效 tokens，不依赖弹层所在的 DOM 位置。
+颜色须为六位十六进制值，圆角范围为 0–32px。自定义主题的圆角会覆盖所选风格的默认容器形状；未自定义时各风格保留各自默认值。主题作用域里的浮层继续读取触发器的有效 tokens，不依赖弹层所在的 DOM 位置。
 
 Demo 参考 HeroUI docs 组织为目录、交互预览、用法代码与主题调节栏。支持种子色、辅助色、圆角、配色预设，以及全站共享的浅色 / 深色 / 跟随系统设置；页面、所有预览与浮层保持一致，默认跟随系统并实时响应系统主题变化。支持复制明暗 CSS 和本地保存；刷新可恢复（包括旧版的明暗偏好），恢复默认主题会回到跟随系统。浏览器禁止存储或剪贴板时有明确提示，输入非法颜色不会破坏当前主题。
+
+「鹤坡」风格同时改变原生配色、字体和形状；「鹤坡配色」预设仅以黛青 `#3F5662`、木色 `#C4A787` 生成自定义明暗色阶，保留当前风格的字体。两者入口不同，原生主题导出为适配层 import，自定义配色导出为 HCT tokens。
 
 ### 动效
 
@@ -160,15 +165,15 @@ Demo 参考 HeroUI docs 组织为目录、交互预览、用法代码与主题�
 
 新增设计语言时，在自己的 CSS 中为 `[data-zx-style="你的风格"]` 实现 `--zx-*`，需要明暗配色时再增加同作用域的 `data-zx-color-mode` 规则：
 
-| 共享角色                                                                                         | 控制内容             |
-| ------------------------------------------------------------------------------------------------ | -------------------- |
-| `--zx-surface`、`--zx-text`、`--zx-accent`、`--zx-on-accent`、`--zx-tonal`、`--zx-on-tonal` 等   | 背景、文字与操作配色 |
-| `--zx-font`、`--zx-label-size`、`--zx-label-weight`、`--zx-label-line-height`                    | 字体与标签排版       |
-| `--zx-radius`、`--zx-border-width`、`--zx-shadow`                                                | 形状、边界与层次     |
-| `--zx-button-height`、`--zx-button-height-sm`、`--zx-button-height-lg`、`--zx-button-padding` 等 | 各尺寸档位与留白     |
-| `--zx-motion-duration-short`、`--zx-motion-easing`、`--zx-button-active-transform`               | 过渡与按压反馈       |
-| `--zx-selection-border`、`--zx-selection-shadow`、`--zx-indicator`                               | 选中轮廓与细线可读性 |
-| `--zx-switch-radius`、`--zx-slider-thumb-radius`、`--zx-button-hover-transform`                  | 控件几何与悬停反馈   |
+| 共享角色                                                                                           | 控制内容             |
+| -------------------------------------------------------------------------------------------------- | -------------------- |
+| `--zx-surface`、`--zx-text`、`--zx-accent`、`--zx-on-accent`、`--zx-tonal`、`--zx-on-tonal` 等     | 背景、文字与操作配色 |
+| `--zx-font`、`--zx-font-display`、`--zx-label-size`、`--zx-label-weight`、`--zx-label-line-height` | 正文、标题与标签排版 |
+| `--zx-radius`、`--zx-border-width`、`--zx-shadow`                                                  | 形状、边界与层次     |
+| `--zx-button-height`、`--zx-button-height-sm`、`--zx-button-height-lg`、`--zx-button-padding` 等   | 各尺寸档位与留白     |
+| `--zx-motion-duration-short`、`--zx-motion-easing`、`--zx-button-active-transform`                 | 过渡与按压反馈       |
+| `--zx-selection-border`、`--zx-selection-shadow`、`--zx-indicator`                                 | 选中轮廓与细线可读性 |
+| `--zx-switch-radius`、`--zx-slider-thumb-radius`、`--zx-button-hover-transform`                    | 控件几何与悬停反馈   |
 
 每个作用域都从中性默认值开始，避免继承父作用域的语言特征。适配层可以直接赋值，也可映射自己的 token 命名；不需要修改 Button 或增加 `if (style)`。
 
@@ -195,7 +200,7 @@ Clean 是受 Material 3 启发的 Web 实现，不是 Google 官方组件，也�
 | 选择器     | Autocomplete、ComboBox、Select                                                                                                                                                       |
 | 排版与工具 | Kbd、Typography、ScrollShadow                                                                                                                                                        |
 
-Demo 的目录支持检索、组件深链接（`/?component=DatePicker`）、手机选择器、深色样本和可复制 TSX。每个条目包含实际可操作用法；全部条目均可切换五种风格。Endfield 验证覆盖完整目录的桌面 / 手机与浅色 / 深色组合，并抽查表单、日历、导航、数据和浮层。Minimal、Soft、Brutalist 能读取中性合同，但不代表已逐个完成这些风格的视觉验收。设计依据与 Unslop 审查见 [Endfield 验收](docs/endfield-review.md)。
+Demo 的目录支持检索、组件深链接（`/?component=DatePicker`）、手机选择器、深色样本和可复制 TSX。每个条目包含实际可操作用法；全部条目均可切换各风格。Endfield 与鹤坡的验证覆盖完整目录的桌面 / 手机与浅色 / 深色组合，并抽查字体、交互和浮层。Minimal、Soft、Brutalist 能读取中性合同，但不代表已逐个完成这些风格的视觉验收。设计依据与 Unslop 审查见 [Endfield 验收](docs/endfield-review.md) 与 [鹤坡验收](docs/hepo-review.md)。
 
 复杂交互复用 `react-aria-components`，支持受控与非受控状态、键盘导航和辅助技术语义。表单/选择类遵循 React Aria 的 `isDisabled`、`isRequired`、`isInvalid` 命名；原 `Button` 继续保留原生 `disabled` 和 `onClick`。日期值使用 `@internationalized/date`，颜色值使用 React Aria Color。具体 Props 类型由入口导出，可结合 Demo 查看完整组合。
 

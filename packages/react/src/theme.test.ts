@@ -30,6 +30,7 @@ test('keeps supporting colors bright in dark mode, including brand yellow and ci
     '#e8b86d',
     '#edb9a2',
     '#e1bb67',
+    '#c4a787',
     '#ffffff',
     '#000000',
     '#0000ff',

@@ -29,6 +29,7 @@
   --zx-solid-border: transparent;
   --zx-shadow: none;
   --zx-font: 'Avenir Next', 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --zx-font-display: var(--zx-font);
   --zx-label-size: 14px;
   --zx-label-weight: 600;
   --zx-label-line-height: 1.4;
@@ -463,10 +464,12 @@
   font: 400 16px/24px var(--zx-font);
 }
 .zx-typography[data-variant='headline'] {
+  font-family: var(--zx-font-display);
   font-size: 32px;
   line-height: 40px;
 }
 .zx-typography[data-variant='title'] {
+  font-family: var(--zx-font-display);
   font-size: 22px;
   line-height: 28px;
 }
@@ -636,6 +639,15 @@
   background: var(--zx-tonal);
   color: var(--zx-on-tonal);
   border-color: transparent;
+}
+
+/* Placeholder text and built-in accessories use the backing surface's paired ink.
+   A transparent input inside a group inherits the group's effective foreground. */
+.zx-input[data-variant='tonal']::placeholder,
+.zx-input-group[data-variant='tonal'] > .zx-input::placeholder,
+.zx-input-group[data-variant='tonal'] > .zx-input-group__adornment,
+.zx-input-group[data-variant='tonal'] > .zx-field-button {
+  color: inherit;
 }
 
 .zx-input[data-hovered]:not([data-disabled]),
@@ -1889,6 +1901,7 @@
 
 .zx-dialog__title {
   margin: 0;
+  font-family: var(--zx-font-display);
   font-size: 20px;
   line-height: 1.4;
   font-weight: 600;
@@ -2938,6 +2951,70 @@
   --zx-selection-border: #fffa00;
   --zx-indicator: #fffa00;
   --zx-scrim: rgb(25 25 25 / 56%);
+}
+
+/*
+ * 鹤坡 — stone-white walls, ink-blue robes and pale timber.
+ * Typography pairs Song-style display with sans-serif reading and controls.
+ * Scope-only tokens preserve nesting and the shared component behaviour.
+ */
+[data-zx-style='hepo'] {
+  --zx-surface: #f8f7f3;
+  --zx-surface-subtle: #eeede7;
+  --zx-surface-raised: #ffffff;
+  --zx-text: #252e32;
+  --zx-muted: #5d686b;
+  --zx-border: #d5d8d3;
+  --zx-control-border: #7a8587;
+  --zx-accent: #3f5662;
+  --zx-accent-hover: #304650;
+  --zx-on-accent: #ffffff;
+  --zx-accent-ink: #3f5662;
+  --zx-secondary: #c4a787;
+  --zx-on-secondary: #32291f;
+  --zx-tonal: #e8dfd1;
+  --zx-on-tonal: #32291f;
+  --zx-focus: #3f5662;
+  --zx-selection-border: #3f5662;
+  --zx-indicator: #3f5662;
+  --zx-radius: 4px;
+  --zx-radius-sm: 2px;
+  --zx-radius-md: 4px;
+  --zx-radius-lg: 8px;
+  --zx-radius-full: 4px;
+  --zx-switch-radius: 4px;
+  --zx-slider-thumb-radius: 2px;
+  --zx-font: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  --zx-font-display: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'STSong', serif;
+  --zx-label-weight: 500;
+  --zx-label-line-height: 1.5;
+  --zx-button-padding: 24px;
+  --zx-button-hover-transform: none;
+  --zx-button-active-transform: translateY(1px);
+  --zx-motion-easing: cubic-bezier(0.2, 0, 0, 1);
+  --zx-scrim: rgb(25 34 39 / 36%);
+}
+
+[data-zx-style='hepo'][data-zx-color-mode='dark'] {
+  --zx-surface: #192227;
+  --zx-surface-subtle: #253137;
+  --zx-surface-raised: #202b30;
+  --zx-text: #e8eeec;
+  --zx-muted: #b3bfbe;
+  --zx-border: #435055;
+  --zx-control-border: #8b9c9e;
+  --zx-accent: #b8cccf;
+  --zx-accent-hover: #d0dfe0;
+  --zx-on-accent: #192b30;
+  --zx-accent-ink: #b8cccf;
+  --zx-secondary: #d8c3aa;
+  --zx-on-secondary: #32291f;
+  --zx-tonal: #d8c3aa;
+  --zx-on-tonal: #32291f;
+  --zx-focus: #b8cccf;
+  --zx-selection-border: #b8cccf;
+  --zx-indicator: #b8cccf;
+  --zx-scrim: rgb(9 16 20 / 60%);
 }
 
 [data-zx-style='minimal'] {

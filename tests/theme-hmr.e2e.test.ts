@@ -33,7 +33,13 @@ test('keeps old and refreshed theme consumers connected across repeated partial 
     let refreshes = 0
     page.on('pageerror', (error) => errors.push(error.message))
     page.on('console', (message) => {
-      if (message.type() === 'error') errors.push(message.text())
+      if (
+        message.type() === 'error' ||
+        /A component changed from (uncontrolled to controlled|controlled to uncontrolled)/.test(
+          message.text(),
+        )
+      )
+        errors.push(message.text())
       if (message.text().startsWith('[Fast Refresh] done')) refreshes++
     })
     await page.routeWebSocket('**', (socket) => {

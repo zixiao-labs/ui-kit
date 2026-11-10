@@ -25,6 +25,7 @@
   --zx-solid-border: transparent;
   --zx-shadow: none;
   --zx-font: 'Avenir Next', 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --zx-font-display: var(--zx-font);
   --zx-label-size: 14px;
   --zx-label-weight: 600;
   --zx-label-line-height: 1.4;

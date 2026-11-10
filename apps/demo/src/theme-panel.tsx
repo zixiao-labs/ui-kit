@@ -3,6 +3,7 @@ import type { CSSProperties } from 'react'
 import { ArrowRotateLeft, Check, Copy, Palette } from '@gravity-ui/icons'
 import { themeToCSS } from '@zixiao-labs/ui-kits-react/theme'
 import { useTheme } from './theme'
+import { hepoColors } from './style-options'
 
 function SeedInput({
   label,
@@ -103,6 +104,7 @@ export function ThemePanel() {
             { name: '松林', primary: '#28745b', secondary: '#e8b86d' },
             { name: '海岸', primary: '#3269b1', secondary: '#edb9a2' },
             { name: '朱砂', primary: '#b84842', secondary: '#e1bb67' },
+            { name: '鹤坡', ...hepoColors },
           ].map((preset) => (
             <button
               type="button"

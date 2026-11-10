@@ -32,6 +32,15 @@ beforeEach(async () => {
   page.setDefaultTimeout(5000)
   errors = []
   page.on('pageerror', (error) => errors.push(error.message))
+  page.on('console', (message) => {
+    if (
+      /A component changed from (uncontrolled to controlled|controlled to uncontrolled)/.test(
+        message.text(),
+      )
+    ) {
+      errors.push(message.text())
+    }
+  })
   await page.goto('/')
   await page.getByRole('button', { name: '触发交互', exact: true }).click()
   await expect.poll(() => page.locator('.click-count').textContent()).toBe('已触发 1 次交互')

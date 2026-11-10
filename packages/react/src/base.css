@@ -27,6 +27,7 @@
   --zx-solid-border: transparent;
   --zx-shadow: none;
   --zx-font: 'Avenir Next', 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --zx-font-display: var(--zx-font);
   --zx-label-size: 14px;
   --zx-label-weight: 600;
   --zx-label-line-height: 1.4;
@@ -461,10 +462,12 @@
   font: 400 16px/24px var(--zx-font);
 }
 .zx-typography[data-variant='headline'] {
+  font-family: var(--zx-font-display);
   font-size: 32px;
   line-height: 40px;
 }
 .zx-typography[data-variant='title'] {
+  font-family: var(--zx-font-display);
   font-size: 22px;
   line-height: 28px;
 }
@@ -634,6 +637,15 @@
   background: var(--zx-tonal);
   color: var(--zx-on-tonal);
   border-color: transparent;
+}
+
+/* Placeholder text and built-in accessories use the backing surface's paired ink.
+   A transparent input inside a group inherits the group's effective foreground. */
+.zx-input[data-variant='tonal']::placeholder,
+.zx-input-group[data-variant='tonal'] > .zx-input::placeholder,
+.zx-input-group[data-variant='tonal'] > .zx-input-group__adornment,
+.zx-input-group[data-variant='tonal'] > .zx-field-button {
+  color: inherit;
 }
 
 .zx-input[data-hovered]:not([data-disabled]),
@@ -1887,6 +1899,7 @@
 
 .zx-dialog__title {
   margin: 0;
+  font-family: var(--zx-font-display);
   font-size: 20px;
   line-height: 1.4;
   font-weight: 600;
