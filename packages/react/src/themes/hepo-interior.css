@@ -1,0 +1,63 @@
+/*
+ * 鹤坡·室内 — warm plaster, red timber frames and pale champagne textiles.
+ * A standalone sibling of Hepo: same Song display type and small-radius joinery.
+ * Dark surfaces stay charcoal; warm supporting fills stay light, never muddy gold.
+ */
+[data-zx-style='hepo-interior'] {
+  --zx-surface: #f7f4ee;
+  --zx-surface-subtle: #ece7dd;
+  --zx-surface-raised: #fffdf8;
+  --zx-text: #302b27;
+  --zx-muted: #6c6057;
+  --zx-border: #dcd4c8;
+  --zx-control-border: #84766a;
+  --zx-accent: #82503d;
+  --zx-accent-hover: #6e402f;
+  --zx-on-accent: #ffffff;
+  --zx-accent-ink: #82503d;
+  --zx-secondary: #d8bd88;
+  --zx-on-secondary: #352d20;
+  --zx-tonal: #eee3cc;
+  --zx-on-tonal: #352d20;
+  --zx-focus: #82503d;
+  --zx-selection-border: #82503d;
+  --zx-indicator: #82503d;
+  --zx-radius: 4px;
+  --zx-radius-sm: 2px;
+  --zx-radius-md: 4px;
+  --zx-radius-lg: 8px;
+  --zx-radius-full: 4px;
+  --zx-switch-radius: 4px;
+  --zx-slider-thumb-radius: 2px;
+  --zx-font: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  --zx-font-display: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'STSong', serif;
+  --zx-label-weight: 500;
+  --zx-label-line-height: 1.5;
+  --zx-button-padding: 24px;
+  --zx-button-hover-transform: none;
+  --zx-button-active-transform: translateY(1px);
+  --zx-motion-easing: cubic-bezier(0.2, 0, 0, 1);
+  --zx-scrim: rgb(35 30 25 / 36%);
+}
+
+[data-zx-style='hepo-interior'][data-zx-color-mode='dark'] {
+  --zx-surface: #242321;
+  --zx-surface-subtle: #33312d;
+  --zx-surface-raised: #2b2926;
+  --zx-text: #f2ece2;
+  --zx-muted: #c3b7a6;
+  --zx-border: #514a40;
+  --zx-control-border: #a2937e;
+  --zx-accent: #e6b993;
+  --zx-accent-hover: #f1cdb0;
+  --zx-on-accent: #3d291b;
+  --zx-accent-ink: #e6b993;
+  --zx-secondary: #ddc79d;
+  --zx-on-secondary: #352d20;
+  --zx-tonal: #e7d7b9;
+  --zx-on-tonal: #352d20;
+  --zx-focus: #e6b993;
+  --zx-selection-border: #e6b993;
+  --zx-indicator: #e6b993;
+  --zx-scrim: rgb(14 12 10 / 60%);
+}

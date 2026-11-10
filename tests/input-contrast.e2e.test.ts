@@ -6,7 +6,7 @@ import { chromium } from 'playwright'
 import type { Browser, Page } from 'playwright'
 import { inputContrastFixture } from '../packages/react/tests/input-contrast-fixture'
 import { contrastRatio, createTheme } from '../packages/react/src/theme'
-import { hepoColors, styleOptions } from '../apps/demo/src/style-options'
+import { hepoColors, hepoInteriorColors, styleOptions } from '../apps/demo/src/style-options'
 import { startDemo } from './dev-server'
 
 let app: Awaited<ReturnType<typeof startDemo>>
@@ -91,6 +91,7 @@ for (const mode of ['light', 'dark'] as const) {
       { primary: '#3269b1', secondary: '#edb9a2' },
       { primary: '#b84842', secondary: '#e1bb67' },
       hepoColors,
+      hepoInteriorColors,
     ]
     for (const theme of styleOptions) {
       for (const palette of palettes) {

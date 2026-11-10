@@ -1,4 +1,5 @@
 export const hepoColors = { primary: '#3f5662', secondary: '#c4a787' } as const
+export const hepoInteriorColors = { primary: '#82503d', secondary: '#d8bd88' } as const
 
 export const styleOptions = [
   {
@@ -22,6 +23,13 @@ export const styleOptions = [
     name: '鹤坡',
     description: '石白黛青，宋体标题与木色层次',
     ...hepoColors,
+    radius: 4,
+  },
+  {
+    id: 'hepo-interior',
+    name: '鹤坡·室内',
+    description: '暖石白与红木，香槟色辅助面',
+    ...hepoInteriorColors,
     radius: 4,
   },
   {

@@ -23,8 +23,8 @@ function About() {
           <span className="section-number">02 / EXPRESSION</span>
           <h2>局部样式作用域</h2>
           <p>
-            Clean、Endfield、鹤坡、Minimal、Soft 与 Brutalist 共享行为。用 data-zx-style 和
-            data-zx-color-mode 切换外观，同一页面可以并存多个风格。
+            Clean、Endfield、鹤坡及室内变体、Minimal、Soft 与 Brutalist 共享行为。用 data-zx-style
+            和 data-zx-color-mode 切换外观，同一页面可以并存多个风格。
           </p>
         </section>
         <section>

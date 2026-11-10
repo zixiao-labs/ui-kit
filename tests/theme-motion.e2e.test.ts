@@ -101,6 +101,7 @@ test('shows bright supporting selections and exact secondary swatches in native 
     { name: '海岸', secondary: '#edb9a2' },
     { name: '朱砂', secondary: '#e1bb67' },
     { name: '鹤坡', secondary: '#c4a787' },
+    { name: '鹤坡·室内', secondary: '#d8bd88' },
   ]) {
     if (preset.name) {
       await page.getByRole('button', { name: `${preset.name}配色`, exact: true }).click()

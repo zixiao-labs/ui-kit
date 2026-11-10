@@ -245,12 +245,13 @@ test('captures Hepo light, dark, Chinese type, mobile, reflow and nested portal 
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
     if (directory) await page.screenshot({ path: join(directory, `${name}.png`) })
   }
-  // All five presets should share a row in the desktop theme sidebar.
+  // Six presets form two balanced rows, including the longer interior label.
   const rows = await page
     .locator('.theme-presets button')
     .evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect().top))
-  expect(rows.length).toBe(5)
-  expect(new Set(rows).size).toBe(1)
+  expect(rows.length).toBe(6)
+  expect(new Set(rows).size).toBe(2)
+  for (const top of new Set(rows)) expect(rows.filter((row) => row === top).length).toBe(3)
   await capture('hepo-light')
   await page.getByLabel('页面主题', { exact: true }).selectOption('dark')
   await capture('hepo-dark')

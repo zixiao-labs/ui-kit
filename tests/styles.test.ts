@@ -15,6 +15,7 @@ test('keeps the shared contract and non-Material adapters free of Material depen
     'themes/brutalist.css',
     'themes/endfield.css',
     'themes/hepo.css',
+    'themes/hepo-interior.css',
   ]) {
     expect(readStyle(path)).not.toContain('--md-')
   }
@@ -70,7 +71,13 @@ test('exports a base-only entry and direct theme entries without requiring the b
   expect(manifest.exports['./base.css']).toBe('./src/base.css')
   expect(manifest.exports['./themes/*.css']).toBe('./src/themes/*.css')
   const fromDemo = createRequire(resolve('apps/demo/package.json'))
-  for (const path of ['base.css', 'themes/soft.css', 'themes/endfield.css', 'themes/hepo.css']) {
+  for (const path of [
+    'base.css',
+    'themes/soft.css',
+    'themes/endfield.css',
+    'themes/hepo.css',
+    'themes/hepo-interior.css',
+  ]) {
     expect(readFileSync(fromDemo.resolve(`@zixiao-labs/ui-kits-react/${path}`), 'utf8')).toBe(
       readStyle(path),
     )
@@ -114,19 +121,21 @@ test('Endfield implements neutral scope tokens without descendant overrides or p
   expect(css).not.toContain('--md-')
 })
 
-test('Hepo keeps its palette and display type inside independently selectable scopes', () => {
-  const css = readStyle('themes/hepo.css')
-  const selectors = [...css.matchAll(/(?:^|\n)([^{}\n]+)\s*\{/g)].map((match) => match[1].trim())
-  expect(selectors).toEqual([
-    "[data-zx-style='hepo']",
-    "[data-zx-style='hepo'][data-zx-color-mode='dark']",
-  ])
-  expect(css).toContain("--zx-font-display: 'Noto Serif SC'")
-  expect(css).toContain("--zx-font: 'Noto Sans SC'")
-  expect(css).not.toContain('url(')
-  expect(css).not.toContain('--md-')
-  expect(readStyle('foundation.css')).toContain('--zx-font-display: var(--zx-font)')
-})
+for (const style of ['hepo', 'hepo-interior']) {
+  test(`${style} keeps its palette and display type inside independently selectable scopes`, () => {
+    const css = readStyle(`themes/${style}.css`)
+    const selectors = [...css.matchAll(/(?:^|\n)([^{}\n]+)\s*\{/g)].map((match) => match[1].trim())
+    expect(selectors).toEqual([
+      `[data-zx-style='${style}']`,
+      `[data-zx-style='${style}'][data-zx-color-mode='dark']`,
+    ])
+    expect(css).toContain("--zx-font-display: 'Noto Serif SC'")
+    expect(css).toContain("--zx-font: 'Noto Sans SC'")
+    expect(css).not.toContain('url(')
+    expect(css).not.toContain('--md-')
+    expect(readStyle('foundation.css')).toContain('--zx-font-display: var(--zx-font)')
+  })
+}
 
 test('the demo shell no longer relies on a particular design language token set', () => {
   for (const path of ['styles.css', 'catalog.css', 'docs.css', 'theme-workbench.css']) {
