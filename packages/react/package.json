@@ -3,10 +3,16 @@
   "version": "0.0.0",
   "private": true,
   "description": "Zixiao Laboratories UI Kits — shared React components with scoped, interchangeable styles.",
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "sideEffects": [
     "**/*.css"
   ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": "./src/index.ts",
     "./theme": "./src/theme.ts",
@@ -14,7 +20,26 @@
     "./base.css": "./src/base.css",
     "./themes/*.css": "./src/themes/*.css"
   },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      },
+      "./theme": {
+        "types": "./dist/theme.d.ts",
+        "import": "./dist/theme.js",
+        "default": "./dist/theme.js"
+      },
+      "./styles.css": "./dist/styles.css",
+      "./base.css": "./dist/base.css",
+      "./themes/*.css": "./dist/themes/*.css"
+    }
+  },
   "scripts": {
+    "build": "pnpm styles:generate && tsdown",
+    "prepack": "pnpm build",
     "styles:generate": "node scripts/generate-styles.mjs",
     "shaders:generate": "node scripts/generate-shadow.mjs && oxfmt --write src/shadow.shader.ts",
     "typecheck": "tsc --noEmit"
@@ -33,6 +58,7 @@
     "@vgpu/wgsl": "0.6.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "tsdown": "0.23.7",
     "typescript": "^7.0.2"
   },
   "peerDependencies": {

@@ -6,7 +6,7 @@ Clean、Endfield 和鹤坡复用同一套完整组件实现。Minimal、Soft、B
 
 ## 开始开发
 
-需要 Node.js >=22.12.0 和 pnpm 12.18.0。
+需要 Node.js 22.18+（22.x）、24.11+（24.x）或 >=26，以及 pnpm 12.18.0；Node 版本要求与 tsdown 0.23 配套。
 
 ```sh
 pnpm install
@@ -23,9 +23,36 @@ pnpm dev
 | `packages/react` | `@zixiao-labs/ui-kits-react`     | React 组件、类型、共享行为和各风格 CSS |
 | `apps/demo`      | `@zixiao-labs/ui-kits-demo`      | 多风格组件工作台，Nasti 开发与 SSR     |
 
-这些包目前均为 `private`，**还不能从 npm 安装**。内部依赖使用 `workspace:*`，组件包通过源码 exports 交给 Nasti 编译。发布构建、版本管理与 CI 尚未接入，不把源码入口当作可发布产物。
+这些包目前均为 `private`，**还不能从 npm 安装**。内部依赖使用 `workspace:*`，组件包通过源码 exports 交给 Nasti 编译。组件包已接入 tsdown 构建和 tarball 验证；版本管理、npm 发布与 CI 尚未接入。
 
 包名前缀与文档、页面品牌一致：**Zixiao Laboratories UI Kits**。npm scope 保留 `@zixiao-labs`，不申请新 scope。
+
+### 组件包构建与导出
+
+```sh
+pnpm build:lib       # 生成 CSS，再用 tsdown 构建组件包
+pnpm test:package    # pack → 独立安装 → 类型与 Node SSR 验证
+
+# 只打包，不发布；prepack 会自动重新构建
+mkdir -p test-results
+pnpm --filter @zixiao-labs/ui-kits-react pack --out ../../test-results/ui-kits-react.tgz
+```
+
+构建产物位于 `packages/react/dist/`，只提供 ESM，不提供 CommonJS 构建：
+
+| 公开入口                                  | 产物                     |
+| ----------------------------------------- | ------------------------ |
+| `@zixiao-labs/ui-kits-react`              | `index.js`、`index.d.ts` |
+| `@zixiao-labs/ui-kits-react/theme`        | `theme.js`、`theme.d.ts` |
+| `@zixiao-labs/ui-kits-react/styles.css`   | 全部风格的扁平 CSS       |
+| `@zixiao-labs/ui-kits-react/base.css`     | 不含风格适配层的扁平 CSS |
+| `@zixiao-labs/ui-kits-react/themes/*.css` | 各独立风格适配层         |
+
+React、React DOM 和其他运行时依赖保持 external，不复制进组件 JS；GPU 阴影仍保留为动态加载的独立 chunk。CSS 按文件保留，不自动注入 JS，`sideEffects` 标记确保应用打包时不会误删样式。包内只包含 `dist`、包元数据和 README，不依赖源码或 workspace 配置；JS source map 内嵌源码便于调试。
+
+本地 `exports` 继续指向 `src`，Demo 开发、HMR 和源码测试不要求预先构建。`publishConfig.exports` 指向 `dist`，**必须使用 pnpm 的 `pack` / `publish` 才会替换导出表**；不要用不支持此覆盖的 `npm pack` / `npm publish`。当前保持 `private: true`，打包验证不会执行发布。
+
+`test:package` 会临时安装 tarball 及消费端依赖（优先本地缓存，缺失时需要 registry），检查所有运行时导出和 CSS、Bundler / NodeNext 两种 TypeScript 解析、真实 Node ESM SSR，以及 GPU chunk 的延迟加载结构；临时目录在结束后清理。
 
 ## 使用组件
 
@@ -249,7 +276,8 @@ import { Button, TextField } from '@zixiao-labs/ui-kits-react'
 
 ```sh
 pnpm dev          # 启动组件工作台
-pnpm build        # 构建演示应用
+pnpm build        # 按依赖顺序构建组件包与演示应用
+pnpm build:lib    # 只构建组件包（tsdown + CSS）
 pnpm preview      # 预览生产构建结果
 pnpm lint         # Oxlint
 pnpm fmt          # Oxfmt
@@ -258,6 +286,7 @@ pnpm typecheck    # 生成路由类型并检查 workspace
 pnpm check        # lint + 格式 + 类型检查
 pnpm test         # Lightning：组件 SSR/API 测试
 pnpm test:watch   # Lightning：监视组件测试
+pnpm test:package # Lightning：tarball 安装、公开导出、类型与 Node SSR
 pnpm test:e2e     # Lightning：自动启动 Nasti 开发服务并运行浏览器回归
 ```
 
@@ -284,7 +313,7 @@ OTP 的跨浏览器裁切回归可单独运行：先执行 `pnpm exec playwright
 - 通过独立适配层扩展 Clean、Endfield 等风格；只列已经实现且可操作的组件，不用不可用的导航制造完整感。
 - 风格不改变行为；无法由 tokens 表达的结构差异再考虑 skin，不在组件里堆积 `if (style)`。
 - Dialog、Select 等复杂交互使用 React Aria 无样式无障碍 primitives，不自行重造焦点管理。扩展时保留受控状态、原生表单语义与主题隔离。
-- 出现真实复用和发布需求后再拆独立 tokens/primitives 包，引入库构建、产物验证和版本发布流程。
+- 组件库构建与产物验证统一使用 tsdown 和 tarball 消费测试；出现真实复用需求后再拆独立 tokens/primitives 包，版本发布流程单独接入。
 
 ## Nasti 注意事项
 
