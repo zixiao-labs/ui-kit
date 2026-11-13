@@ -1,0 +1,58 @@
+.zx-liquid-glass {
+  position: relative;
+  padding: 24px;
+  color: var(--zx-text);
+  background: var(--zx-surface-raised);
+  border: 1px solid var(--zx-border);
+}
+.zx-liquid-glass[data-zx-liquid-glass='ready'] {
+  background: transparent;
+}
+.zx-liquid-glass > .zx-liquid-glass-layer {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  pointer-events: none;
+  border-radius: inherit;
+}
+/* Upstream emits Tailwind utility names. Supply only the scoped styles needed
+   here; consumers do not need Tailwind or any global utility rules. */
+.zx-liquid-glass-layer > div:not(.zx-liquid-glass-engine) {
+  display: none;
+}
+.zx-liquid-glass-layer > :is(.zx-liquid-glass-engine, span) {
+  transition: none !important;
+}
+.zx-liquid-glass-engine > svg {
+  max-width: 100%;
+  max-height: 100%;
+}
+.zx-liquid-glass-engine > .glass {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  background: color-mix(in srgb, var(--zx-surface-raised) 70%, transparent);
+  box-shadow: none !important;
+  transition: none !important;
+}
+.zx-liquid-glass > .zx-liquid-glass-content {
+  position: relative;
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .zx-liquid-glass[data-zx-liquid-glass] {
+    background: var(--zx-surface-raised);
+  }
+  .zx-liquid-glass > .zx-liquid-glass-layer {
+    display: none;
+  }
+}
+@media (forced-colors: active) {
+  .zx-liquid-glass > .zx-liquid-glass-layer {
+    display: none;
+  }
+  .zx-liquid-glass[data-zx-liquid-glass] {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+  }
+}

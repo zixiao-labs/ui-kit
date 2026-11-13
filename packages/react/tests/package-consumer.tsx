@@ -12,6 +12,8 @@ import {
 import type { ButtonProps, SelectProps, SurfaceEffects } from '@zixiao-labs/ui-kits-react'
 import { createTheme, themeToCSS } from '@zixiao-labs/ui-kits-react/theme'
 import type { ThemeOptions } from '@zixiao-labs/ui-kits-react/theme'
+import { PatternBackground } from '@zixiao-labs/ui-kits-react/patterns'
+import { LiquidGlassSurface } from '@zixiao-labs/ui-kits-react/liquid-glass'
 
 const options: ThemeOptions = { primary: '#8b5cf6', radius: 12 }
 const button: ButtonProps = { variant: 'tonal', ref: createRef<HTMLButtonElement>() }
@@ -41,6 +43,13 @@ export const sample = (
 )
 
 export const css = themeToCSS(options)
+export const optionalSample = (
+  <PatternBackground pattern="yunlei">
+    <LiquidGlassSurface>
+      <Button>Optional material</Button>
+    </LiquidGlassSurface>
+  </PatternBackground>
+)
 
 // Ensure the emitted declarations still reject invalid public API values.
 // @ts-expect-error Not a supported Button variant.

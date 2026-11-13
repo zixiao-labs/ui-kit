@@ -2,6 +2,11 @@ import { useState } from 'react'
 import { Copy, Plus } from '@gravity-ui/icons'
 import { Button, Card, Select, Surface } from '@zixiao-labs/ui-kits-react'
 import type { SurfaceEffects } from '@zixiao-labs/ui-kits-react'
+import { PatternBackground } from '@zixiao-labs/ui-kits-react/patterns'
+import type { BackgroundPattern } from '@zixiao-labs/ui-kits-react/patterns'
+import { LiquidGlassSurface } from '@zixiao-labs/ui-kits-react/liquid-glass'
+import '@zixiao-labs/ui-kits-react/patterns.css'
+import '@zixiao-labs/ui-kits-react/liquid-glass.css'
 import { useTheme } from '../theme'
 
 const options = [
@@ -11,30 +16,48 @@ const options = [
   { id: 'glass', label: '液态玻璃', detail: '边缘折射 · 中央文字保持清晰' },
 ] as const
 
+function indentCode(code: string) {
+  return code
+    .split('\n')
+    .map((line) => `  ${line}`)
+    .join('\n')
+}
+
 export function EffectPlayground({ component }: { component: 'Button' | 'Card' | 'Surface' }) {
   const { previewStyle, dark, sampleStyle, settings } = useTheme()
   const [effects, setEffects] = useState<SurfaceEffects>({})
   const [mode, setMode] = useState('auto')
+  const [pattern, setPattern] = useState<BackgroundPattern | undefined>()
+  const [glassEngine, setGlassEngine] = useState('builtin')
   const [count, setCount] = useState(0)
   const [disabled, setDisabled] = useState(false)
   const [loading, setLoading] = useState(false)
   const [copyResult, setCopyResult] = useState<{ code: string; message: string } | null>(null)
   const isDark = mode === 'auto' ? dark : mode === 'dark'
+  const reactGlass = effects.glass && glassEngine === 'react'
   const entries = Object.entries(effects).filter(
-    ([key, value]) => value && (component !== 'Button' || key !== 'tilt'),
+    ([key, value]) =>
+      value && (component !== 'Button' || key !== 'tilt') && (!reactGlass || key !== 'glass'),
   )
   const selected = Object.fromEntries(entries) as SurfaceEffects
   const props = entries.length
     ? ` effects={{ ${entries.map(([key, value]) => `${key}: ${typeof value === 'string' ? `'${value}'` : value}`).join(', ')} }}`
     : ''
   const custom = settings.customized && previewStyle
-  const example = `import { ${component}${component === 'Button' ? '' : ', Button'} } from '@zixiao-labs/ui-kits-react'
+  const sampleCode = `<${component}${reactGlass ? (component === 'Button' ? ' style={{ background: "transparent", color: "var(--zx-text)", borderColor: "transparent" }}' : ' style={{ background: "transparent", border: 0, padding: 0 }}') : ''}${component === 'Button' ? ' variant="outline"' : ''}${props}${component === 'Button' ? `${disabled ? ' disabled' : ''}${loading ? ' loading' : ''}` : ''}>
+  ${component === 'Button' ? '添加素材' : '<h3>北岸设计</h3>\n  <p>品牌识别与数字体验 · 周五评审</p>\n  <Button variant="tonal">添加素材</Button>'}
+</${component}>`
+  const glassCode = reactGlass
+    ? `<LiquidGlassSurface${component === 'Button' ? ' cornerRadius={28} style={{ padding: 0 }}' : ''}>\n${indentCode(sampleCode)}\n</LiquidGlassSurface>`
+    : sampleCode
+  const contentCode = pattern
+    ? `<PatternBackground pattern="${pattern}" style={{ padding: 32 }}>\n${indentCode(glassCode)}\n</PatternBackground>`
+    : glassCode
+  const example = `import { ${component}${component === 'Button' ? '' : ', Button'} } from '@zixiao-labs/ui-kits-react'${pattern ? "\nimport { PatternBackground } from '@zixiao-labs/ui-kits-react/patterns'\nimport '@zixiao-labs/ui-kits-react/patterns.css'" : ''}${reactGlass ? "\nimport { LiquidGlassSurface } from '@zixiao-labs/ui-kits-react/liquid-glass'\nimport '@zixiao-labs/ui-kits-react/liquid-glass.css'" : ''}
 import '@zixiao-labs/ui-kits-react/styles.css'${custom ? "\nimport { createTheme } from '@zixiao-labs/ui-kits-react/theme'" : ''}
 
 <div data-zx-style="${sampleStyle.id}" data-zx-color-mode="${isDark ? 'dark' : 'light'}"${custom ? `\n  style={createTheme(${JSON.stringify({ primary: settings.primary, secondary: settings.secondary, radius: settings.radius })}, ${isDark})}` : ''}>
-  <${component}${component === 'Button' ? ' variant="outline"' : ''}${props}${component === 'Button' ? `${disabled ? ' disabled' : ''}${loading ? ' loading' : ''}` : ''}>
-    ${component === 'Button' ? '添加素材' : '<h3>北岸设计</h3>\n    <p>品牌识别与数字体验 · 周五评审</p>\n    <Button variant="tonal">添加素材</Button>'}
-  </${component}>
+${indentCode(contentCode)}
 </div>`
 
   function toggle(id: (typeof options)[number]['id'], checked: boolean) {
@@ -60,12 +83,37 @@ import '@zixiao-labs/ui-kits-react/styles.css'${custom ? "\nimport { createTheme
       loading={loading}
       onClick={() => setCount((value) => value + 1)}
       data-testid={component === 'Button' ? 'effect-sample' : undefined}
+      style={
+        reactGlass && component === 'Button'
+          ? { background: 'transparent', color: 'var(--zx-text)', borderColor: 'transparent' }
+          : undefined
+      }
     >
       <Plus aria-hidden="true" />
       添加素材
     </Button>
   )
   const Container = component === 'Surface' ? Surface : Card
+  const sample =
+    component === 'Button' ? (
+      action
+    ) : (
+      <Container
+        effects={selected}
+        className="effects-sample"
+        data-testid="effect-sample"
+        style={reactGlass ? { background: 'transparent', border: 0, padding: 0 } : undefined}
+      >
+        <span className="effects-project-type">项目档案 · 北岸</span>
+        <h3>北岸设计</h3>
+        <p>
+          品牌识别与数字体验
+          <br />
+          下一轮评审 · 周五 14:30
+        </p>
+        {action}
+      </Container>
+    )
   return (
     <section className="effects-lab" aria-label={`${component} 可选效果`}>
       <div className="section-heading">
@@ -90,6 +138,39 @@ import '@zixiao-labs/ui-kits-react/styles.css'${custom ? "\nimport { createTheme
                 </span>
               </label>
             ))}
+          {effects.glass && (
+            <>
+              <Select
+                className="effects-mode style-select"
+                label="玻璃实现"
+                value={glassEngine}
+                onChange={(value) => {
+                  if (value) setGlassEngine(value)
+                }}
+                items={[
+                  { id: 'builtin', label: '内置轻量折射' },
+                  { id: 'react', label: 'Liquid Glass React' },
+                ]}
+              />
+              <p className="effects-hint">
+                React 库按需加载为外层材质，内部仍用原生按钮；Safari / Firefox 的折射效果有限
+              </p>
+            </>
+          )}
+          <Select
+            className="effects-mode style-select"
+            label="背景纹路"
+            value={pattern ?? 'none'}
+            onChange={(value) =>
+              setPattern(value === 'none' ? undefined : (value as BackgroundPattern))
+            }
+            items={[
+              { id: 'none', label: '无纹路' },
+              { id: 'hui', label: '回纹 · 连续折线' },
+              { id: 'yunlei', label: '云雷纹 · 方圆回旋' },
+              { id: 'lei', label: '雷纹 · 丁形勾连' },
+            ]}
+          />
           <Select
             className="effects-mode style-select"
             label="效果样本明暗"
@@ -128,6 +209,8 @@ import '@zixiao-labs/ui-kits-react/styles.css'${custom ? "\nimport { createTheme
             className="copy-button"
             onClick={() => {
               setEffects({})
+              setPattern(undefined)
+              setGlassEngine('builtin')
               setDisabled(false)
               setLoading(false)
               setCopyResult(null)
@@ -136,34 +219,34 @@ import '@zixiao-labs/ui-kits-react/styles.css'${custom ? "\nimport { createTheme
             恢复无效果
           </button>
         </fieldset>
-        <div
+        <PatternBackground
           className="effects-stage"
+          pattern={pattern}
           data-zx-style={sampleStyle.id}
           data-zx-color-mode={isDark ? 'dark' : 'light'}
           style={previewStyle}
         >
-          <svg className="effects-drawing" viewBox="0 0 600 360" fill="none" aria-hidden="true">
-            <path d="M0 280H600M40 280V160L160 96L280 160V280M72 280V180H248V280M300 280V120L420 56L560 120V280M328 280V140H532V280M160 96V52M420 56V20" />
-            <path d="M92 280V208H132V280M184 280V208H224V280M352 280V176H396V280M452 280V176H504V280" />
-          </svg>
-          {component === 'Button' ? (
-            action
+          {!pattern && (
+            <svg className="effects-drawing" viewBox="0 0 600 360" fill="none" aria-hidden="true">
+              <path d="M0 280H600M40 280V160L160 96L280 160V280M72 280V180H248V280M300 280V120L420 56L560 120V280M328 280V140H532V280M160 96V52M420 56V20" />
+              <path d="M92 280V208H132V280M184 280V208H224V280M352 280V176H396V280M452 280V176H504V280" />
+            </svg>
+          )}
+          {reactGlass ? (
+            <LiquidGlassSurface
+              className={component === 'Button' ? 'effects-glass-action' : 'effects-glass-sample'}
+              cornerRadius={component === 'Button' ? 28 : 16}
+              style={component === 'Button' ? { padding: 0 } : undefined}
+            >
+              {sample}
+            </LiquidGlassSurface>
           ) : (
-            <Container effects={selected} className="effects-sample" data-testid="effect-sample">
-              <span className="effects-project-type">项目档案 · 北岸</span>
-              <h3>北岸设计</h3>
-              <p>
-                品牌识别与数字体验
-                <br />
-                下一轮评审 · 周五 14:30
-              </p>
-              {action}
-            </Container>
+            sample
           )}
           <output className="effects-result" aria-live="polite">
             已添加 {count} 份素材
           </output>
-        </div>
+        </PatternBackground>
       </div>
       <div className="code-panel">
         <div className="code-heading">

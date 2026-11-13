@@ -39,6 +39,14 @@
   justify-content: space-between;
   margin-top: 8px;
 }
+.effects-hint {
+  color: var(--muted);
+  font: 400 12px/20px var(--zx-font);
+}
+.effects-glass-sample {
+  width: 100%;
+  max-width: 368px;
+}
 .effects-button-states {
   display: flex;
   flex-wrap: wrap;

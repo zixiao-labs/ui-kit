@@ -13,7 +13,7 @@
 - [vgpu holographic-card](https://vgpu.sh/examples/holographic-card)：参考指针倾斜与反光，不复制示例的文字、三角图形或全息画面。
 - [vgpu triangle-led-front](https://vgpu.sh/examples/triangle-led-front)：参考光从物体边缘溢出、照亮承托面的关系，不移植整套光线模拟。
 - 用户给出的夜景照片：参考下半部分的暖色檐线、墙脚照明，不使用照片或水印作为交付资产。
-- [liquid-glass-react](https://github.com/rdev/liquid-glass-react)：参考背景层与清晰内容分离、SVG 位移折射的实现思路。没有直接包裹该组件，避免引入其定位、尺寸、鼠标弹性与 div 点击语义。
+- [liquid-glass-react](https://github.com/rdev/liquid-glass-react)：内置实现参考其背景层与清晰内容分离思路；另提供独立的 `/liquid-glass` 适配器，实际按需加载 1.1.1，只用作装饰背景，不引入 div 点击语义和鼠标弹性。
 
 ## API
 
@@ -42,6 +42,8 @@ import '@zixiao-labs/ui-kits-react/styles.css'
 倾斜用于较大的内容表面，不用于小操作目标、输入框、表格、加载反馈或焦点管理复杂的浮层。玻璃按钮保留原生 `button`、`ref`、表单属性、焦点、禁用与加载语义；玻璃效果会改用当前表面文字色，以免透明按钮沿用实心强调色上的文字。
 
 工作台的 Button、Card、Surface 页均有「材质与光影」，初始全部关闭，可独立切换并复制当前 TSX。配置入口统一使用组件库 `Select`。切换页面或刷新会恢复无效果，不把装饰意外扩散到全局。
+
+背景纹路与第三方玻璃增强的 API、实际验证与本轮 Unslop 检查另见 [底纹与玻璃增强验收](patterns-glass-review.md)；按需加载和生产包体积边界见 [Tree-shaking 指引](tree-shaking.md)。后文的原始效果验证记录不替代这轮新增功能的验证。
 
 ## 实现、成本与降级
 

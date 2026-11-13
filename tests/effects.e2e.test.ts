@@ -53,6 +53,12 @@ afterEach(async () => {
 
 const sample = () => page.getByTestId('effect-sample')
 const lab = (name = 'Card') => page.getByRole('region', { name: `${name} 可选效果` })
+async function chooseEffect(label: string, option: string) {
+  await page.getByRole('button', { name: new RegExp(label) }).click()
+  const menu = page.getByRole('listbox', { name: new RegExp(label) })
+  await menu.getByRole('option', { name: option, exact: true }).click()
+  await menu.waitFor({ state: 'detached' })
+}
 async function open(name = 'Card') {
   await page.goto(`/?component=${name}`)
   await lab(name).getByRole('checkbox', { name: 'GPU 阴影' }).waitFor()
@@ -99,6 +105,106 @@ test('default components request no GPU chunk and all effects are explicit, comp
   expect(await sample().getAttribute('data-zx-effects')).toBe(null)
   expect(await sample().locator('[aria-hidden="true"]').count()).toBe(1) // action icon only
   expect(await page.locator('.component-demo [data-zx-effects]').count()).toBe(0)
+})
+
+test('optional patterns stay local, have distinct geometry and survive dark/mobile/reflow without intercepting actions', async () => {
+  await open()
+  expect(await page.locator('.zx-pattern-ink').count()).toBe(0)
+  const paths = new Set<string>()
+  for (const [id, label] of [
+    ['hui', '回纹 · 连续折线'],
+    ['yunlei', '云雷纹 · 方圆回旋'],
+    ['lei', '雷纹 · 丁形勾连'],
+  ]) {
+    await chooseEffect('背景纹路', label)
+    const stage = page.locator('.effects-stage')
+    expect(await stage.getAttribute('data-zx-pattern')).toBe(id)
+    paths.add((await stage.locator('pattern path').getAttribute('d'))!)
+    expect(
+      await stage
+        .locator('.zx-pattern-ink')
+        .evaluate((node) => getComputedStyle(node).pointerEvents),
+    ).toBe('none')
+    expect(await page.locator('.component-demo .zx-pattern-ink').count()).toBe(0)
+    await lab().getByRole('button', { name: '添加素材', exact: true }).click()
+    expect(await lab().locator('code').textContent()).toContain(`pattern="${id}"`)
+    await screenshot(`patterns-${id}-light`)
+  }
+  expect(paths.size).toBe(3)
+  expect(await lab().locator('.effects-result').textContent()).toBe('已添加 3 份素材')
+  await chooseEffect('效果样本明暗', '深色')
+  await screenshot('patterns-lei-dark')
+  await page.setViewportSize({ width: 390, height: 844 })
+  await screenshot('patterns-mobile')
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  await page.setViewportSize({ width: 720, height: 450 })
+  await screenshot('patterns-200-reflow')
+  await page.emulateMedia({ forcedColors: 'active' })
+  expect(
+    await page.locator('.zx-pattern-ink').evaluate((node) => getComputedStyle(node).display),
+  ).toBe('none')
+  await page.emulateMedia({ forcedColors: 'none' })
+  await lab().getByRole('button', { name: '恢复无效果' }).click()
+  expect(await page.locator('.zx-pattern-ink').count()).toBe(0)
+})
+
+test('Liquid Glass React loads only when selected, keeps native actions and stable content through resize', async () => {
+  const upstream: string[] = []
+  page.on('request', (request) => {
+    if (/liquid-glass-react/.test(decodeURIComponent(request.url()))) upstream.push(request.url())
+  })
+  await open()
+  expect(await page.locator('.zx-liquid-glass').count()).toBe(0)
+  expect(upstream).toEqual([])
+  await chooseEffect('背景纹路', '云雷纹 · 方圆回旋')
+  await lab().getByRole('checkbox', { name: '液态玻璃' }).check()
+  await chooseEffect('玻璃实现', 'Liquid Glass React')
+  const glass = page.locator('[data-zx-liquid-glass="ready"]')
+  await glass.waitFor()
+  expect(upstream.length > 0).toBe(true)
+  expect(await glass.locator('.glass__warp').count()).toBe(1)
+  expect(await sample().locator('.zx-effect-glass').count()).toBe(0)
+  await lab().getByRole('button', { name: '添加素材', exact: true }).click()
+  expect(await lab().locator('.effects-result').textContent()).toBe('已添加 1 份素材')
+  const button = lab().getByRole('button', { name: '添加素材', exact: true })
+  await button.focus()
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.setViewportSize({ width: 390, height: 844 })
+  expect(await button.evaluate((node) => node === document.activeElement)).toBe(true)
+  await button.press('Enter')
+  expect(await lab().locator('.effects-result').textContent()).toBe('已添加 2 份素材')
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  await screenshot('patterns-liquid-glass-mobile')
+  await page.setViewportSize({ width: 1440, height: 1100 })
+  await screenshot('patterns-liquid-glass-desktop')
+  await chooseEffect('效果样本明暗', '深色')
+  await screenshot('patterns-liquid-glass-dark')
+  expect(await lab().locator('code').textContent()).toContain("ui-kits-react/liquid-glass'")
+  await lab().getByRole('button', { name: '恢复无效果' }).click()
+  expect(await page.locator('.zx-liquid-glass').count()).toBe(0)
+})
+
+test('a failed optional glass import keeps an opaque usable surface and enhanced buttons keep native states', async () => {
+  await page.route(/\/@modules\/liquid-glass-react(?:[/?]|$)/, (route) =>
+    route.fulfill({
+      contentType: 'application/javascript',
+      body: 'throw new Error("fixture unavailable")',
+    }),
+  )
+  await open('Button')
+  await lab('Button').getByRole('checkbox', { name: '液态玻璃' }).check()
+  await chooseEffect('玻璃实现', 'Liquid Glass React')
+  await page.locator('[data-zx-liquid-glass="fallback"]').waitFor()
+  const button = lab('Button').getByRole('button', { name: '添加素材', exact: true })
+  expect(await button.evaluate((node) => node.tagName)).toBe('BUTTON')
+  await button.click()
+  expect(await lab('Button').locator('.effects-result').textContent()).toBe('已添加 1 份素材')
+  await lab('Button').getByRole('checkbox', { name: '禁用按钮' }).check()
+  expect(await button.isDisabled()).toBe(true)
+  await lab('Button').getByRole('checkbox', { name: '禁用按钮' }).uncheck()
+  await lab('Button').getByRole('checkbox', { name: '加载中' }).check()
+  expect(await button.getAttribute('aria-busy')).toBe('true')
+  expect(await button.isDisabled()).toBe(true)
 })
 
 test('renders real transparent GPU shadow pixels, stays idle and releases devices on toggle, loss and unmount', async () => {

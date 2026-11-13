@@ -11,6 +11,10 @@ const ariaEntries = dirname(fromLibrary.resolve('react-aria/CollectionBuilder'))
 
 export default defineConfig({
   framework: 'react',
+  build: {
+    minify: true,
+    rolldownOptions: { treeshake: true },
+  },
   resolve: {
     alias: {
       'react-aria-components': dirname(fromLibrary.resolve('react-aria-components')),

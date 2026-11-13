@@ -5,10 +5,14 @@ packages:
 allowBuilds:
   '@vgpu/adapter-node': false
   webgpu: false
+minimumReleaseAgeExclude:
+  - '@nasti-toolchain/nasti@2.10.1'
 permissions:
   '@tanstack/react-router':
     skills: true
   '@tanstack/react-start':
+    skills: true
+  tsdown:
     skills: true
 skills:
   dirs:

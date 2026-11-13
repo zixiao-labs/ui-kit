@@ -34,6 +34,44 @@ import '@zixiao-labs/ui-kits-react/themes/endfield.css'
 import { createTheme, themeToCSS } from '@zixiao-labs/ui-kits-react/theme'
 ```
 
+## 可选底纹与玻璃
+
+```tsx
+import { PatternBackground } from '@zixiao-labs/ui-kits-react/patterns'
+import '@zixiao-labs/ui-kits-react/patterns.css'
+
+;<PatternBackground pattern="hui" style={{ padding: 32 }}>
+  <Button>查看档案</Button>
+</PatternBackground>
+```
+
+`hui` / `yunlei` / `lei` 分别为回纹、云雷纹、雷纹的几何化表达；不传 `pattern` 则不生成 SVG。用 `--zx-pattern-color` 和 `--zx-pattern-opacity` 调整颜色与强度（默认 0.12）。装饰不截获输入，不自动应用于主题。
+
+第三方液态玻璃需由应用安装 `liquid-glass-react@^1.1.1`（optional peer），与普通组件分离：
+
+```tsx
+import { LiquidGlassSurface } from '@zixiao-labs/ui-kits-react/liquid-glass'
+import '@zixiao-labs/ui-kits-react/liquid-glass.css'
+
+;<LiquidGlassSurface cornerRadius={16} displacementScale={32}>
+  <Button>查看档案</Button>
+</LiquidGlassSurface>
+```
+
+适配器只在客户端挂载后动态加载该库，SSR / 首次 hydration / 加载失败保留实色表面与原生操作。只折射背景，内容不随载入或尺寸更新重新挂载；关闭弹性、鼠标跟踪与彩色像差。Safari / Firefox 的边缘折射有限，不承诺与 Chromium 等效。
+
+## Tree-shaking
+
+- 用 ESM 命名导入；不要把整个组件命名空间做成动态注册表。
+- `/theme`、`/patterns`、`/liquid-glass` 独立于根入口；不用时不导入，普通项目无需安装第三方玻璃库。
+- 只加载 `base.css` + 一种主题，避免同时加载全量 `styles.css`。
+- 普通 Button 可进一步只加载 `/css/foundation.css` + 主题；启用 effects 再加载 `/css/effects.css`，组件过渡需要 `/css/motion.css`。其他组件族源样式也从 `/css/*.css` 导出，复杂组合建议使用基础全量层。
+- CSS 显式导入是副作用，不会因组件未使用自动裁剪；保留包的 `sideEffects: ["**/*.css"]`。
+- 内置 effects 仍由组件共享实现引用，省略 props 不保证打包器移除 GPU 后端的动态 chunk；动态分包节省首屏下载，不保证减小所有输出的总和。
+- Nasti 2.9–2.10 / Vite 8 在 `build.rolldownOptions` 配置 `treeshake: true`；Vite 5–7 对应 `build.rollupOptions`。保持生产压缩开启，不以开发预打包大小判断结果。
+
+workspace 的 `docs/tree-shaking.md` 包含完整 Nasti / Vite 配置、延迟加载示例与生产验证步骤。
+
 ## 构建约定
 
 - 只提供 ESM；组件和 `theme` 入口均附带 TypeScript 声明与 JS source map。

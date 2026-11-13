@@ -40,13 +40,17 @@ pnpm --filter @zixiao-labs/ui-kits-react pack --out ../../test-results/ui-kits-r
 
 构建产物位于 `packages/react/dist/`，只提供 ESM，不提供 CommonJS 构建：
 
-| 公开入口                                  | 产物                     |
-| ----------------------------------------- | ------------------------ |
-| `@zixiao-labs/ui-kits-react`              | `index.js`、`index.d.ts` |
-| `@zixiao-labs/ui-kits-react/theme`        | `theme.js`、`theme.d.ts` |
-| `@zixiao-labs/ui-kits-react/styles.css`   | 全部风格的扁平 CSS       |
-| `@zixiao-labs/ui-kits-react/base.css`     | 不含风格适配层的扁平 CSS |
-| `@zixiao-labs/ui-kits-react/themes/*.css` | 各独立风格适配层         |
+| 公开入口                                                      | 产物                                 |
+| ------------------------------------------------------------- | ------------------------------------ |
+| `@zixiao-labs/ui-kits-react`                                  | `index.js`、`index.d.ts`             |
+| `@zixiao-labs/ui-kits-react/theme`                            | `theme.js`、`theme.d.ts`             |
+| `@zixiao-labs/ui-kits-react/patterns`                         | 可选传统底纹组件与类型               |
+| `@zixiao-labs/ui-kits-react/liquid-glass`                     | 可选 Liquid Glass React 适配器与类型 |
+| `@zixiao-labs/ui-kits-react/styles.css`                       | 全部风格的扁平 CSS                   |
+| `@zixiao-labs/ui-kits-react/base.css`                         | 不含风格适配层的扁平 CSS             |
+| `@zixiao-labs/ui-kits-react/css/*.css`                        | 按组件族选择的源样式                 |
+| `@zixiao-labs/ui-kits-react/patterns.css`、`liquid-glass.css` | 独立可选功能样式                     |
+| `@zixiao-labs/ui-kits-react/themes/*.css`                     | 各独立风格适配层                     |
 
 React、React DOM 和其他运行时依赖保持 external，不复制进组件 JS；GPU 阴影仍保留为动态加载的独立 chunk。CSS 按文件保留，不自动注入 JS，`sideEffects` 标记确保应用打包时不会误删样式。包内只包含 `dist`、包元数据和 README，不依赖源码或 workspace 配置；JS source map 内嵌源码便于调试。
 
@@ -200,6 +204,30 @@ Demo 参考 HeroUI docs 组织为目录、交互预览、用法代码与主题�
 `Card`、`Surface` 提供 `effects={{ shadow: 'gpu', tilt: true, backlight: true, glass: true }}`，`Button` 支持其中的阴影、背光和玻璃。每项均独立 opt-in，可与原有 `variant` 组合；默认组件不改变外观，也不申请 GPU。
 
 GPU 阴影按需使用 vgpu，缺少 WebGPU 或 device 丢失时退回 CSS 阴影；倾斜在触屏、粗指针与减少动态效果模式下关闭；背光只在当前深色主题作用域点亮；玻璃只折射背景，不扭曲文字，并保留原生按钮语义。工作台三个组件页的「材质与光影」可实际切换、操作和复制代码。完整 API、成本、浏览器降级与 Unslop 自检见 [可选效果验收](docs/effects-review.md)。
+
+背景纹路是独立的 opt-in 功能，不随鹤坡或任何主题自动启用：
+
+```tsx
+import { Button } from '@zixiao-labs/ui-kits-react'
+import { PatternBackground } from '@zixiao-labs/ui-kits-react/patterns'
+import '@zixiao-labs/ui-kits-react/base.css'
+import '@zixiao-labs/ui-kits-react/themes/hepo.css'
+import '@zixiao-labs/ui-kits-react/patterns.css'
+
+;<PatternBackground pattern="yunlei" data-zx-style="hepo" style={{ padding: 32 }}>
+  <Button>查看档案</Button>
+</PatternBackground>
+```
+
+`hui` 是回纹（连续折线），`yunlei` 是云雷纹（方圆回旋），`lei` 是雷纹（丁形勾连）。它们是依据参考图制作的几何化底纹，不作为文物图样的复原或年代判断；不传 `pattern` 时不生成 SVG。可通过 `--zx-pattern-color`、`--zx-pattern-opacity` 调整颜色与强度，默认透明度 0.12；装饰层不参与点击，在强制颜色模式下隐藏。
+
+液态玻璃保留内置轻量实现，并新增独立的 `/liquid-glass` 增强入口 `LiquidGlassSurface`（同时导入 `/liquid-glass.css`）。使用该入口才需安装 optional peer `liquid-glass-react@^1.1.1`；工作台可在「玻璃实现」中对比两者。增强材质在客户端挂载后加载，SSR / 加载失败保留实色表面；不将整个容器当作按钮，不启用第三方鼠标弹性。Safari / Firefox 的折射支持有限。
+
+### 按需加载与包体积
+
+只导入使用的组件、基础层和所选主题；动态配色、纹路与第三方玻璃入口分开引入。需要更细粒度的 CSS 时可使用 `/css/foundation.css` 等组件族入口。**JS Tree-shaking 不会自动删除完整 CSS 中的未使用样式；动态 GPU chunk 不等于从总产物移除。**
+
+完整示例、边界与验证方法见 [Tree-shaking 指引](docs/tree-shaking.md)，包含 **Nasti 2.10.1（兼容 2.9 的基本配置）、Vite 8（及 Vite 5–7 的配置差异）**、可选依赖与 SSR、CSS 按需加载，以及 tarball 消费构建回归。
 
 新增设计语言时，在自己的 CSS 中为 `[data-zx-style="你的风格"]` 实现 `--zx-*`，需要明暗配色时再增加同作用域的 `data-zx-color-mode` 规则：
 

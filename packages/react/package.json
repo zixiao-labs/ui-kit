@@ -16,8 +16,13 @@
   "exports": {
     ".": "./src/index.ts",
     "./theme": "./src/theme.ts",
+    "./patterns": "./src/optional/patterns.tsx",
+    "./patterns.css": "./src/optional/patterns.css",
+    "./liquid-glass": "./src/optional/liquid-glass.tsx",
+    "./liquid-glass.css": "./src/optional/liquid-glass.css",
     "./styles.css": "./src/styles.css",
     "./base.css": "./src/base.css",
+    "./css/*.css": "./src/*.css",
     "./themes/*.css": "./src/themes/*.css"
   },
   "publishConfig": {
@@ -32,8 +37,21 @@
         "import": "./dist/theme.js",
         "default": "./dist/theme.js"
       },
+      "./patterns": {
+        "types": "./dist/patterns.d.ts",
+        "import": "./dist/patterns.js",
+        "default": "./dist/patterns.js"
+      },
+      "./patterns.css": "./dist/patterns.css",
+      "./liquid-glass": {
+        "types": "./dist/liquid-glass.d.ts",
+        "import": "./dist/liquid-glass.js",
+        "default": "./dist/liquid-glass.js"
+      },
+      "./liquid-glass.css": "./dist/liquid-glass.css",
       "./styles.css": "./dist/styles.css",
       "./base.css": "./dist/base.css",
+      "./css/*.css": "./dist/css/*.css",
       "./themes/*.css": "./dist/themes/*.css"
     }
   },
@@ -56,13 +74,20 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vgpu/wgsl": "0.6.0",
+    "liquid-glass-react": "1.1.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "tsdown": "0.23.7",
     "typescript": "^7.0.2"
   },
   "peerDependencies": {
+    "liquid-glass-react": "^1.1.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "liquid-glass-react": {
+      "optional": true
+    }
   }
 }
