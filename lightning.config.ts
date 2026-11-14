@@ -9,6 +9,7 @@ export default defineConfig({
       'tests/shadow.test.ts',
       'tests/demo-selects.test.ts',
       'tests/component-catalogue.test.ts',
+      'tests/solid.test.ts',
     ],
     environment: 'node',
   },

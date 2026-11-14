@@ -1,6 +1,6 @@
 # Zixiao Laboratories UI Kits
 
-`@zixiao-labs` 的多风格 React 组件库。**一套组件 API，共享语义与交互，多种视觉表达。**
+`@zixiao-labs` 的多风格 React / SolidJS 组件库。**共享视觉契约，框架原生交互，多种视觉表达。**
 
 Clean、Endfield 和鹤坡复用同一套完整组件实现。Minimal、Soft、Brutalist 保留在同一个主题机制中；后续风格继续复用组件行为，不复制组件实现。
 
@@ -15,17 +15,28 @@ pnpm dev
 
 演示应用沿用 **Nasti + TanStack React Start**，不额外引入 Vite。框架与编译依赖放在应用包内；Lightning 测试运行器和 Oxc 工具放在 workspace 根目录。
 
+Solid 版本使用独立的 **Nasti + SolidJS SPA**，运行 `pnpm dev:solid`；`pnpm build:solid` 构建 Solid 组件包与 demo，`pnpm preview:solid` 预览生产版本。原有 `pnpm dev` 仍启动 React 工作台。
+
 ## Workspace 包清单
 
-| 路径             | 包名                             | 职责                                   |
-| ---------------- | -------------------------------- | -------------------------------------- |
-| 根目录           | `@zixiao-labs/ui-kits-workspace` | 私有 workspace，统一工具与测试入口     |
-| `packages/react` | `@zixiao-labs/ui-kits-react`     | React 组件、类型、共享行为和各风格 CSS |
-| `apps/demo`      | `@zixiao-labs/ui-kits-demo`      | 多风格组件工作台，Nasti 开发与 SSR     |
+| 路径              | 包名                              | 职责                                               |
+| ----------------- | --------------------------------- | -------------------------------------------------- |
+| 根目录            | `@zixiao-labs/ui-kits-workspace`  | 私有 workspace，统一工具与测试入口                 |
+| `packages/react`  | `@zixiao-labs/ui-kits-react`      | React 组件、类型、共享行为和各风格 CSS             |
+| `apps/demo`       | `@zixiao-labs/ui-kits-demo`       | 多风格组件工作台，Nasti 开发与 SSR                 |
+| `packages/solid`  | `@zixiao-labs/ui-kits-solid`      | 原生 Solid 组件、Kobalte 交互、共享样式            |
+| `apps/solid-demo` | `@zixiao-labs/ui-kits-solid-demo` | Solid 组件工作台，Nasti SPA                        |
+| `packages/shared` | `@zixiao-labs/ui-kits-shared`     | 框架无关的主题源文件，构建时内联，不作为运行时依赖 |
 
 这些包目前均为 `private`，**还不能从 npm 安装**。内部依赖使用 `workspace:*`，组件包通过源码 exports 交给 Nasti 编译。组件包已接入 tsdown 构建和 tarball 验证；版本管理、npm 发布与 CI 尚未接入。
 
 包名前缀与文档、页面品牌一致：**Zixiao Laboratories UI Kits**。npm scope 保留 `@zixiao-labs`，不申请新 scope。
+
+### SolidJS 版本
+
+Solid demo 提供 49 个真实可操作的目录条目，支持七套风格、明暗 / 跟随系统、主题持久化、深链接、代码与 CSS 复制、移动端目录，以及嵌套浮层主题隔离。使用 `class`、`createSignal`、Kobalte 原生属性，不在内部挂载 React。
+
+当前不是 React 目录的完整对等版本：日期 / 颜色选择器、部分分组组件及 GPU / 液态玻璃增强尚未迁移，表格保留原生语义。详细 API、组件范围、构建消费与差异见 [Solid README](packages/solid/README.md)，视觉与交互验收见 [Solid 检查记录](docs/solid-review.md)。
 
 ### 组件包构建与导出
 

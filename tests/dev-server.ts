@@ -3,7 +3,7 @@ import { createServer } from 'node:net'
 import { setTimeout } from 'node:timers/promises'
 
 /** Each run owns a free port and process group; never reuse or kill a user's server. */
-export async function startDemo() {
+export async function startDemo(packageName = '@zixiao-labs/ui-kits-demo') {
   const reservation = createServer()
   await new Promise<void>((resolve, reject) => {
     reservation.once('error', reject)
@@ -19,7 +19,7 @@ export async function startDemo() {
   const windows = process.platform === 'win32'
   const child = spawn(
     windows ? 'pnpm.cmd' : 'pnpm',
-    ['--filter', '@zixiao-labs/ui-kits-demo', 'dev', '--host', '127.0.0.1', '--port', String(port)],
+    ['--filter', packageName, 'dev', '--host', '127.0.0.1', '--port', String(port)],
     { detached: !windows, shell: windows, stdio: ['ignore', 'pipe', 'pipe'] },
   )
   let logs = ''

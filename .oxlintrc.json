@@ -15,6 +15,17 @@
     "typescript/consistent-type-imports": "error",
     "typescript/no-explicit-any": "error"
   },
+  "overrides": [
+    {
+      "files": ["packages/solid/**", "apps/solid-demo/**"],
+      "rules": {
+        "react/rules-of-hooks": "off",
+        "react/exhaustive-deps": "off",
+        "react/immutability": "off",
+        "react/refs": "off"
+      }
+    }
+  ],
   "ignorePatterns": [
     "**/dist/**",
     "**/.nasti/**",
