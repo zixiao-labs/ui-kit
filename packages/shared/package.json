@@ -1,0 +1,9 @@
+{
+  "name": "@zixiao-labs/ui-kits-shared",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@material/material-color-utilities": "0.3.0"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "@zixiao-labs/ui-kits-solid-demo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Zixiao Laboratories UI Kits — SolidJS component workbench.",
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --filter @zixiao-labs/ui-kits-solid styles:generate && nasti dev",
+    "build": "nasti build",
+    "preview": "nasti preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@zixiao-labs/ui-kits-solid": "workspace:*",
+    "solid-js": "^1.9.19"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.7",
+    "@nasti-toolchain/nasti": "^2.10.1",
+    "@types/node": "^22.0.0",
+    "babel-preset-solid": "^1.9.16",
+    "solid-refresh": "^0.7.8",
+    "typescript": "^7.0.2"
+  }
+}

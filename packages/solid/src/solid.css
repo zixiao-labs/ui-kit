@@ -1,0 +1,192 @@
+/* Solid/Kobalte state and native-semantic adapters; shared visual tokens stay unchanged. */
+.zx-solid :is(button, a, summary, [role='tab'], [role='option'], [role='menuitem']):focus-visible {
+  outline: 2px solid var(--zx-focus);
+  outline-offset: 2px;
+}
+
+.zx-choice:has(input:focus-visible) > :is(.zx-checkbox__box, .zx-radio__circle, .zx-switch__track) {
+  outline: 2px solid var(--zx-focus);
+  outline-offset: 4px;
+}
+
+.zx-choice[data-checked] .zx-checkbox__box,
+.zx-choice[data-indeterminate] .zx-checkbox__box,
+.zx-choice[data-checked] .zx-switch__track {
+  background: var(--zx-accent);
+  border-color: var(--zx-selection-border);
+}
+
+.zx-choice[data-checked] .zx-checkbox__box > svg,
+.zx-choice[data-indeterminate] .zx-checkbox__box > svg,
+.zx-choice[data-checked] .zx-radio__circle > span {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.zx-choice[data-checked] .zx-radio__circle {
+  border-color: var(--zx-selection-border);
+}
+
+.zx-choice[data-checked] .zx-switch__thumb {
+  background: var(--zx-on-accent);
+  transform: translateX(18px);
+}
+
+.zx-choice:dir(rtl)[data-checked] .zx-switch__thumb {
+  transform: translateX(-18px);
+}
+
+.zx-toggle-button[data-pressed] {
+  background: var(--zx-tonal);
+  color: var(--zx-on-tonal);
+  border-color: var(--zx-selection-border);
+}
+
+.zx-toggle-button:focus-visible,
+.zx-select__trigger:focus-visible {
+  outline: 2px solid var(--zx-focus);
+  outline-offset: 2px;
+}
+
+.zx-toggle-button:hover:not([data-disabled]) {
+  background: var(--zx-surface-subtle);
+}
+
+.zx-tabs__tab {
+  border: 0;
+  background: transparent;
+  font: inherit;
+}
+
+.zx-tabs__tab[data-selected]::after {
+  position: absolute;
+  inset: auto 16px 0;
+  height: 3px;
+  border-radius: var(--zx-radius-sm);
+  background: var(--zx-indicator);
+  content: '';
+}
+
+.zx-tabs[data-variant='tonal'] .zx-tabs__tab[data-selected] {
+  background: var(--zx-tonal);
+}
+
+.zx-tabs[data-variant='tonal'] .zx-tabs__tab::after {
+  content: none;
+}
+
+.zx-disclosure__panel {
+  height: auto;
+}
+
+.zx-disclosure__panel[data-expanded] {
+  opacity: 1;
+}
+
+.zx-solid-dialog-overlay {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  background: var(--zx-scrim);
+}
+
+.zx-solid-dialog-positioner {
+  display: flex;
+  position: fixed;
+  z-index: 101;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 24px;
+  pointer-events: none;
+}
+
+.zx-solid-dialog-positioner > .zx-modal {
+  pointer-events: auto;
+}
+
+.zx-modal.zx-solid {
+  position: relative;
+  overflow: visible;
+}
+
+.zx-modal.zx-solid > .zx-dialog {
+  max-height: inherit;
+  overflow-y: auto;
+  border-radius: inherit;
+}
+
+.zx-solid-dialog-positioner[data-surface='drawer'] {
+  justify-content: flex-end;
+  padding: 0;
+}
+
+.zx-solid-dialog-positioner[data-surface='sheet'] {
+  align-items: flex-end;
+  padding: 0;
+}
+
+.zx-select__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  text-align: start;
+  cursor: pointer;
+}
+
+.zx-select__content {
+  z-index: 110;
+  min-width: var(--kb-popper-anchor-width);
+  max-height: min(320px, var(--kb-popper-content-available-height, 320px));
+}
+
+.zx-listbox__item[data-highlighted],
+.zx-menu__item[data-highlighted] {
+  outline: none;
+  color: var(--zx-on-tonal);
+  background: var(--zx-tonal);
+}
+
+.zx-listbox__item[data-disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.zx-menu,
+.zx-listbox {
+  margin: 0;
+  list-style: none;
+}
+
+.zx-slider__native {
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  accent-color: var(--zx-indicator);
+}
+
+.zx-input:focus-within {
+  border-color: var(--zx-focus);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .zx-modal[data-expanded],
+  .zx-popover[data-expanded],
+  .zx-tooltip[data-expanded],
+  .zx-select__content[data-expanded] {
+    animation: zx-solid-enter var(--zx-motion-duration-short) var(--zx-motion-easing);
+  }
+}
+
+@keyframes zx-solid-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

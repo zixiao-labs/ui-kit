@@ -1,0 +1,66 @@
+{
+  "name": "@zixiao-labs/ui-kits-solid",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Zixiao Laboratories UI Kits — native SolidJS components with scoped, interchangeable styles.",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./theme": "./src/theme.ts",
+    "./patterns": "./src/patterns.tsx",
+    "./styles.css": "./styles/styles.css",
+    "./base.css": "./styles/base.css",
+    "./patterns.css": "./styles/patterns.css",
+    "./css/*.css": "./styles/css/*.css",
+    "./themes/*.css": "./styles/themes/*.css"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "solid": "./dist/index.jsx",
+        "default": "./dist/index.jsx"
+      },
+      "./theme": {
+        "types": "./dist/theme.d.ts",
+        "import": "./dist/theme.js",
+        "default": "./dist/theme.js"
+      },
+      "./patterns": {
+        "types": "./dist/patterns.d.ts",
+        "solid": "./dist/patterns.jsx",
+        "default": "./dist/patterns.jsx"
+      },
+      "./styles.css": "./dist/styles.css",
+      "./base.css": "./dist/base.css",
+      "./patterns.css": "./dist/patterns.css",
+      "./css/*.css": "./dist/css/*.css",
+      "./themes/*.css": "./dist/themes/*.css"
+    }
+  },
+  "scripts": {
+    "prepare": "pnpm styles:generate",
+    "styles:generate": "node scripts/generate-styles.mjs",
+    "build": "pnpm styles:generate && tsdown",
+    "prepack": "pnpm build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@kobalte/core": "^0.13.14",
+    "@material/material-color-utilities": "0.3.0"
+  },
+  "devDependencies": {
+    "solid-js": "^1.9.19",
+    "tsdown": "0.23.7",
+    "typescript": "^7.0.2"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.9.8"
+  }
+}
