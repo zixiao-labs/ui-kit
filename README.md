@@ -219,7 +219,7 @@ import '@zixiao-labs/ui-kits-react/patterns.css'
 </PatternBackground>
 ```
 
-`hui` 是回纹（连续折线），`yunlei` 是云雷纹（方圆回旋），`lei` 是雷纹（丁形勾连）。它们是依据参考图制作的几何化底纹，不作为文物图样的复原或年代判断；不传 `pattern` 时不生成 SVG。可通过 `--zx-pattern-color`、`--zx-pattern-opacity` 调整颜色与强度，默认透明度 0.12；装饰层不参与点击，在强制颜色模式下隐藏。
+`hui` 是回纹（连续折线），`yunlei` 是云雷纹（方圆回旋），`lei` 是雷纹（丁形勾连）。路径由提供的参考图片裁剪、去噪后实际矢量描摹，不再用手写折线近似；云雷纹保留完整、不规则的云头纹带，回纹和雷纹按内部单元连续平铺。描摹步骤与独立 SVG 见 [纹样描摹记录](docs/pattern-tracing.md)。不传 `pattern` 时不生成 SVG。可通过 `--zx-pattern-color`、`--zx-pattern-opacity` 调整颜色与强度，默认透明度 0.12；装饰层不参与点击，在强制颜色模式下隐藏。
 
 液态玻璃保留内置轻量实现，并新增独立的 `/liquid-glass` 增强入口 `LiquidGlassSurface`（同时导入 `/liquid-glass.css`）。使用该入口才需安装 optional peer `liquid-glass-react@^1.1.1`；工作台可在「玻璃实现」中对比两者。增强材质在客户端挂载后加载，SSR / 加载失败保留实色表面；不将整个容器当作按钮，不启用第三方鼠标弹性。Safari / Firefox 的折射支持有限。
 

@@ -45,7 +45,7 @@ import '@zixiao-labs/ui-kits-react/patterns.css'
 </PatternBackground>
 ```
 
-`hui` / `yunlei` / `lei` 分别为回纹、云雷纹、雷纹的几何化表达；不传 `pattern` 则不生成 SVG。用 `--zx-pattern-color` 和 `--zx-pattern-opacity` 调整颜色与强度（默认 0.12）。装饰不截获输入，不自动应用于主题。
+`hui` / `yunlei` / `lei` 分别为从参考图片实际矢量描摹的回纹、云雷纹、雷纹；云雷纹保留完整纹带，回纹和雷纹连续平铺。不传 `pattern` 则不生成 SVG。用 `--zx-pattern-color` 和 `--zx-pattern-opacity` 调整颜色与强度（默认 0.12）。装饰不截获输入，不自动应用于主题。
 
 第三方液态玻璃需由应用安装 `liquid-glass-react@^1.1.1`（optional peer），与普通组件分离：
 
