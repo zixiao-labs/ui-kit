@@ -18,6 +18,16 @@ beforeAll(async () => {
     args: [
       '--enable-unsafe-webgpu',
       ...(process.platform === 'darwin' ? ['--use-angle=metal'] : []),
+      // Hosted Linux runners have no hardware GPU. Exercise real WebGPU via
+      // Chromium's software Vulkan backend instead of skipping the pixel test.
+      ...(process.platform === 'linux'
+        ? [
+            '--use-angle=vulkan',
+            '--use-vulkan=swiftshader',
+            '--enable-features=Vulkan',
+            '--disable-vulkan-surface',
+          ]
+        : []),
       '--use-mock-keychain',
       '--password-store=basic',
     ],

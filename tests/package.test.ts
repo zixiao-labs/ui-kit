@@ -35,9 +35,12 @@ test('packs a source-free library usable through its public JS, type and CSS exp
   mkdirSync('test-results', { recursive: true })
   const fixture = mkdtempSync(resolve('test-results/package-'))
   try {
-    const archive = join(fixture, 'ui-kits-react.tgz')
-    // Run the real lifecycle: prepack must build JS, declarations and current CSS.
-    pnpm(['pack', '--out', archive], library)
+    const archive = process.env.UI_KITS_REACT_TARBALL
+      ? resolve(process.env.UI_KITS_REACT_TARBALL)
+      : join(fixture, 'ui-kits-react.tgz')
+    // CI tests the exact archive later uploaded for publishing. Local runs also
+    // exercise the real prepack lifecycle, including JS, declarations and CSS.
+    if (!process.env.UI_KITS_REACT_TARBALL) pnpm(['pack', '--out', archive], library)
     writeFileSync(
       join(fixture, 'package.json'),
       JSON.stringify({
@@ -65,6 +68,16 @@ test('packs a source-free library usable through its public JS, type and CSS exp
     const packedManifest = JSON.parse(readFileSync(join(packed, 'package.json'), 'utf8'))
     expect(packedManifest.exports).toEqual(manifest.publishConfig.exports)
     expect(packedManifest.sideEffects).toEqual(['**/*.css'])
+    expect(packedManifest.name).toBe('@zixiao-labs/ui-kits-react')
+    expect(packedManifest.version).toBe(manifest.version)
+    expect(packedManifest.private === true).toBe(false)
+    expect(packedManifest.license).toBe('MIT')
+    expect(packedManifest.author).toBe('Zixiao Laboratories')
+    expect(packedManifest.repository).toEqual(manifest.repository)
+    expect(readFileSync(join(packed, 'LICENSE'), 'utf8')).toBe(readFileSync('LICENSE', 'utf8'))
+    for (const version of Object.values(packedManifest.dependencies) as string[]) {
+      expect(version.startsWith('workspace:')).toBe(false)
+    }
     // Do not resolve upward here: a developer's ancestor checkout can contain
     // the peer even though this isolated consumer did not install it.
     expect(existsSync(join(fixture, 'node_modules/liquid-glass-react'))).toBe(false)

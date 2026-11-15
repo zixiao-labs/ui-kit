@@ -2,7 +2,13 @@
 
 一套组件 API，共享语义与交互，多种视觉表达。基于 React 19 和 React Aria，支持作用域内独立的风格与明暗配色。
 
-当前仍为私有 workspace 包，尚未发布 npm；可用 `pnpm pack` 生成本地安装包验证。
+公开 npm 包的发布配置已就绪；是否可安装以 npm registry 中实际发布的版本为准。许可证为 MIT，版权署名 Zixiao Laboratories。Solid 版本暂不发布。
+
+发布后安装：
+
+```sh
+pnpm add @zixiao-labs/ui-kits-react react@^19 react-dom@^19
+```
 
 ## 使用
 
@@ -77,6 +83,7 @@ workspace 的 `docs/tree-shaking.md` 包含完整 Nasti / Vite 配置、延迟�
 - 只提供 ESM；组件和 `theme` 入口均附带 TypeScript 声明与 JS source map。
 - 需要 React / React DOM 19；运行时依赖保持 external，CSS 需显式导入。
 - GPU 阴影按需动态加载，默认使用组件不会申请 GPU。
-- workspace 导出指向源码，`pnpm pack` / `publish` 通过 `publishConfig.exports` 切换到 `dist`；不要使用 `npm pack` / `publish`。
+- workspace 导出指向源码，`pnpm pack` 通过 `publishConfig.exports` 切换到 `dist`；不要使用 `npm pack` 或在源码目录直接 `npm publish`。CI 用 npm OIDC 发布已转换并通过消费验证的 `.tgz`。
 - `pnpm build` 生成最新 CSS 并执行 tsdown，`prepack` 自动运行构建。
 - 在 workspace 根目录执行 `pnpm test:package`，验证真实 tarball 的安装、导出、类型与 Node SSR。
+- 维护者的 CI、首次建包、Trusted Publisher 绑定和版本标签步骤见仓库 `docs/publishing.md`。

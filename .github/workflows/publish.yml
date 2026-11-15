@@ -1,0 +1,70 @@
+name: Publish React
+
+on:
+  push:
+    tags: ['react-v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: npm-react-publish
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate release tag
+    if: github.repository == 'zixiao-labs/ui-kit'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      dist-tag: ${{ steps.release.outputs.dist-tag }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Require a commit already on main
+        run: git merge-base --is-ancestor HEAD origin/main
+      - name: Check version, scope and release metadata
+        id: release
+        run: node scripts/check-release.ts "$RELEASE_TAG"
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+
+  ci:
+    name: Release CI
+    needs: validate
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    name: Publish to npm
+    needs: [validate, ci]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - name: Install an OIDC-capable npm CLI
+        run: npm install --global npm@11.12.1
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
+        with:
+          name: react-package
+          path: release
+      # Publish the exact pnpm-packed, consumer-tested archive from this run.
+      # No checkout, dependency lifecycle scripts, pnpm publish -r, or npm token.
+      - name: Publish public React tarball using OIDC
+        run: npm publish ./release/ui-kits-react.tgz --ignore-scripts --access public --provenance --tag "$DIST_TAG"
+        env:
+          DIST_TAG: ${{ needs.validate.outputs.dist-tag }}

@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { afterAll, afterEach, beforeAll, beforeEach, expect, test } from '@lightning-js/lightning'
 import { chromium } from 'playwright'
 import type { Browser, Page } from 'playwright'
+import { styleOptions } from '../apps/demo/src/style-options'
 import { startDemo } from './dev-server'
 import { chooseDemoSelect } from './select-helpers'
 
@@ -53,6 +54,8 @@ afterEach(async () => {
 for (const mode of ['light', 'dark']) {
   test(`keeps skeleton placeholders visible on each theme's surfaces in ${mode} mode`, async () => {
     await chooseDemoSelect(page, '样本主题', mode)
+    const directory = process.env.UI_KITS_SCREENSHOT_DIR
+    if (directory) await mkdir(directory, { recursive: true })
     const blocks = page.locator('.demo-stage .zx-skeleton')
     expect(await blocks.count()).toBe(4)
     expect(await blocks.first().getAttribute('aria-hidden')).toBe('true')
@@ -60,7 +63,8 @@ for (const mode of ['light', 'dark']) {
     expect(square!.width).toBe(64)
     expect(square!.height).toBe(64)
 
-    for (const theme of ['clean', 'minimal', 'soft', 'brutalist']) {
+    let minimumContrast = Infinity
+    for (const { id: theme } of styleOptions) {
       for (const surface of [
         '--zx-surface-subtle',
         '--zx-surface',
@@ -100,6 +104,8 @@ for (const mode of ['light', 'dark']) {
                 const a = luminance(background)
                 const b = luminance(fill)
                 return {
+                  theme: options.theme,
+                  surface: options.surface,
                   background,
                   fill,
                   contrast: (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05),
@@ -111,16 +117,23 @@ for (const mode of ['light', 'dark']) {
         )
         // A decorative placeholder visibility floor, not a WCAG text requirement.
         expect(readings.filter((reading) => reading.contrast < 1.2)).toEqual([])
+        minimumContrast = Math.min(minimumContrast, ...readings.map((reading) => reading.contrast))
+        if (directory && surface === '--zx-tonal') {
+          await page.locator('.component-demo').screenshot({
+            path: join(directory, `skeleton-${theme}-${mode}-tonal.png`),
+          })
+        }
       }
     }
+    console.log(
+      `Skeleton ${mode}: minimum contrast ${minimumContrast.toFixed(3)} across all themes`,
+    )
 
     await page.locator('.component-demo').evaluate((container) => {
       container.setAttribute('data-zx-style', 'clean')
       ;(container as HTMLElement).style.removeProperty('background-color')
     })
-    const directory = process.env.UI_KITS_SCREENSHOT_DIR
     if (directory) {
-      await mkdir(directory, { recursive: true })
       await page
         .locator('.component-demo')
         .screenshot({ path: join(directory, `skeleton-${mode}-desktop.png`) })

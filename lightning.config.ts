@@ -10,6 +10,7 @@ export default defineConfig({
       'tests/demo-selects.test.ts',
       'tests/component-catalogue.test.ts',
       'tests/solid.test.ts',
+      'tests/release.test.ts',
     ],
     environment: 'node',
   },

@@ -28,7 +28,9 @@ Solid 版本使用独立的 **Nasti + SolidJS SPA**，运行 `pnpm dev:solid`；
 | `apps/solid-demo` | `@zixiao-labs/ui-kits-solid-demo` | Solid 组件工作台，Nasti SPA                        |
 | `packages/shared` | `@zixiao-labs/ui-kits-shared`     | 框架无关的主题源文件，构建时内联，不作为运行时依赖 |
 
-这些包目前均为 `private`，**还不能从 npm 安装**。内部依赖使用 `workspace:*`，组件包通过源码 exports 交给 Nasti 编译。组件包已接入 tsdown 构建和 tarball 验证；版本管理、npm 发布与 CI 尚未接入。
+React 包已准备公开发布，首个版本预设为 `0.1.0`；**配置完成不代表已经发布到 npm**。Solid、shared、demo 和根 workspace 仍为 `private`，Solid 暂不发布。内部依赖使用 `workspace:*`，组件包在 workspace 内通过源码 exports 交给 Nasti 编译。
+
+GitHub CI 覆盖 lint、格式、类型、单元测试、生产构建、tarball 消费及浏览器回归；`react-v<版本>` 标签触发完整 CI 后，通过 npm Trusted Publishing（OIDC，无 npm token）仅发布 React 包。首次建包、GitHub `npm` Environment 与 npm 绑定的手动步骤见 [发布指南](docs/publishing.md)。许可证为 MIT，版权署名 Zixiao Laboratories。
 
 包名前缀与文档、页面品牌一致：**Zixiao Laboratories UI Kits**。npm scope 保留 `@zixiao-labs`，不申请新 scope。
 
@@ -46,7 +48,7 @@ pnpm test:package    # pack → 独立安装 → 类型与 Node SSR 验证
 
 # 只打包，不发布；prepack 会自动重新构建
 mkdir -p test-results
-pnpm --filter @zixiao-labs/ui-kits-react pack --out ../../test-results/ui-kits-react.tgz
+pnpm release:pack
 ```
 
 构建产物位于 `packages/react/dist/`，只提供 ESM，不提供 CommonJS 构建：
@@ -65,7 +67,7 @@ pnpm --filter @zixiao-labs/ui-kits-react pack --out ../../test-results/ui-kits-r
 
 React、React DOM 和其他运行时依赖保持 external，不复制进组件 JS；GPU 阴影仍保留为动态加载的独立 chunk。CSS 按文件保留，不自动注入 JS，`sideEffects` 标记确保应用打包时不会误删样式。包内只包含 `dist`、包元数据和 README，不依赖源码或 workspace 配置；JS source map 内嵌源码便于调试。
 
-本地 `exports` 继续指向 `src`，Demo 开发、HMR 和源码测试不要求预先构建。`publishConfig.exports` 指向 `dist`，**必须使用 pnpm 的 `pack` / `publish` 才会替换导出表**；不要用不支持此覆盖的 `npm pack` / `npm publish`。当前保持 `private: true`，打包验证不会执行发布。
+本地 `exports` 继续指向 `src`，Demo 开发、HMR 和源码测试不要求预先构建。`publishConfig.exports` 指向 `dist`，**必须先使用 pnpm 的 `pack` 才会替换导出表**；不要用 `npm pack` 或从源码目录直接 `npm publish`。发布工作流用 npm OIDC 发布已转换并验证的 `.tgz`；本地打包与消费验证不会执行发布。
 
 `test:package` 会临时安装 tarball 及消费端依赖（优先本地缓存，缺失时需要 registry），检查所有运行时导出和 CSS、Bundler / NodeNext 两种 TypeScript 解析、真实 Node ESM SSR，以及 GPU chunk 的延迟加载结构；临时目录在结束后清理。
 
@@ -327,6 +329,8 @@ pnpm test         # Lightning：组件 SSR/API 测试
 pnpm test:watch   # Lightning：监视组件测试
 pnpm test:package # Lightning：tarball 安装、公开导出、类型与 Node SSR
 pnpm test:e2e     # Lightning：自动启动 Nasti 开发服务并运行浏览器回归
+pnpm release:check # 检查 React 发布元数据和其他包的私有状态
+pnpm release:pack  # 构建并生成 React 发布 tarball；不会发布
 ```
 
 ### 测试与截图
@@ -352,7 +356,7 @@ OTP 的跨浏览器裁切回归可单独运行：先执行 `pnpm exec playwright
 - 通过独立适配层扩展 Clean、Endfield 等风格；只列已经实现且可操作的组件，不用不可用的导航制造完整感。
 - 风格不改变行为；无法由 tokens 表达的结构差异再考虑 skin，不在组件里堆积 `if (style)`。
 - Dialog、Select 等复杂交互使用 React Aria 无样式无障碍 primitives，不自行重造焦点管理。扩展时保留受控状态、原生表单语义与主题隔离。
-- 组件库构建与产物验证统一使用 tsdown 和 tarball 消费测试；出现真实复用需求后再拆独立 tokens/primitives 包，版本发布流程单独接入。
+- 组件库构建与产物验证统一使用 tsdown 和 tarball 消费测试；出现真实复用需求后再拆独立 tokens/primitives 包。React 通过独立版本标签与 npm OIDC 发布，不递归发布 workspace。
 
 ## Nasti 注意事项
 

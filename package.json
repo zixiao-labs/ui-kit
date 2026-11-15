@@ -21,7 +21,9 @@
     "test": "lightning run",
     "test:watch": "lightning watch",
     "test:package": "lightning run --config lightning.package.config.ts",
-    "test:e2e": "lightning run --config lightning.e2e.config.ts"
+    "test:e2e": "lightning run --config lightning.e2e.config.ts",
+    "release:check": "node scripts/check-release.ts",
+    "release:pack": "pnpm release:check && pnpm --filter @zixiao-labs/ui-kits-react pack --out test-results/ui-kits-react.tgz"
   },
   "devDependencies": {
     "@lightning-js/lightning": "^3.1.2",

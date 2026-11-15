@@ -454,9 +454,9 @@
 .zx-skeleton {
   min-height: 24px;
   width: 100%;
-  /* Tint the actual backing surface so placeholders cannot disappear into
-     a container that already uses the subtle surface token. */
-  background: color-mix(in srgb, var(--zx-text) 12%, transparent);
+  /* Use an opaque neutral fill: translucent text disappears on bright tonal
+     surfaces in dark mode, while surface-subtle alone disappears on itself. */
+  background: color-mix(in srgb, var(--zx-text) 25%, var(--zx-surface));
   border-radius: var(--zx-radius-sm);
 }
 .zx-kbd {

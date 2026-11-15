@@ -1,8 +1,26 @@
 {
   "name": "@zixiao-labs/ui-kits-react",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0",
   "description": "Zixiao Laboratories UI Kits — shared React components with scoped, interchangeable styles.",
+  "keywords": [
+    "components",
+    "design-system",
+    "react",
+    "react-aria",
+    "themes",
+    "ui"
+  ],
+  "homepage": "https://github.com/zixiao-labs/ui-kit#readme",
+  "bugs": {
+    "url": "https://github.com/zixiao-labs/ui-kit/issues"
+  },
+  "license": "MIT",
+  "author": "Zixiao Laboratories",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zixiao-labs/ui-kit.git",
+    "directory": "packages/react"
+  },
   "files": [
     "dist"
   ],
@@ -53,7 +71,9 @@
       "./base.css": "./dist/base.css",
       "./css/*.css": "./dist/css/*.css",
       "./themes/*.css": "./dist/themes/*.css"
-    }
+    },
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
     "build": "pnpm styles:generate && tsdown",
