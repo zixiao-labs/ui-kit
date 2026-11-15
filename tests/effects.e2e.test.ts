@@ -11,23 +11,28 @@ let app: Awaited<ReturnType<typeof startDemo>>
 let browser: Browser
 let page: Page
 let errors: string[]
+const softwareGpu = process.platform === 'linux' || process.env.UI_KITS_TEST_SOFTWARE_GPU === '1'
 
 beforeAll(async () => {
   app = await startDemo()
   browser = await chromium.launch({
+    // CI uses Xvfb: exercise actual canvas presentation, not a headless-only
+    // compositor path that may omit software WebGPU surfaces on Linux.
+    headless: process.env.UI_KITS_TEST_GPU_HEADED !== '1',
     args: [
       '--enable-unsafe-webgpu',
-      ...(process.platform === 'darwin' ? ['--use-angle=metal'] : []),
-      // Hosted Linux runners have no hardware GPU. Exercise real WebGPU via
-      // Chromium's software Vulkan backend instead of skipping the pixel test.
-      ...(process.platform === 'linux'
+      // Keep ANGLE/compositing and WebGPU on SwiftShader together. Forcing
+      // Chromium's Vulkan compositor separately loses the device on canvas submit.
+      ...(softwareGpu
         ? [
-            '--use-angle=vulkan',
-            '--use-vulkan=swiftshader',
-            '--enable-features=Vulkan',
-            '--disable-vulkan-surface',
+            '--use-gl=angle',
+            '--use-angle=swiftshader',
+            '--use-webgpu-adapter=swiftshader',
+            '--enable-unsafe-swiftshader',
           ]
-        : []),
+        : process.platform === 'darwin'
+          ? ['--use-angle=metal']
+          : []),
       '--use-mock-keychain',
       '--password-store=basic',
     ],
@@ -47,6 +52,9 @@ beforeEach(async () => {
     colorScheme: 'light',
   })
   page.setDefaultTimeout(7000)
+  // Headed Chromium requests this optional browser-chrome asset automatically.
+  // The workbench has no favicon; keep that unrelated 404 out of console assertions.
+  await page.context().route('**/favicon.ico', (route) => route.fulfill({ status: 204 }))
   errors = []
   page.on('pageerror', (error) => errors.push(error.message))
   page.on('console', (message) => {
@@ -75,6 +83,31 @@ async function open(name = 'Card') {
 }
 async function renderer() {
   return sample().getAttribute('data-zx-shadow-renderer')
+}
+async function waitForGpuShadow(timeout = 7000) {
+  await page.waitForFunction(
+    () => {
+      const node = document.querySelector('[data-testid="effect-sample"]')
+      return (
+        node?.hasAttribute('data-zx-shadow-renderer') ||
+        node?.hasAttribute('data-zx-shadow-error') ||
+        'shadowDeviceLoss' in window
+      )
+    },
+    undefined,
+    { timeout, polling: 100 },
+  )
+  const state = await page.evaluate(() => {
+    const node = document.querySelector('[data-testid="effect-sample"]')
+    return {
+      renderer: node?.getAttribute('data-zx-shadow-renderer'),
+      error: node?.getAttribute('data-zx-shadow-error'),
+      deviceLoss: (window as unknown as { shadowDeviceLoss?: string }).shadowDeviceLoss ?? null,
+    }
+  })
+  // Device loss removes the renderer attribute without being a shader error.
+  // Fail with its reason instead of waiting for a ready flag that can never arrive.
+  expect(state).toEqual({ renderer: 'gpu', error: null, deviceLoss: null })
 }
 async function screenshot(name: string, component = 'Card') {
   if (!process.env.UI_KITS_SCREENSHOT_DIR) return
@@ -220,16 +253,22 @@ test('a failed optional glass import keeps an opaque usable surface and enhanced
 test('renders real transparent GPU shadow pixels, stays idle and releases devices on toggle, loss and unmount', async () => {
   await page.addInitScript(() => {
     const gpu = navigator.gpu
-    const stats = { requests: 0, destroyed: 0, submits: 0 }
+    const stats = { requests: 0, destroyed: 0, submits: 0, adapter: '' }
     Object.assign(window, { shadowStats: stats })
     const request = gpu.requestAdapter.bind(gpu)
     gpu.requestAdapter = async (options) => {
       stats.requests++
       const adapter = await request(options)
+      stats.adapter = adapter?.info.architecture ?? 'unavailable'
       if (!adapter) return null
       const create = adapter.requestDevice.bind(adapter)
       adapter.requestDevice = async (descriptor) => {
         const device = await create(descriptor)
+        void device.lost.then((info) => {
+          if (info.reason !== 'destroyed') {
+            Object.assign(window, { shadowDeviceLoss: `${info.reason}: ${info.message}` })
+          }
+        })
         const destroy = device.destroy.bind(device)
         device.destroy = () => {
           stats.destroyed++
@@ -252,14 +291,12 @@ test('renders real transparent GPU shadow pixels, stays idle and releases device
   const before = PNG.sync.read(await stage.screenshot())
   await lab().getByRole('checkbox', { name: 'GPU 阴影' }).check()
   await sample().scrollIntoViewIfNeeded()
-  await page.waitForFunction(() => {
-    const node = document.querySelector('[data-testid="effect-sample"]')
-    return (
-      node?.hasAttribute('data-zx-shadow-renderer') || node?.hasAttribute('data-zx-shadow-error')
-    )
-  })
-  expect(await sample().getAttribute('data-zx-shadow-error')).toBe(null)
-  expect(await renderer()).toBe('gpu')
+  await waitForGpuShadow()
+  const adapter = await page.evaluate(
+    () => (window as unknown as { shadowStats: { adapter: string } }).shadowStats.adapter,
+  )
+  console.log(`GPU shadow adapter: ${adapter}`)
+  if (softwareGpu) expect(adapter).toBe('swiftshader')
   // Read compositor pixels, not drawImage(canvas) after WebGPU's swapchain has
   // already presented and discarded its current texture.
   const after = PNG.sync.read(await stage.screenshot())
@@ -290,7 +327,7 @@ test('renders real transparent GPU shadow pixels, stays idle and releases device
     await lab().getByRole('checkbox', { name: 'GPU 阴影' }).uncheck()
     expect(await sample().locator('canvas').count()).toBe(0)
     await lab().getByRole('checkbox', { name: 'GPU 阴影' }).check()
-    await expect.poll(renderer, { timeout: 10000 }).toBe('gpu')
+    await waitForGpuShadow(10000)
   }
   await page.evaluate(() =>
     (window as unknown as { loseShadowDevice: () => void }).loseShadowDevice(),

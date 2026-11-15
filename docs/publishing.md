@@ -16,7 +16,9 @@
 
 pnpm 版本从根 `package.json#packageManager` 读取。Actions 固定到完整 commit SHA；依赖安装使用 `pnpm install --frozen-lockfile`。不恢复依赖缓存，以免发布构建复用污染的缓存。
 
-Linux 的 GPU 像素回归使用 Chromium 自带的 SwiftShader / Vulkan 软件后端，不依赖 runner 的独立显卡，也不跳过真实 WebGPU 渲染断言；这验证渲染正确性，不代表硬件性能测试。
+Linux 的 GPU 像素回归使用 Chromium 自带的 SwANGLE（ANGLE + SwiftShader）软件路径，让页面合成与 WebGPU 选择一致的软件后端；不要单独强制 Chromium 的 Vulkan compositor，否则可能在首次 canvas 提交时丢失设备。它不依赖 runner 的独立显卡，也不跳过真实 WebGPU 渲染断言；这验证渲染正确性，不代表硬件性能测试。CI 显式设置 `UI_KITS_TEST_SOFTWARE_GPU=1`，本地也可用同一开关复现软件路径。
+
+CI 同时通过 Xvfb 虚拟显示运行套件，并设置 `UI_KITS_TEST_GPU_HEADED=1`，仅让材质 / GPU 套件使用有界面 Chromium，确保像素断言经过实际 canvas 合成路径；其他套件仍为 headless。Xvfb / xauth 由 workflow 安装，无需维护者手动提供显示器或显卡。
 
 `Build and package` 上传 `react-package` artifact，其中只有 `ui-kits-react.tgz`。它是由 **pnpm pack** 生成、已经过真实独立安装、Bundler / NodeNext 类型检查、Node SSR 和 tree-shaking 检查的同一个归档。浏览器结果保留为 `browser-results`。两类 artifact 均保留 7 天。
 
@@ -109,6 +111,18 @@ UI_KITS_REACT_TARBALL=test-results/ui-kits-react.tgz pnpm test:package
 npm publish ./test-results/ui-kits-react.tgz --dry-run --ignore-scripts --access public
 pnpm exec playwright install chromium webkit
 UI_KITS_TEST_WEBKIT=1 pnpm test:e2e
+```
+
+只复现 CI 的 GPU / 材质回归，可运行：
+
+```sh
+UI_KITS_TEST_SOFTWARE_GPU=1 pnpm exec lightning run --config lightning.e2e.config.ts tests/effects.e2e.test.ts
+```
+
+Linux 无显示服务器时，复现 CI 的有界面像素路径：
+
+```sh
+UI_KITS_TEST_SOFTWARE_GPU=1 UI_KITS_TEST_GPU_HEADED=1 xvfb-run --auto-servernum --server-args="-screen 0 1920x1440x24" pnpm exec lightning run --config lightning.e2e.config.ts tests/effects.e2e.test.ts
 ```
 
 `pnpm release:check` 也可传入期望的标签：`pnpm release:check react-v0.1.0`。`pnpm release:pack` 自动检查元数据并由 `prepack` 构建，只打包，不发布。

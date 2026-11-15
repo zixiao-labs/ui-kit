@@ -75,9 +75,13 @@ jobs:
       - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium webkit
-      - run: pnpm test:e2e
+      - run: sudo apt-get install --yes xvfb xauth
+      - name: Run browser regressions with a virtual display
+        run: xvfb-run --auto-servernum --server-args="-screen 0 1920x1440x24" pnpm test:e2e
         env:
           UI_KITS_TEST_WEBKIT: '1'
+          UI_KITS_TEST_SOFTWARE_GPU: '1'
+          UI_KITS_TEST_GPU_HEADED: '1'
           UI_KITS_SCREENSHOT_DIR: test-results/screenshots
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: ${{ always() }}
