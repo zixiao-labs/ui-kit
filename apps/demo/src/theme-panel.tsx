@@ -80,7 +80,7 @@ export function ThemePanel() {
       <section className="theme-panel" id="theme-customizer" aria-labelledby="theme-panel-title">
         <div className="theme-panel-heading">
           <Palette aria-hidden="true" />
-          <h2 id="theme-panel-title">调一套你的主题</h2>
+          <h2 id="theme-panel-title">主题设置</h2>
           <button
             type="button"
             className="icon-button"

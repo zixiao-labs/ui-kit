@@ -36,20 +36,9 @@
   transform: translateX(-18px);
 }
 
-.zx-toggle-button[data-pressed] {
-  background: var(--zx-tonal);
-  color: var(--zx-on-tonal);
-  border-color: var(--zx-selection-border);
-}
-
-.zx-toggle-button:focus-visible,
 .zx-select__trigger:focus-visible {
   outline: 2px solid var(--zx-focus);
   outline-offset: 2px;
-}
-
-.zx-toggle-button:hover:not([data-disabled]) {
-  background: var(--zx-surface-subtle);
 }
 
 .zx-tabs__tab {

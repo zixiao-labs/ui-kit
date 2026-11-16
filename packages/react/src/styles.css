@@ -250,21 +250,32 @@
   color: var(--zx-text);
   font: 500 14px/20px var(--zx-font);
   cursor: pointer;
-  transition: background var(--zx-motion-duration-short) var(--zx-motion-easing);
+  transition:
+    background-color var(--zx-motion-duration-short) var(--zx-motion-easing),
+    color var(--zx-motion-duration-short) var(--zx-motion-easing),
+    border-color var(--zx-motion-duration-short) var(--zx-motion-easing);
 }
-.zx-toggle-button[data-selected] {
+.zx-toggle-button:is([data-selected], [aria-pressed='true']) {
   background: var(--zx-tonal);
   color: var(--zx-on-tonal);
   border-color: var(--zx-selection-border);
 }
-.zx-toggle-button[data-hovered] {
+.zx-toggle-button:is([data-hovered], :hover):not(:disabled, [data-disabled]) {
   background: var(--zx-surface-subtle);
+}
+.zx-toggle-button:is([data-selected], [aria-pressed='true']):is([data-hovered], :hover):not(
+    :disabled,
+    [data-disabled]
+  ) {
+  /* Hover is feedback within a state, not a replacement for the selection. */
+  background: color-mix(in srgb, var(--zx-tonal), var(--zx-on-tonal) 8%);
 }
 .zx-toggle-button[data-disabled] {
   opacity: 0.45;
   cursor: not-allowed;
 }
 .zx-toggle-button[data-focus-visible],
+.zx-toggle-button:focus-visible,
 .zx-chip-remove:focus-visible,
 .zx-scroll-shadow:focus-visible,
 .zx-table [data-focus-visible] {
@@ -1064,7 +1075,7 @@
   padding: 4px;
   border: 1px solid var(--zx-control-border);
   border-radius: var(--zx-switch-radius);
-  background: var(--zx-tonal);
+  background: var(--zx-surface-subtle);
   transition: background-color var(--zx-motion-duration-short) var(--zx-motion-easing);
 }
 
@@ -1372,12 +1383,15 @@
     transform var(--zx-motion-duration-short) var(--zx-motion-easing);
 }
 
-:is(
-    .zx-field-button,
-    .zx-toggle-button,
-    .zx-overlay-action,
-    .zx-picker-icon-button
-  )[data-pressed]:not([data-disabled]) {
+:is(.zx-field-button, .zx-overlay-action, .zx-picker-icon-button)[data-pressed]:not(
+    [data-disabled]
+  ) {
+  transform: scale(0.97);
+}
+
+/* Kobalte's data-pressed means selected, RAC's means pointer-down.
+ * Native :active is the common transient press state, not persistent selection. */
+.zx-toggle-button:active:not(:disabled, [data-disabled]) {
   transform: scale(0.97);
 }
 
@@ -1756,7 +1770,7 @@
   padding: 12px 16px;
   border-radius: var(--zx-radius-sm) var(--zx-radius-sm) 0 0;
   color: var(--zx-muted);
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
 }
 
@@ -2206,6 +2220,7 @@
   color: var(--zx-accent-ink);
 }
 
+.zx-tabs__tab:hover:not(:disabled, [data-disabled]),
 :is(
     .zx-disclosure__trigger,
     .zx-tabs__tab,
@@ -2216,6 +2231,11 @@
     .zx-toast__action
   )[data-hovered]:not([data-disabled]) {
   background: var(--zx-surface-subtle);
+}
+
+.zx-tabs[data-variant='tonal'] .zx-tabs__tab[data-selected]:is([data-hovered], :hover) {
+  /* Keep selected text on its matching fill in both RAC and Kobalte. */
+  background: var(--zx-tonal);
 }
 
 .zx-overlay-action[data-variant='solid'][data-hovered] {

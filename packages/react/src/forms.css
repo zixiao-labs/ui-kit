@@ -362,7 +362,7 @@
   padding: 4px;
   border: 1px solid var(--zx-control-border);
   border-radius: var(--zx-switch-radius);
-  background: var(--zx-tonal);
+  background: var(--zx-surface-subtle);
   transition: background-color var(--zx-motion-duration-short) var(--zx-motion-easing);
 }
 

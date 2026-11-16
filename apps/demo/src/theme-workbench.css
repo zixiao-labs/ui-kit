@@ -9,8 +9,8 @@
 }
 .workspace-toolbar {
   justify-content: space-between;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--line);
 }
 .workspace-toolbar > a {

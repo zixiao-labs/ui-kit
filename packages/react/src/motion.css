@@ -25,12 +25,15 @@
     transform var(--zx-motion-duration-short) var(--zx-motion-easing);
 }
 
-:is(
-    .zx-field-button,
-    .zx-toggle-button,
-    .zx-overlay-action,
-    .zx-picker-icon-button
-  )[data-pressed]:not([data-disabled]) {
+:is(.zx-field-button, .zx-overlay-action, .zx-picker-icon-button)[data-pressed]:not(
+    [data-disabled]
+  ) {
+  transform: scale(0.97);
+}
+
+/* Kobalte's data-pressed means selected, RAC's means pointer-down.
+ * Native :active is the common transient press state, not persistent selection. */
+.zx-toggle-button:active:not(:disabled, [data-disabled]) {
   transform: scale(0.97);
 }
 

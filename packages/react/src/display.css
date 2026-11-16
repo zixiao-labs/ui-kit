@@ -46,21 +46,32 @@
   color: var(--zx-text);
   font: 500 14px/20px var(--zx-font);
   cursor: pointer;
-  transition: background var(--zx-motion-duration-short) var(--zx-motion-easing);
+  transition:
+    background-color var(--zx-motion-duration-short) var(--zx-motion-easing),
+    color var(--zx-motion-duration-short) var(--zx-motion-easing),
+    border-color var(--zx-motion-duration-short) var(--zx-motion-easing);
 }
-.zx-toggle-button[data-selected] {
+.zx-toggle-button:is([data-selected], [aria-pressed='true']) {
   background: var(--zx-tonal);
   color: var(--zx-on-tonal);
   border-color: var(--zx-selection-border);
 }
-.zx-toggle-button[data-hovered] {
+.zx-toggle-button:is([data-hovered], :hover):not(:disabled, [data-disabled]) {
   background: var(--zx-surface-subtle);
+}
+.zx-toggle-button:is([data-selected], [aria-pressed='true']):is([data-hovered], :hover):not(
+    :disabled,
+    [data-disabled]
+  ) {
+  /* Hover is feedback within a state, not a replacement for the selection. */
+  background: color-mix(in srgb, var(--zx-tonal), var(--zx-on-tonal) 8%);
 }
 .zx-toggle-button[data-disabled] {
   opacity: 0.45;
   cursor: not-allowed;
 }
 .zx-toggle-button[data-focus-visible],
+.zx-toggle-button:focus-visible,
 .zx-chip-remove:focus-visible,
 .zx-scroll-shadow:focus-visible,
 .zx-table [data-focus-visible] {

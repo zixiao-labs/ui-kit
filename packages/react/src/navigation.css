@@ -127,7 +127,7 @@
   padding: 12px 16px;
   border-radius: var(--zx-radius-sm) var(--zx-radius-sm) 0 0;
   color: var(--zx-muted);
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
 }
 
@@ -577,6 +577,7 @@
   color: var(--zx-accent-ink);
 }
 
+.zx-tabs__tab:hover:not(:disabled, [data-disabled]),
 :is(
     .zx-disclosure__trigger,
     .zx-tabs__tab,
@@ -587,6 +588,11 @@
     .zx-toast__action
   )[data-hovered]:not([data-disabled]) {
   background: var(--zx-surface-subtle);
+}
+
+.zx-tabs[data-variant='tonal'] .zx-tabs__tab[data-selected]:is([data-hovered], :hover) {
+  /* Keep selected text on its matching fill in both RAC and Kobalte. */
+  background: var(--zx-tonal);
 }
 
 .zx-overlay-action[data-variant='solid'][data-hovered] {

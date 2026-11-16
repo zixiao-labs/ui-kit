@@ -14,6 +14,9 @@
 body {
   margin: 0;
 }
+html {
+  scroll-padding-top: 88px;
+}
 button,
 input,
 select,
@@ -61,12 +64,22 @@ pre:focus-visible {
   top: 12px;
 }
 .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   display: flex;
-  min-height: 88px;
+  min-height: 72px;
   align-items: center;
-  gap: 48px;
-  padding: 16px 32px;
+  gap: 32px;
+  padding-block: 12px;
+  background: var(--zx-surface);
   border-bottom: 1px solid var(--workbench-line);
+}
+.site-header,
+.workbench,
+.site-footer {
+  width: min(1440px, calc(100% - 64px));
+  margin-inline: auto;
 }
 .brand {
   display: flex;
@@ -115,20 +128,20 @@ pre:focus-visible {
 }
 .workbench {
   display: grid;
-  grid-template-columns: 224px minmax(0, 1fr) 256px;
-  max-width: 1600px;
+  grid-template-columns: 192px minmax(0, 1fr) 240px;
+  gap: 32px;
+  padding-block: 32px 64px;
   min-height: calc(100dvh - 160px);
-  margin-inline: auto;
 }
 .component-nav {
   position: sticky;
-  top: 0;
+  top: 104px;
   align-self: start;
-  max-height: 100dvh;
+  max-height: calc(100dvh - 128px);
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 28px 16px 32px 24px;
-  border-right: 1px solid var(--workbench-line);
+  scrollbar-width: thin;
+  padding-right: 8px;
 }
 .directory-heading,
 .theme-heading {
@@ -198,20 +211,17 @@ pre:focus-visible {
   background: transparent;
   color: var(--zx-text);
   text-align: start;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 20px;
 }
 .directory-item:hover {
   background: var(--zx-surface-subtle);
 }
 .directory-item[aria-current] {
-  color: var(--zx-accent-ink);
+  color: var(--zx-text);
   background: var(--zx-surface-subtle);
-  box-shadow: inset 2px 0 var(--zx-accent-ink);
+  box-shadow: inset 2px 0 var(--zx-text);
   font-weight: 500;
-}
-.directory-item span {
-  font-size: 16px;
 }
 .directory-footnote {
   margin-top: 40px;
@@ -228,12 +238,11 @@ pre:focus-visible {
 }
 main {
   min-width: 0;
-  padding: 32px clamp(24px, 3vw, 48px) 48px;
 }
 .page-breadcrumb {
   display: flex;
-  gap: 12px;
-  margin-bottom: 28px;
+  gap: 8px;
+  margin-bottom: 12px;
   color: var(--zx-muted);
   font-size: 12px;
   line-height: 20px;
@@ -246,7 +255,7 @@ main {
   align-items: start;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 .page-heading h1 {
   font-size: clamp(28px, 3vw, 40px);
@@ -255,10 +264,10 @@ main {
   font-family: var(--zx-font-display);
 }
 .page-heading p {
-  margin-top: 16px;
+  margin-top: 8px;
   color: var(--zx-muted);
   font-size: 14px;
-  line-height: 1.8;
+  line-height: 24px;
 }
 .source-label {
   flex: none;
@@ -269,12 +278,12 @@ main {
 .preview-panel,
 .code-panel {
   border: 1px solid var(--workbench-line);
-  border-radius: 8px;
+  border-radius: var(--zx-radius-md);
   overflow: clip;
 }
 .panel-heading {
   display: flex;
-  min-height: 56px;
+  min-height: 52px;
   padding: 12px 20px;
   align-items: center;
   justify-content: space-between;
@@ -282,7 +291,7 @@ main {
   border-bottom: 1px solid var(--workbench-line);
 }
 .panel-heading h2 {
-  font-size: 13px;
+  font-size: 14px;
   line-height: 20px;
   font-weight: 500;
 }
@@ -292,13 +301,13 @@ main {
 }
 .panel-divider {
   padding-inline: 8px;
-  color: var(--workbench-line);
+  color: inherit;
 }
 .preview-canvas {
   display: grid;
   min-height: 280px;
   align-content: center;
-  padding: 40px 32px;
+  padding: 32px;
   background: var(--zx-surface-raised);
 }
 .preview-canvas > * {
@@ -350,27 +359,8 @@ main {
   color: var(--zx-muted);
   font: 12px/20px var(--workbench-mono);
 }
-.preview-caption {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  min-height: 48px;
-  padding: 12px 20px;
-  border-top: 1px solid var(--workbench-line);
-  color: var(--zx-muted);
-  font-size: 12px;
-  line-height: 20px;
-}
-.preview-caption > span:last-child {
-  margin-left: auto;
-}
-.caption-rule {
-  width: 12px;
-  height: 2px;
-  background: var(--zx-accent-ink);
-}
 .code-panel {
-  margin-top: 24px;
+  margin-top: 16px;
 }
 .code-title {
   display: flex;
@@ -402,7 +392,7 @@ main {
   overflow: auto;
   background: var(--zx-surface-subtle);
   color: var(--zx-text);
-  font: 12px/1.9 var(--workbench-mono);
+  font: 12px/24px var(--workbench-mono);
   tab-size: 2;
 }
 .copy-message {
@@ -432,8 +422,12 @@ main {
   font-size: 12px;
 }
 .theme-panel {
-  padding: 28px 24px 32px;
-  border-left: 1px solid var(--workbench-line);
+  align-self: start;
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--workbench-line);
+  border-radius: var(--zx-radius-md);
+  background: var(--zx-surface-raised);
 }
 .theme-heading {
   margin-bottom: 8px;
@@ -496,11 +490,11 @@ main {
   display: flex;
   gap: 8px;
   min-width: 0;
-  height: 40px;
+  min-height: 44px;
 }
 .color-control input[type='color'] {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   flex: none;
   padding: 4px;
   border: 1px solid var(--workbench-line);
@@ -543,7 +537,7 @@ main {
   display: block;
   margin-top: 8px;
   color: var(--zx-muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .theme-actions {
   display: grid;
@@ -557,8 +551,8 @@ main {
 .theme-footer,
 .settings-notice {
   color: var(--zx-muted);
-  font-size: 11px;
-  line-height: 1.9;
+  font-size: 12px;
+  line-height: 20px;
 }
 .theme-footer {
   margin-top: 16px;
@@ -571,9 +565,7 @@ main {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 16px;
-  max-width: 1600px;
-  margin-inline: auto;
-  padding: 24px 32px;
+  padding-block: 24px;
   border-top: 1px solid var(--workbench-line);
   color: var(--zx-muted);
   font-size: 12px;
@@ -616,9 +608,32 @@ main {
 .zx-tag-group legend {
   padding: 0;
 }
+/* Keep the historical engineering shell distinct from the quieter families. */
+html[data-zx-style='endfield'] .brand-mark {
+  border-radius: 0;
+}
+html[data-zx-style='endfield'] .page-heading {
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--workbench-line);
+}
+html[data-zx-style='endfield'] .page-heading h1 {
+  font-family: 'Arial Narrow', 'DIN Condensed', var(--zx-font);
+}
+html[data-zx-style='endfield'] .preview-panel > .panel-heading {
+  background: #191919;
+  color: #f2f2f0;
+}
+html[data-zx-style='endfield'] .preview-panel > .panel-heading > span {
+  color: inherit;
+}
+html[data-zx-style='endfield'] .directory-item[aria-current] {
+  box-shadow: inset 3px 0 var(--zx-accent);
+  color: var(--zx-text);
+}
 @media (min-width: 1600px) {
-  .site-header {
-    padding-inline: max(32px, calc((100vw - 1536px) / 2));
+  .workbench {
+    grid-template-columns: 208px minmax(0, 1fr) 240px;
+    gap: 40px;
   }
 }
 @media (max-width: 1152px) {
@@ -627,8 +642,6 @@ main {
   }
   .theme-panel {
     grid-column: 2;
-    border-left: 0;
-    border-top: 1px solid var(--workbench-line);
     padding: 24px;
   }
   .component-nav {
@@ -650,11 +663,19 @@ main {
     display: none;
   }
 }
-@media (max-width: 720px) {
+@media (max-width: 800px) {
+  html {
+    scroll-padding-top: 80px;
+  }
+  .site-header,
+  .workbench,
+  .site-footer {
+    width: calc(100% - 32px);
+  }
   .site-header {
-    min-height: 80px;
+    min-height: 64px;
     gap: 16px;
-    padding: 16px;
+    padding-block: 8px;
   }
   .brand {
     font-size: 12px;
@@ -678,12 +699,10 @@ main {
   }
   .workbench {
     display: block;
+    padding-block: 16px 32px;
   }
   .component-nav {
     display: none;
-  }
-  main {
-    padding: 24px 16px 32px;
   }
   .mobile-directory {
     display: flex;
@@ -722,7 +741,7 @@ main {
     padding: 12px 16px;
   }
   .preview-canvas {
-    padding: 32px 20px;
+    padding: 24px 16px;
   }
   .button-example {
     gap: 32px;
@@ -737,27 +756,21 @@ main {
   .specimen-count {
     width: 100%;
   }
-  .preview-caption {
-    padding: 12px 16px;
-  }
-  .preview-caption > span:last-child {
-    display: none;
-  }
   .code-panel pre {
     padding: 20px 16px;
-    font-size: 11px;
   }
   .code-title {
     gap: 12px;
   }
   .theme-panel {
-    padding: 24px 20px;
+    margin-top: 32px;
+    padding: 20px;
   }
   .surface-samples {
     grid-template-columns: 1fr;
   }
   .site-footer {
-    padding: 24px 20px;
+    padding-block: 24px;
   }
   .site-footer span:last-child {
     display: none;

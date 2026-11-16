@@ -196,7 +196,6 @@ export function App() {
                         onClick={() => selectComponent(example.name)}
                       >
                         {example.name}
-                        <span aria-hidden="true">{selected() === example.name ? '↗' : ''}</span>
                       </button>
                     )}
                   </For>
@@ -245,10 +244,6 @@ export function App() {
                 {(example) => <Dynamic component={example.render} />}
               </Show>
             </div>
-            <div class="preview-caption">
-              <span class="caption-rule" aria-hidden="true" />
-              真实组件，可用键盘与鼠标操作<span>不是静态设计稿</span>
-            </div>
           </section>
           <section class="code-panel" aria-labelledby="code-heading">
             <div class="panel-heading">
@@ -282,7 +277,7 @@ export function App() {
         </main>
         <aside class="theme-panel" aria-label="主题设置">
           <div class="theme-heading">
-            <h2>主题实验室</h2>
+            <h2>主题设置</h2>
             <span>7 种风格</span>
           </div>
           <p class="theme-intro">相同的组件，切换表达方式</p>
