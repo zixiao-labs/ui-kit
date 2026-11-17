@@ -12,6 +12,19 @@ let browser: Browser
 let page: Page
 let errors: string[]
 const softwareGpu = process.platform === 'linux' || process.env.UI_KITS_TEST_SOFTWARE_GPU === '1'
+// Cold SwiftShader startup includes lazy module loading, device creation and
+// native pipeline compilation; it must not share the 7s UI interaction budget.
+const gpuReadyTimeout = 30_000
+
+interface ShadowStats {
+  requests: number
+  devices: number
+  pipelines: number
+  compiled: number
+  destroyed: number
+  submits: number
+  adapter: string
+}
 
 beforeAll(async () => {
   app = await startDemo()
@@ -21,8 +34,7 @@ beforeAll(async () => {
     headless: process.env.UI_KITS_TEST_GPU_HEADED !== '1',
     args: [
       '--enable-unsafe-webgpu',
-      // Keep ANGLE/compositing and WebGPU on SwiftShader together. Forcing
-      // Chromium's Vulkan compositor separately loses the device on canvas submit.
+      // Keep ANGLE and WebGPU on SwiftShader rather than a runner's absent GPU.
       ...(softwareGpu
         ? [
             '--use-gl=angle',
@@ -33,6 +45,11 @@ beforeAll(async () => {
         : process.platform === 'darwin'
           ? ['--use-angle=metal']
           : []),
+      // Linux needs Vulkan-backed shared images to present WebGPU canvases.
+      // SwiftShader GLES alone submits a frame, then loses the native device.
+      ...(process.platform === 'linux'
+        ? ['--use-vulkan=swiftshader', '--enable-features=Vulkan', '--disable-vulkan-surface']
+        : []),
       '--use-mock-keychain',
       '--password-store=basic',
     ],
@@ -52,6 +69,9 @@ beforeEach(async () => {
     colorScheme: 'light',
   })
   page.setDefaultTimeout(7000)
+  // A cold dev graph can take longer to load under software GPU/CPU emulation.
+  // Keep navigation separate from the shorter UI interaction deadline.
+  page.setDefaultNavigationTimeout(30_000)
   // Headed Chromium requests this optional browser-chrome asset automatically.
   // The workbench has no favicon; keep that unrelated 404 out of console assertions.
   await page.context().route('**/favicon.ico', (route) => route.fulfill({ status: 204 }))
@@ -79,35 +99,59 @@ async function chooseEffect(label: string, option: string) {
 }
 async function open(name = 'Card') {
   await page.goto(`/?component=${name}`)
+  // The shell's client effect can run before the route's Suspense boundary
+  // hydrates. Select the existing default as a real, state-preserving action
+  // before screenshots mutate input caret styles on the SSR tree.
+  await page.locator('html[data-zx-color-mode]').waitFor({ state: 'attached' })
   await lab(name).getByRole('checkbox', { name: 'GPU 阴影' }).waitFor()
+  await chooseEffect('背景纹路', '无纹路')
 }
 async function renderer() {
   return sample().getAttribute('data-zx-shadow-renderer')
 }
-async function waitForGpuShadow(timeout = 7000) {
-  await page.waitForFunction(
-    () => {
-      const node = document.querySelector('[data-testid="effect-sample"]')
-      return (
-        node?.hasAttribute('data-zx-shadow-renderer') ||
-        node?.hasAttribute('data-zx-shadow-error') ||
-        'shadowDeviceLoss' in window
-      )
-    },
-    undefined,
-    { timeout, polling: 100 },
-  )
-  const state = await page.evaluate(() => {
+async function gpuShadowState() {
+  return page.evaluate(() => {
     const node = document.querySelector('[data-testid="effect-sample"]')
     return {
       renderer: node?.getAttribute('data-zx-shadow-renderer'),
       error: node?.getAttribute('data-zx-shadow-error'),
       deviceLoss: (window as unknown as { shadowDeviceLoss?: string }).shadowDeviceLoss ?? null,
+      stats: (window as unknown as { shadowStats?: ShadowStats }).shadowStats,
+      visibility: document.visibilityState,
+      shadow: node?.getAttribute('data-zx-shadow'),
+      canvas: !!node?.querySelector('canvas'),
+      bounds: node?.getBoundingClientRect().toJSON(),
+      viewport: { width: innerWidth, height: innerHeight },
     }
   })
+}
+async function waitForGpuShadow() {
+  // The renderer intentionally pauses offscreen/hidden hosts. Clicking a control
+  // can scroll the sample out of view, especially after toggles on narrow screens.
+  await page.bringToFront()
+  await sample().scrollIntoViewIfNeeded()
+  try {
+    await page.waitForFunction(
+      () => {
+        const node = document.querySelector('[data-testid="effect-sample"]')
+        return (
+          node?.hasAttribute('data-zx-shadow-renderer') ||
+          node?.hasAttribute('data-zx-shadow-error') ||
+          'shadowDeviceLoss' in window
+        )
+      },
+      undefined,
+      { timeout: gpuReadyTimeout, polling: 100 },
+    )
+  } catch (cause) {
+    throw new Error(
+      `GPU shadow readiness timed out:\n${JSON.stringify(await gpuShadowState(), null, 2)}`,
+      { cause },
+    )
+  }
   // Device loss removes the renderer attribute without being a shader error.
   // Fail with its reason instead of waiting for a ready flag that can never arrive.
-  expect(state).toEqual({ renderer: 'gpu', error: null, deviceLoss: null })
+  expect(await gpuShadowState()).toMatchObject({ renderer: 'gpu', error: null, deviceLoss: null })
 }
 async function screenshot(name: string, component = 'Card') {
   if (!process.env.UI_KITS_SCREENSHOT_DIR) return
@@ -253,7 +297,15 @@ test('a failed optional glass import keeps an opaque usable surface and enhanced
 test('renders real transparent GPU shadow pixels, stays idle and releases devices on toggle, loss and unmount', async () => {
   await page.addInitScript(() => {
     const gpu = navigator.gpu
-    const stats = { requests: 0, destroyed: 0, submits: 0, adapter: '' }
+    const stats: ShadowStats = {
+      requests: 0,
+      devices: 0,
+      pipelines: 0,
+      compiled: 0,
+      destroyed: 0,
+      submits: 0,
+      adapter: '',
+    }
     Object.assign(window, { shadowStats: stats })
     const request = gpu.requestAdapter.bind(gpu)
     gpu.requestAdapter = async (options) => {
@@ -264,13 +316,25 @@ test('renders real transparent GPU shadow pixels, stays idle and releases device
       const create = adapter.requestDevice.bind(adapter)
       adapter.requestDevice = async (descriptor) => {
         const device = await create(descriptor)
+        stats.devices++
+        const compile = device.createRenderPipelineAsync.bind(device)
+        device.createRenderPipelineAsync = async (descriptor) => {
+          stats.pipelines++
+          const pipeline = await compile(descriptor)
+          stats.compiled++
+          return pipeline
+        }
+        let destroying = false
         void device.lost.then((info) => {
-          if (info.reason !== 'destroyed') {
+          // Chromium can also report an unrequested native loss as "destroyed".
+          // Only teardown initiated through this device's wrapper is expected.
+          if (!destroying) {
             Object.assign(window, { shadowDeviceLoss: `${info.reason}: ${info.message}` })
           }
         })
         const destroy = device.destroy.bind(device)
         device.destroy = () => {
+          destroying = true
           stats.destroyed++
           destroy()
         }
@@ -279,7 +343,14 @@ test('renders real transparent GPU shadow pixels, stays idle and releases device
           stats.submits++
           submit(commands)
         }
-        Object.assign(window, { loseShadowDevice: () => device.destroy() })
+        Object.assign(window, {
+          // Bypass the teardown wrapper to simulate an unrequested native loss,
+          // including Chromium's "destroyed" loss on failed canvas presentation.
+          loseShadowDevice: () => {
+            stats.destroyed++
+            destroy()
+          },
+        })
         return device
       }
       return adapter
@@ -288,9 +359,8 @@ test('renders real transparent GPU shadow pixels, stays idle and releases device
   await open()
   await sample().scrollIntoViewIfNeeded()
   const stage = page.locator('.effects-stage')
-  const before = PNG.sync.read(await stage.screenshot())
+  const before = PNG.sync.read(await stage.screenshot({ animations: 'disabled' }))
   await lab().getByRole('checkbox', { name: 'GPU 阴影' }).check()
-  await sample().scrollIntoViewIfNeeded()
   await waitForGpuShadow()
   const adapter = await page.evaluate(
     () => (window as unknown as { shadowStats: { adapter: string } }).shadowStats.adapter,
@@ -298,8 +368,9 @@ test('renders real transparent GPU shadow pixels, stays idle and releases device
   console.log(`GPU shadow adapter: ${adapter}`)
   if (softwareGpu) expect(adapter).toBe('swiftshader')
   // Read compositor pixels, not drawImage(canvas) after WebGPU's swapchain has
-  // already presented and discarded its current texture.
-  const after = PNG.sync.read(await stage.screenshot())
+  // already presented and discarded its current texture. Finish CSS transitions
+  // in both captures so theme/surface animation cannot change the control pixels.
+  const after = PNG.sync.read(await stage.screenshot({ animations: 'disabled' }))
   const bounds = await sample().boundingBox()
   const origin = await stage.boundingBox()
   const x = Math.round(bounds!.x - origin!.x + bounds!.width / 2)
@@ -309,7 +380,10 @@ test('renders real transparent GPU shadow pixels, stays idle and releases device
     return [...image.data.subarray(offset, offset + 3)]
   }
   expect(rgb(after, x, y)[0]).toBeLessThan(rgb(before, x, y)[0])
-  expect(rgb(after, 4, 4)).toEqual(rgb(before, 4, 4))
+  // Use the solid stage edge outside the canvas, not its antialiased rounded
+  // corner: SwiftShader can round that partially covered pixel differently.
+  const edgeY = Math.round(before.height / 2)
+  expect(rgb(after, 4, edgeY)).toEqual(rgb(before, 4, edgeY))
   const innerX = Math.round(bounds!.x - origin!.x + 12)
   const innerY = Math.round(bounds!.y - origin!.y + 12)
   expect(rgb(after, innerX, innerY)).toEqual(rgb(before, innerX, innerY))
@@ -323,16 +397,25 @@ test('renders real transparent GPU shadow pixels, stays idle and releases device
     return stats.submits === before
   })
   expect(idle).toBe(true)
+  // Controls and preview no longer fit together: every toggle must bring the
+  // paused, offscreen renderer back into view before waiting for its first frame.
+  await page.setViewportSize({ width: 390, height: 844 })
   for (let index = 0; index < 2; index++) {
     await lab().getByRole('checkbox', { name: 'GPU 阴影' }).uncheck()
     expect(await sample().locator('canvas').count()).toBe(0)
     await lab().getByRole('checkbox', { name: 'GPU 阴影' }).check()
-    await waitForGpuShadow(10000)
+    await waitForGpuShadow()
   }
+  await page.setViewportSize({ width: 1440, height: 1100 })
   await page.evaluate(() =>
     (window as unknown as { loseShadowDevice: () => void }).loseShadowDevice(),
   )
   await expect.poll(renderer).toBe(null)
+  await expect
+    .poll(() =>
+      page.evaluate(() => (window as unknown as { shadowDeviceLoss?: string }).shadowDeviceLoss),
+    )
+    .toContain('destroyed:')
   expect(await sample().evaluate((node) => getComputedStyle(node).boxShadow)).not.toBe('none')
   await page
     .locator('.directory-groups')
@@ -348,7 +431,7 @@ test('renders real transparent GPU shadow pixels, stays idle and releases device
       }),
     )
     .toBe(true)
-})
+}, 120_000)
 
 test('falls back without WebGPU and cancels a pending adapter request without leaking a device', async () => {
   await page.addInitScript(() => Object.defineProperty(navigator, 'gpu', { value: undefined }))
@@ -409,16 +492,18 @@ test('tilts with a mouse, resets on leave/cancel, and disables movement for keyb
   expect(await card.getAttribute('data-zx-tilting')).toBe(null)
   await card.hover({ position: { x: 40, y: 48 } })
   await page.mouse.move(0, 0)
-  expect(await card.getAttribute('data-zx-tilting')).toBe(null)
+  // Browser input/media commands can return before the renderer delivers their
+  // events. Observe the reset, just as the initial tilt waits for its rAF update.
+  await expect.poll(() => card.getAttribute('data-zx-tilting')).toBe(null)
   const action = lab().getByRole('button', { name: '添加素材', exact: true })
   await action.focus()
   await page.keyboard.press('Enter')
   expect(await lab().locator('.effects-result').textContent()).toBe('已添加 1 份素材')
-  expect(await card.getAttribute('data-zx-tilting')).toBe(null)
+  await expect.poll(() => card.getAttribute('data-zx-tilting')).toBe(null)
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await card.hover({ position: { x: 32, y: 40 } })
-  expect(await card.evaluate((node) => getComputedStyle(node).transform)).toBe('none')
-  expect(await card.getAttribute('data-zx-tilting')).toBe(null)
+  await expect.poll(() => card.evaluate((node) => getComputedStyle(node).transform)).toBe('none')
+  await expect.poll(() => card.getAttribute('data-zx-tilting')).toBe(null)
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   await card.dispatchEvent('pointermove', { pointerType: 'touch', clientX: 100, clientY: 100 })
   expect(await card.getAttribute('data-zx-tilting')).toBe(null)
