@@ -20,6 +20,15 @@ test('only React is public, with MIT metadata and matching licenses in the packa
   expect(readFileSync('LICENSE', 'utf8')).toContain('Zixiao Laboratories')
 })
 
+test('general CI validates the release archive without npm publish registry checks', () => {
+  const ci = readFileSync('.github/workflows/ci.yml', 'utf8')
+  expect(ci).toContain('run: pnpm release:pack')
+  expect(ci).toContain('run: pnpm test:package')
+  expect(ci).toContain('UI_KITS_REACT_TARBALL: test-results/ui-kits-react.tgz')
+  expect(ci).toContain('path: test-results/ui-kits-react.tgz')
+  expect(ci).not.toMatch(/\b(?:npm|pnpm)\s+publish\b/)
+})
+
 test('release tags must match the package and cannot publish Solid or another package', () => {
   for (const tag of ['v0.1.0', 'solid-v0.1.0', 'react-v0.0.0', 'react-v999.0.0']) {
     expect(() => validateRelease(manifest, privatePackages, tag)).toThrow()

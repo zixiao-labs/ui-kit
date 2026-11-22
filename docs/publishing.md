@@ -8,11 +8,11 @@
 
 `.github/workflows/ci.yml` 在 `main` 的 push、所有 PR，以及发布工作流调用时运行：
 
-| Job                | 检查                                                                                                         |
-| ------------------ | ------------------------------------------------------------------------------------------------------------ |
-| Checks             | Node 22 / 24 / 26；冻结 lockfile 安装、lint、格式、全 workspace 类型、Lightning 单元测试、发布元数据         |
-| Build and package  | Node 24；React / Solid 组件包及两个 demo 的生产构建、React 打包、React / Solid tarball 消费测试、npm dry-run |
-| Browser regression | Chromium + WebKit；现有 Lightning 浏览器回归，包括 Solid 与 OTP 跨浏览器检查；上传截图                       |
+| Job                | 检查                                                                                                 |
+| ------------------ | ---------------------------------------------------------------------------------------------------- |
+| Checks             | Node 22 / 24 / 26；冻结 lockfile 安装、lint、格式、全 workspace 类型、Lightning 单元测试、发布元数据 |
+| Build and package  | Node 24；React / Solid 组件包及两个 demo 的生产构建、React 打包、React / Solid tarball 消费测试      |
+| Browser regression | Chromium + WebKit；现有 Lightning 浏览器回归，包括 Solid 与 OTP 跨浏览器检查；上传截图               |
 
 pnpm 版本从根 `package.json#packageManager` 读取。Actions 固定到完整 commit SHA；依赖安装使用 `pnpm install --frozen-lockfile`。不恢复依赖缓存，以免发布构建复用污染的缓存。
 
@@ -21,6 +21,8 @@ Linux 的 GPU 像素回归使用 Chromium 自带的 SwANGLE（ANGLE + SwiftShade
 CI 同时通过 Xvfb 虚拟显示运行套件，并设置 `UI_KITS_TEST_GPU_HEADED=1`，仅让材质 / GPU 套件使用有界面 Chromium，确保像素断言经过实际 canvas 合成路径；其他套件仍为 headless。Xvfb / xauth 由 workflow 安装，无需维护者手动提供显示器或显卡。
 
 `Build and package` 上传 `react-package` artifact，其中只有 `ui-kits-react.tgz`。它是由 **pnpm pack** 生成、已经过真实独立安装、Bundler / NodeNext 类型检查、Node SSR 和 tree-shaking 检查的同一个归档。浏览器结果保留为 `browser-results`。两类 artifact 均保留 7 天。
+
+普通 CI 不执行 `npm publish --dry-run`，也不需要 npm 登录、token 或发布权限。dry-run 仍会查询 registry 并检查版本冲突，当前版本已发布时也会失败；日志中的未登录提示只是 warning，给 CI 加 token 并不能解决重复版本错误。归档由打包和消费测试验证，版本是否可发布及 OIDC 授权由最终 publish job 检查，不必为了让普通 CI 通过而升级版本。
 
 ## 首次启用：需要手动配置
 
@@ -108,7 +110,6 @@ pnpm test
 pnpm build
 pnpm release:pack
 UI_KITS_REACT_TARBALL=test-results/ui-kits-react.tgz pnpm test:package
-npm publish ./test-results/ui-kits-react.tgz --dry-run --ignore-scripts --access public
 pnpm exec playwright install chromium webkit
 UI_KITS_TEST_WEBKIT=1 pnpm test:e2e
 ```
