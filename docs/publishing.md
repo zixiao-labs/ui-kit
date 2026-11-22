@@ -78,6 +78,10 @@ OIDC 成功后，建议在 npm **Publishing access** 选择 **Require two-factor
 
 ## 后续发布
 
+仓库级 [Merge Skill](../.agents/skills/merge/SKILL.md) 使用 `metadata.delta-action: land` 接入 Delta 的 **Merge** 按钮，也可通过 `/merge` 显式调用。它遵循 PR、完整 CI 与远程结果验证流程；安装 Skill 或普通合并不等于授权发布。
+
+根据上次已发布标签以来的公开 API / 功能变化选择未使用的版本，在 `docs/releases/react-v<版本>.md` 记录发布说明；不要把 demo、设计技能或 CI 的改动误写成 npm 组件功能。
+
 1. 只修改 `packages/react/package.json` 中的版本，并准备对应发布说明。无需同步修改 Solid / shared / demo 的版本。
 2. 提交 PR，通过 CI 后合入 `main`。
 3. 在已更新到该提交的 `main` 上确认 `pnpm release:check` 通过，再创建和推送对应标签。例如 React 版本为 `0.1.1` 时：
