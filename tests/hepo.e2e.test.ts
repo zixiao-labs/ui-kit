@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { afterAll, afterEach, beforeAll, beforeEach, expect, test } from '@lightning-js/lightning'
 import { chromium } from 'playwright'
 import type { Browser, Page } from 'playwright'
-import { contrastRatio } from '../packages/react/src/theme'
+import { contrastRatio, themePresets } from '../packages/react/src/theme'
 import { styleOptions } from '../apps/demo/src/style-options'
 import { startDemo } from './dev-server'
 import { chooseDemoSelect } from './select-helpers'
@@ -246,13 +246,16 @@ test('captures Hepo light, dark, Chinese type, mobile, reflow and nested portal 
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
     if (directory) await page.screenshot({ path: join(directory, `${name}.png`) })
   }
-  // Six presets form two balanced rows, including the longer interior label.
+  // All presets keep the three-column grid, including the longer interior label.
+  const presetCount = Object.keys(themePresets).length
   const rows = await page
     .locator('.theme-presets button')
     .evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect().top))
-  expect(rows.length).toBe(6)
-  expect(new Set(rows).size).toBe(2)
-  for (const top of new Set(rows)) expect(rows.filter((row) => row === top).length).toBe(3)
+  expect(rows.length).toBe(presetCount)
+  expect(new Set(rows).size).toBe(Math.ceil(presetCount / 3))
+  for (const [index, top] of [...new Set(rows)].entries()) {
+    expect(rows.filter((row) => row === top).length).toBe(Math.min(3, presetCount - index * 3))
+  }
   await capture('hepo-light')
   await chooseDemoSelect(page, '页面主题', 'dark')
   await capture('hepo-dark')
