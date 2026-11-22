@@ -1,0 +1,32 @@
+/* Tailwind CSS v4 build-time entry. Import after tailwindcss, not as browser CSS.
+ * Inline references resolve at each element, including nested theme scopes.
+ * This entry adds no reset, components, palette or font downloads.
+ */
+@theme inline {
+  --color-zx-accent: var(--zx-accent);
+  --color-zx-accent-hover: var(--zx-accent-hover);
+  --color-zx-on-accent: var(--zx-on-accent);
+  --color-zx-accent-ink: var(--zx-accent-ink);
+  --color-zx-secondary: var(--zx-secondary);
+  --color-zx-on-secondary: var(--zx-on-secondary);
+  --color-zx-tonal: var(--zx-tonal);
+  --color-zx-on-tonal: var(--zx-on-tonal);
+  --color-zx-surface: var(--zx-surface);
+  --color-zx-surface-subtle: var(--zx-surface-subtle);
+  --color-zx-surface-raised: var(--zx-surface-raised);
+  --color-zx-text: var(--zx-text);
+  --color-zx-muted: var(--zx-muted);
+  --color-zx-border: var(--zx-border);
+  --color-zx-control-border: var(--zx-control-border);
+  --color-zx-focus: var(--zx-focus);
+  --color-zx-error: var(--zx-error);
+  --color-zx-on-error: var(--zx-on-error);
+  --color-zx-error-container: var(--zx-error-container);
+  --color-zx-on-error-container: var(--zx-on-error-container);
+  --font-zx: var(--zx-font);
+  --font-zx-display: var(--zx-font-display);
+  --radius-zx: var(--zx-radius);
+  --radius-zx-sm: var(--zx-radius-sm);
+  --radius-zx-md: var(--zx-radius-md);
+  --radius-zx-lg: var(--zx-radius-lg);
+}

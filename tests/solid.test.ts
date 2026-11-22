@@ -1,12 +1,23 @@
 import { execFileSync } from 'node:child_process'
 import { readFileSync, readdirSync } from 'node:fs'
 import { expect, test } from '@lightning-js/lightning'
-import { createTheme, themeToCSS } from '../packages/solid/src/theme'
-import { createTheme as reactTheme } from '../packages/react/src/theme'
+import {
+  createTheme,
+  themePresets,
+  themeToCSS,
+  zixiaoDarkColors,
+} from '../packages/solid/src/theme'
+import {
+  createTheme as reactTheme,
+  themePresets as reactPresets,
+} from '../packages/react/src/theme'
 
 test('Solid and React share the exact HCT implementation rather than forked palettes', () => {
   expect(createTheme).toBe(reactTheme)
+  expect(themePresets).toBe(reactPresets)
   expect(createTheme()['--zx-accent']).toBe('#8b5cf6')
+  expect(createTheme(themePresets.danluFeilong, true)['--zx-accent']).toBe('#e94829')
+  expect(createTheme({ darkColors: zixiaoDarkColors }, true)['--zx-accent']).toBe('#422256')
   expect(themeToCSS()).toContain('[data-zx-theme="custom"][data-zx-color-mode="dark"]')
 })
 
@@ -37,5 +48,8 @@ test('Solid copies the canonical styles and traced motifs without a React runtim
   )
   expect(readFileSync('packages/solid/styles/patterns.css', 'utf8')).toBe(
     readFileSync('packages/react/src/optional/patterns.css', 'utf8'),
+  )
+  expect(readFileSync('packages/solid/styles/tailwind.css', 'utf8')).toBe(
+    readFileSync('packages/react/src/optional/tailwind.css', 'utf8'),
   )
 })

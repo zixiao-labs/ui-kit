@@ -83,6 +83,7 @@ test('Solid tarball supports isolated types, CSS subpaths, DOM compilation and r
       'styles.css',
       'base.css',
       'patterns.css',
+      'tailwind.css',
       'css/forms.css',
       'css/solid.css',
       ...readdirSync('packages/react/src/themes').map((name) => `themes/${name}`),

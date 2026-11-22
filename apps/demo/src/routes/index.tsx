@@ -78,21 +78,20 @@ function Home() {
   const [copyResult, setCopyResult] = useState<{ code: string; state: 'copied' | 'error' } | null>(
     null,
   )
-  const { previewStyle, dark, sampleStyle, settings } = useTheme()
+  const { previewStyle, previewExpression, previewImport, dark, sampleStyle } = useTheme()
   const active = componentExamples.find((item) => item.name === component) ?? componentExamples[0]
   const filtered = componentExamples.filter((item) =>
     `${item.name} ${item.description} ${categoryLabels[item.category]}`
       .toLowerCase()
       .includes(query.toLowerCase().trim()),
   )
-  const custom = settings.customized && previewStyle
   const code = `import type { ReactNode } from 'react'
-${custom ? "import { createTheme } from '@zixiao-labs/ui-kits-react/theme'\n" : ''}${active.code}
+${previewStyle && previewImport ? `${previewImport.trim()}\n` : ''}${active.code}
 
 // 用此作用域包裹上方组件 JSX；不改变组件的状态与行为
 export function ThemedScope({ children }: { children: ReactNode }) {
   return (
-    <div data-zx-style="${sampleStyle.id}" data-zx-color-mode="${dark ? 'dark' : 'light'}"${custom ? `\n      style={createTheme(${JSON.stringify({ primary: settings.primary, secondary: settings.secondary, radius: settings.radius })}, ${dark})}` : ''}>
+    <div data-zx-style="${sampleStyle.id}" data-zx-color-mode="${dark ? 'dark' : 'light'}"${previewStyle ? `\n      style={${previewExpression}}` : ''}>
       {children}
     </div>
   )

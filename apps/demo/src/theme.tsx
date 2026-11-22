@@ -8,7 +8,13 @@ import {
 } from 'react'
 import type { Context, CSSProperties, ReactNode } from 'react'
 import type {} from '@nasti-toolchain/nasti/client'
-import { brandTheme, createTheme } from '@zixiao-labs/ui-kits-react/theme'
+import {
+  brandTheme,
+  createTheme,
+  isFontFamily,
+  zixiaoDarkColors,
+} from '@zixiao-labs/ui-kits-react/theme'
+import type { ThemeOptions } from '@zixiao-labs/ui-kits-react/theme'
 import { isStyleName, styleOptions, type StyleName } from './style-options'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
@@ -21,6 +27,9 @@ export interface ThemeSettings {
   mode: ThemeMode
   style: StyleName
   preview: StyleName | 'inherit'
+  darkOptimized: boolean
+  fontFamily: string
+  displayFontFamily: string
 }
 
 const defaults: ThemeSettings = {
@@ -29,6 +38,9 @@ const defaults: ThemeSettings = {
   mode: 'system',
   style: 'clean',
   preview: 'inherit',
+  darkOptimized: false,
+  fontFamily: '',
+  displayFontFamily: '',
 }
 const storageKey = 'zx-ui-theme-v1'
 const systemThemeQuery = '(prefers-color-scheme: dark)'
@@ -62,6 +74,51 @@ function readSettings(value: unknown): ThemeSettings | undefined {
     mode,
     style: isStyleName(item.style) ? item.style : 'clean',
     preview: isStyleName(item.preview) ? item.preview : 'inherit',
+    darkOptimized: item.darkOptimized === true,
+    fontFamily: isFontFamily(item.fontFamily) ? item.fontFamily.trim() : '',
+    displayFontFamily: isFontFamily(item.displayFontFamily) ? item.displayFontFamily.trim() : '',
+  }
+}
+
+export function isZixiaoTheme(settings: ThemeSettings) {
+  return settings.customized
+    ? settings.primary.toLowerCase() === brandTheme.primary &&
+        settings.secondary.toLowerCase() === brandTheme.secondary
+    : settings.style === 'clean'
+}
+
+export function getThemeOptions(settings: ThemeSettings): ThemeOptions {
+  return {
+    primary: settings.primary,
+    secondary: settings.secondary,
+    radius: settings.radius,
+    ...(settings.darkOptimized && isZixiaoTheme(settings) ? { darkColors: zixiaoDarkColors } : {}),
+    ...(settings.fontFamily ? { fontFamily: settings.fontFamily } : {}),
+    ...(settings.displayFontFamily ? { displayFontFamily: settings.displayFontFamily } : {}),
+  }
+}
+
+export function getThemePreview(settings: ThemeSettings, dark: boolean) {
+  const customColors =
+    settings.customized || (dark && settings.darkOptimized && isZixiaoTheme(settings))
+  const options = getThemeOptions(settings)
+  const generated = createTheme(options, dark)
+  const fonts = Object.fromEntries(
+    Object.entries(generated).filter(([key]) => key === '--zx-font' || key === '--zx-font-display'),
+  )
+  const tokens = customColors ? generated : Object.keys(fonts).length ? fonts : undefined
+  return {
+    tokens,
+    expression: tokens
+      ? customColors
+        ? `createTheme(${JSON.stringify(options)}, ${dark})`
+        : `${JSON.stringify(tokens)} as CSSProperties`
+      : undefined,
+    import: tokens
+      ? customColors
+        ? "\nimport { createTheme } from '@zixiao-labs/ui-kits-react/theme'"
+        : "\nimport type { CSSProperties } from 'react'"
+      : '',
   }
 }
 
@@ -87,6 +144,8 @@ interface ThemeState {
   reset: () => void
   sampleStyle: (typeof styleOptions)[number]
   previewStyle: CSSProperties | undefined
+  previewExpression: string | undefined
+  previewImport: string
   storageError: boolean
 }
 
@@ -101,10 +160,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [storageError, setStorageError] = useState(false)
   const systemDark = useSyncExternalStore(subscribeToSystemTheme, getSystemDark, getServerDark)
   const dark = settings.mode === 'system' ? systemDark : settings.mode === 'dark'
-  const tokens = useMemo(
-    () => (settings.customized ? createTheme(settings, dark) : undefined),
-    [settings, dark],
-  )
+  const themePreview = useMemo(() => getThemePreview(settings, dark), [settings, dark])
+  const { tokens } = themePreview
   // Browser-only storage is intentionally hydrated after the matching SSR render.
   /* oxlint-disable react/set-state-in-effect */
   useEffect(() => {
@@ -162,9 +219,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         settings.preview === 'inherit' || settings.preview === settings.style
           ? (tokens as CSSProperties | undefined)
           : undefined,
+      previewExpression: themePreview.expression,
+      previewImport: themePreview.import,
       storageError,
     }
-  }, [settings, dark, tokens, storageError])
+  }, [settings, dark, tokens, storageError, themePreview])
   return <ThemeContext value={value}>{children}</ThemeContext>
 }
 

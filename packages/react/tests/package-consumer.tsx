@@ -10,12 +10,23 @@ import {
   parseDate,
 } from '@zixiao-labs/ui-kits-react'
 import type { ButtonProps, SelectProps, SurfaceEffects } from '@zixiao-labs/ui-kits-react'
-import { createTheme, themeToCSS } from '@zixiao-labs/ui-kits-react/theme'
+import {
+  createTheme,
+  themePresets,
+  themeToCSS,
+  zixiaoDarkColors,
+} from '@zixiao-labs/ui-kits-react/theme'
 import type { ThemeOptions } from '@zixiao-labs/ui-kits-react/theme'
 import { PatternBackground } from '@zixiao-labs/ui-kits-react/patterns'
 import { LiquidGlassSurface } from '@zixiao-labs/ui-kits-react/liquid-glass'
 
-const options: ThemeOptions = { primary: '#8b5cf6', radius: 12 }
+const options: ThemeOptions = {
+  ...themePresets.zixiao,
+  radius: 12,
+  darkColors: zixiaoDarkColors,
+  fontFamily: 'system-ui, sans-serif',
+  displayFontFamily: 'serif',
+}
 const button: ButtonProps = { variant: 'tonal', ref: createRef<HTMLButtonElement>() }
 const effects: SurfaceEffects = { shadow: 'gpu', tilt: true }
 const select: SelectProps = {

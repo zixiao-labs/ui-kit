@@ -40,6 +40,39 @@ import '@zixiao-labs/ui-kits-react/themes/endfield.css'
 import { createTheme, themeToCSS } from '@zixiao-labs/ui-kits-react/theme'
 ```
 
+### 配色、字体与 Tailwind CSS
+
+`themePresets` 提供紫霄、松林、海岸、朱砂、鹤坡、鹤坡·室内，以及青岛蓬仙（`#47B79C` + `#8F1D22`）、霓衣云君（`#F3A694` + `#2E59A7`）、丹炉飞龙（朱砂 `#E94829` + 天水碧 `#5AA4AE`）。配色预设不改变组件的风格。
+
+```tsx
+import { createTheme, themePresets, zixiaoDarkColors } from '@zixiao-labs/ui-kits-react/theme'
+
+const options = {
+  ...themePresets.qingdaoPengxian,
+  fontFamily: '"Noto Sans SC", sans-serif',
+  displayFontFamily: '"Noto Serif SC", serif',
+}
+const tokens = createTheme(options, true)
+// <div data-zx-style="clean" data-zx-color-mode="dark" style={tokens}>...</div>
+
+// 可选的紫霄深色优化；浅色保持原品牌色，默认不启用。
+createTheme({ ...themePresets.zixiao, darkColors: zixiaoDarkColors }, true)
+// 深色填色 #422256 + #D7A547
+```
+
+正文字体会用于控件；只传 `fontFamily` 时标题跟随正文，均省略时保留风格默认值。字体栈限 512 字符，不接受 CSS 声明、`url()` 或 `var()`；字体文件需由应用自行加载。`themeToCSS(options)` 同时输出明暗 token 和字体，静态使用需加 `data-zx-theme="custom"`。
+
+Tailwind v4 用户可在**经过 Tailwind 编译**的应用 CSS 中导入可选桥接：
+
+```css
+@import 'tailwindcss';
+@import '@zixiao-labs/ui-kits-react/tailwind.css';
+@import '@zixiao-labs/ui-kits-react/base.css' layer(components);
+@import '@zixiao-labs/ui-kits-react/themes/clean.css' layer(components);
+```
+
+使用 `bg-zx-surface text-zx-text font-zx rounded-zx`、`bg-zx-accent text-zx-on-accent` 等工具类，读取当前作用域的有效 token。用 `font-zx-display` 访问标题字体。预设、自定义和明暗模式都无需重新编译；组件 CSS 放在 `components` layer，让 utilities 可以覆盖组件样式，不要重复导入未分层的 CSS。桥接不加载预设或自动切换明暗，也不提供 v3 插件；普通组件使用者无需 Tailwind 依赖。
+
 ## 可选底纹与玻璃
 
 ```tsx

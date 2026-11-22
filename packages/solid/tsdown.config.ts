@@ -16,7 +16,10 @@ export default defineConfig({
     entryFileNames: (chunk) => (chunk.name === 'theme' ? '[name].js' : '[name].jsx'),
   },
   copy: [
-    { from: ['styles/styles.css', 'styles/base.css', 'styles/patterns.css'], to: 'dist' },
+    {
+      from: ['styles/styles.css', 'styles/base.css', 'styles/patterns.css', 'styles/tailwind.css'],
+      to: 'dist',
+    },
     { from: 'styles/css/*.css', to: 'dist/css' },
     { from: 'styles/themes/*.css', to: 'dist/themes' },
   ],

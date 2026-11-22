@@ -103,6 +103,9 @@ test('shows bright supporting selections and exact secondary swatches in native 
     { name: '朱砂', secondary: '#e1bb67' },
     { name: '鹤坡', secondary: '#c4a787' },
     { name: '鹤坡·室内', secondary: '#d8bd88' },
+    { name: '青岛蓬仙', secondary: '#8f1d22' },
+    { name: '霓衣云君', secondary: '#2e59a7' },
+    { name: '丹炉飞龙', secondary: '#5aa4ae' },
   ]) {
     if (preset.name) {
       await page.getByRole('button', { name: `${preset.name}配色`, exact: true }).click()
@@ -179,6 +182,106 @@ test('adapts shell and preview, persists settings, exports both modes and resets
   await page.reload()
   await expect.poll(() => token('html', '--zx-accent')).toBe('#8b5cf6')
   expect(await page.locator('html').getAttribute('data-zx-color-mode')).toBe('light')
+})
+
+test('opts into Zixiao dark optimization, exports Tailwind setup and leaves other palettes alone', async () => {
+  const lightSurface = await token('html', '--zx-surface')
+  await page.getByRole('checkbox', { name: /紫霄深色优化/ }).check()
+  expect(await token('html', '--zx-accent')).toBe('#8b5cf6')
+  expect(await token('html', '--zx-surface')).toBe(lightSurface)
+  await chooseDemoSelect(page, '页面主题', 'dark')
+  await expect.poll(() => token('html', '--zx-accent')).toBe('#422256')
+  expect(await token('html', '--zx-secondary')).toBe('#d7a547')
+  expect(await token('[data-testid="preview"]', '--zx-accent')).toBe('#422256')
+  await page.reload()
+  await expect.poll(() => token('html', '--zx-accent')).toBe('#422256')
+  expect(await page.getByRole('checkbox', { name: /紫霄深色优化/ }).isChecked()).toBe(true)
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write'])
+  await page.getByRole('checkbox', { name: 'Tailwind CSS 导出', exact: true }).check()
+  await page.getByRole('button', { name: '复制主题 CSS', exact: true }).click()
+  const native = await page.evaluate(() => navigator.clipboard.readText())
+  expect(native).toContain("@import 'tailwindcss';")
+  expect(native).toContain("@import '@zixiao-labs/ui-kits-react/tailwind.css';")
+  expect(native).toContain("themes/clean.css' layer(components)")
+  expect(native).toContain('[data-zx-theme="custom"][data-zx-color-mode="dark"]')
+  expect(native).toContain('--zx-accent: #422256;')
+  expect(native).not.toContain('[data-zx-theme="custom"] {')
+  await page.getByRole('button', { name: '紫霄配色', exact: true }).click()
+  await page.getByRole('button', { name: '复制主题 CSS', exact: true }).click()
+  const custom = await page.evaluate(() => navigator.clipboard.readText())
+  expect(custom).toContain('--zx-accent: #8b5cf6;')
+  expect(custom).toContain('--zx-accent: #422256;')
+  expect(custom).toContain('[data-zx-theme="custom"][data-zx-color-mode="dark"]')
+  for (const [name, primary, secondary] of [
+    ['青岛蓬仙', '#47b79c', '#8f1d22'],
+    ['霓衣云君', '#f3a694', '#2e59a7'],
+    ['丹炉飞龙', '#e94829', '#5aa4ae'],
+  ]) {
+    await page.getByRole('button', { name: `${name}配色`, exact: true }).click()
+    expect(await token('html', '--zx-accent')).toBe(primary)
+    expect(await token('html', '--zx-secondary')).toBe(secondary)
+    expect(await page.getByRole('checkbox', { name: /紫霄深色优化/ }).count()).toBe(0)
+  }
+  await page.getByRole('button', { name: '紫霄配色', exact: true }).click()
+  await page.getByRole('checkbox', { name: /紫霄深色优化/ }).uncheck()
+  expect(await token('html', '--zx-accent')).toBe('#8b5cf6')
+})
+
+test('customizes both font roles without recoloring native styles, persists, exports and themes portals', async () => {
+  await page.getByText('自定义字体', { exact: true }).click()
+  const bodyFont = '"Noto Sans SC", sans-serif'
+  const titleFont = '"Noto Serif SC", serif'
+  const nativeRadius = await token('html', '--zx-radius')
+  await page.getByLabel('正文字体', { exact: true }).fill(bodyFont)
+  await page.getByLabel('标题字体', { exact: true }).fill(titleFont)
+  expect(await token('html', '--zx-font')).toBe(bodyFont)
+  expect(await token('[data-testid="preview"]', '--zx-font-display')).toBe(titleFont)
+  expect(await token('html', '--zx-radius')).toBe(nativeRadius)
+  expect(await page.getByLabel('当前组件代码', { exact: true }).textContent()).toContain(
+    '--zx-font',
+  )
+  await chooseDemoSelect(page, '设计风格', 'hepo')
+  expect(await token('[data-testid="preview"]', '--zx-font')).not.toBe(bodyFont)
+  expect(await token('[data-testid="preview"]', '--zx-font-display')).not.toBe(titleFont)
+  await chooseDemoSelect(page, '设计风格', 'clean')
+  expect(await token('[data-testid="preview"]', '--zx-font')).toBe(bodyFont)
+  await page.getByLabel('正文字体', { exact: true }).fill('serif; color: red')
+  expect(await page.getByLabel('正文字体', { exact: true }).getAttribute('aria-invalid')).toBe(
+    'true',
+  )
+  expect(await token('html', '--zx-font')).toBe(bodyFont)
+  await page.reload()
+  await expect.poll(() => token('html', '--zx-font')).toBe(bodyFont)
+  expect(await token('html', '--zx-font-display')).toBe(titleFont)
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write'])
+  await page.getByRole('button', { name: '复制主题 CSS', exact: true }).click()
+  const css = await page.evaluate(() => navigator.clipboard.readText())
+  expect(css).toContain('--zx-font: "Noto Sans SC", sans-serif;')
+  expect(css).toContain('--zx-font-display: "Noto Serif SC", serif;')
+  expect(css).toContain('[data-zx-theme="custom"] {')
+  expect(css).not.toContain('--zx-accent:')
+  await select('Modal')
+  await page.getByRole('button', { name: '项目详情', exact: true }).click()
+  expect(await token('.zx-modal-overlay', '--zx-font')).toBe(bodyFont)
+  await page.locator('.zx-modal .zx-select-trigger').click()
+  expect(await token('.zx-picker-popover', '--zx-font-display')).toBe(titleFont)
+  await page.keyboard.press('Escape')
+  await page.locator('.zx-picker-popover').waitFor({ state: 'detached' })
+  await page.keyboard.press('Escape')
+  await page.locator('.zx-modal-overlay').waitFor({ state: 'detached' })
+  await page.getByRole('button', { name: '恢复默认主题', exact: true }).click()
+  expect(await token('html', '--zx-font')).not.toBe(bodyFont)
+  expect(await token('html', '--zx-font-display')).not.toBe(titleFont)
+  await page.evaluate(() => {
+    const stored = JSON.parse(localStorage.getItem('zx-ui-theme-v1')!)
+    stored.fontFamily = 'serif; color: red'
+    stored.displayFontFamily = 'url(https://example.com/font)'
+    localStorage.setItem('zx-ui-theme-v1', JSON.stringify(stored))
+  })
+  await page.reload()
+  await expect.poll(() => page.locator('html').getAttribute('data-zx-style')).toBe('clean')
+  expect(await token('html', '--zx-font')).not.toContain('color:')
+  expect(await token('html', '--zx-font-display')).not.toContain('url(')
 })
 
 test('defaults to the system theme and updates every preview and custom token live', async () => {

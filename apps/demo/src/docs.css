@@ -527,6 +527,67 @@ h1 {
 .theme-presets [aria-pressed='true'] .preset-colors {
   outline: 2px solid var(--zx-accent-ink);
 }
+.theme-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin-top: 16px;
+  font-size: 12px;
+  line-height: 20px;
+  cursor: pointer;
+}
+.theme-option input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--zx-accent-ink);
+}
+.theme-option small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+.theme-fonts {
+  margin-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.theme-fonts summary {
+  display: list-item;
+  align-content: center;
+  min-height: 44px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.theme-fonts > p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 20px;
+}
+.font-field {
+  margin-top: 16px;
+}
+.font-field > label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+.font-field > input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--zx-surface);
+  color: var(--ink);
+  font: 12px/20px var(--mono);
+}
+.font-field > input[aria-invalid='true'] {
+  border-color: var(--zx-error);
+}
 .seed-field {
   margin-top: 16px;
 }

@@ -1,12 +1,51 @@
 import { argbFromHex, Hct, hexFromArgb, TonalPalette } from '@material/material-color-utilities'
 
+export interface ThemeColors {
+  primary: string
+  secondary: string
+}
+
 export interface ThemeOptions {
   primary?: string
   secondary?: string
   radius?: number
+  /** Optional exact fills used only in dark mode; tonal roles still derive from HCT. */
+  darkColors?: ThemeColors
+  /** CSS font-family lists. Load licensed font files in the consuming application. */
+  fontFamily?: string
+  displayFontFamily?: string
 }
 export const brandTheme = { primary: '#8b5cf6', secondary: '#fcd34d', radius: 12 } as const
+export const zixiaoDarkColors = { primary: '#422256', secondary: '#d7a547' } as const
+export const themePresets = {
+  zixiao: { name: '紫霄', primary: brandTheme.primary, secondary: brandTheme.secondary },
+  pine: { name: '松林', primary: '#28745b', secondary: '#e8b86d' },
+  coast: { name: '海岸', primary: '#3269b1', secondary: '#edb9a2' },
+  cinnabar: { name: '朱砂', primary: '#b84842', secondary: '#e1bb67' },
+  hepo: { name: '鹤坡', primary: '#3f5662', secondary: '#c4a787' },
+  hepoInterior: { name: '鹤坡·室内', primary: '#82503d', secondary: '#d8bd88' },
+  qingdaoPengxian: { name: '青岛蓬仙', primary: '#47b79c', secondary: '#8f1d22' },
+  niyiYunjun: { name: '霓衣云君', primary: '#f3a694', secondary: '#2e59a7' },
+  danluFeilong: { name: '丹炉飞龙', primary: '#e94829', secondary: '#5aa4ae' },
+} as const
 const hexPattern = /^#[\da-f]{6}$/i
+// A deliberately bounded font-family grammar, not arbitrary CSS. In particular,
+// CSS exports must never accept declarations, comments, URLs or var() expressions.
+const fontPattern =
+  /^(?:"[\p{L}\p{N} _.,-]+"|'[\p{L}\p{N} _.,-]+'|-?[\p{L}_][\p{L}\p{N}_ -]*)(?:\s*,\s*(?:"[\p{L}\p{N} _.,-]+"|'[\p{L}\p{N} _.,-]+'|-?[\p{L}_][\p{L}\p{N}_ -]*))*$/u
+
+export function isFontFamily(value: unknown): value is string {
+  return (
+    typeof value === 'string' &&
+    value.length <= 512 &&
+    fontPattern.test(value.trim()) &&
+    // Tokenize quoted families as a whole, including names with commas. CSS-wide
+    // keywords are not family names unless quoted, even within a fallback list.
+    (value.match(/"[^"]+"|'[^']+'|[^"',]+/g) ?? []).every(
+      (family) => !/^(inherit|initial|unset|revert|revert-layer|default)$/i.test(family.trim()),
+    )
+  )
+}
 
 export function contrastRatio(a: string, b: string) {
   function luminance(hex: string) {
@@ -31,12 +70,23 @@ export function createTheme(
   options: ThemeOptions = {},
   dark = false,
 ): Record<`--zx-${string}`, string> {
-  const { primary = brandTheme.primary, secondary = brandTheme.secondary, radius = 12 } = options
-  if (!hexPattern.test(primary) || !hexPattern.test(secondary)) {
+  const { radius = 12, fontFamily, displayFontFamily, darkColors } = options
+  if (
+    ![options.primary ?? brandTheme.primary, options.secondary ?? brandTheme.secondary].every(
+      (color) => hexPattern.test(color),
+    ) ||
+    (darkColors && (!hexPattern.test(darkColors.primary) || !hexPattern.test(darkColors.secondary)))
+  ) {
     throw new TypeError('Theme colors must be six-digit hex values, e.g. #8b5cf6.')
   }
   if (!Number.isFinite(radius) || radius < 0 || radius > 32)
     throw new RangeError('Theme radius must be between 0 and 32.')
+  for (const font of [fontFamily, displayFontFamily]) {
+    if (font !== undefined && !isFontFamily(font))
+      throw new TypeError('Theme fonts must be CSS font-family lists of at most 512 characters.')
+  }
+  const { primary = brandTheme.primary, secondary = brandTheme.secondary } =
+    dark && darkColors ? darkColors : options
   const seed = Hct.fromInt(argbFromHex(primary))
   const neutral = TonalPalette.fromHueAndChroma(seed.hue, 6)
   const variant = TonalPalette.fromHueAndChroma(seed.hue, 10)
@@ -68,6 +118,12 @@ export function createTheme(
     '--zx-radius-sm': `${Math.max(4, radius - 4)}px`,
     '--zx-radius-md': `${radius}px`,
     '--zx-radius-lg': `${radius + 4}px`,
+    ...(fontFamily ? { '--zx-font': fontFamily.trim() } : {}),
+    ...(displayFontFamily
+      ? { '--zx-font-display': displayFontFamily.trim() }
+      : fontFamily
+        ? { '--zx-font-display': fontFamily.trim() }
+        : {}),
   }
 }
 

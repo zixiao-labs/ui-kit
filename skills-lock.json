@@ -1,6 +1,30 @@
 {
   "version": 2,
   "skills": {
+    "banner-design": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/banner-design/SKILL.md",
+      "computedHash": "1bb85d0bfec06e23578739a476c181b17c4db694c341da4e603e43183a4b42d3"
+    },
+    "brand": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/brand/SKILL.md",
+      "computedHash": "5c99d65bec448b3dda25049f6437a1d8d8777a705a2c597fbe5516dfeeb0a487"
+    },
+    "design": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/design/SKILL.md",
+      "computedHash": "e1df8ce8372cbc26d04fdce02ce950c3fd20fcc0cf359351a2958e4d9feb1f8a"
+    },
+    "design-system": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/design-system/SKILL.md",
+      "computedHash": "407141febc8fae02d061c909843d4082693174829240e44e620e3add26a9a735"
+    },
     "design-taste-frontend": {
       "source": "Leonxlnx/taste-skill",
       "sourceType": "github",
@@ -18,6 +42,24 @@
       "sourceType": "github",
       "skillPath": "SKILL.md",
       "computedHash": "a32297d2a2c83035c1ca50f8042915f94f29fe0fdd0ce9a4ca19f4a104a3686a"
+    },
+    "slides": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/slides/SKILL.md",
+      "computedHash": "9c012d14e94b734b324f859d64da3b47762b8cdee47515ce83bce4366222f885"
+    },
+    "ui-styling": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/ui-styling/SKILL.md",
+      "computedHash": "46f6d38bd624f91a9aefdb22d03264c4b08885503306ae5ee3c0e69cea3fa8ee"
+    },
+    "ui-ux-pro-max": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/ui-ux-pro-max/SKILL.md",
+      "computedHash": "2ddf8ad3585a021330cae66c460006022a1b1d690fa9d2b820c45f4e8d3f9d6e"
     },
     "unslop": {
       "source": "heydamir/unslop",

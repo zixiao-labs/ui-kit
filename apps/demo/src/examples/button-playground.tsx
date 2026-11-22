@@ -14,7 +14,7 @@ const variants = [
 ] as const
 
 export function ButtonPlayground() {
-  const { previewStyle, dark, sampleStyle: style, settings } = useTheme()
+  const { previewStyle, previewExpression, previewImport, dark, sampleStyle: style } = useTheme()
   const [variant, setVariant] = useState<ButtonVariant>('solid')
   const [size, setSize] = useState<ButtonSize>('md')
   const [loading, setLoading] = useState(false)
@@ -26,9 +26,9 @@ export function ButtonPlayground() {
     state: 'copied' | 'error'
   } | null>(null)
   const example = `import { Button } from '@zixiao-labs/ui-kits-react'
-import '@zixiao-labs/ui-kits-react/styles.css'${settings.customized && previewStyle ? "\nimport { createTheme } from '@zixiao-labs/ui-kits-react/theme'" : ''}${withIcon ? "\nimport { Plus } from '@gravity-ui/icons'" : ''}
+import '@zixiao-labs/ui-kits-react/styles.css'${previewStyle ? previewImport : ''}${withIcon ? "\nimport { Plus } from '@gravity-ui/icons'" : ''}
 
-<div data-zx-style="${style.id}" data-zx-color-mode="${dark ? 'dark' : 'light'}"${settings.customized && previewStyle ? `\n  style={createTheme(${JSON.stringify({ primary: settings.primary, secondary: settings.secondary, radius: settings.radius })}, ${dark})}` : ''}>
+<div data-zx-style="${style.id}" data-zx-color-mode="${dark ? 'dark' : 'light'}"${previewStyle ? `\n  style={${previewExpression}}` : ''}>
   <Button variant="${variant}" size="${size}"${loading ? ' loading' : ''}${disabled ? ' disabled' : ''}>
     ${withIcon ? '<Plus aria-hidden="true" />' : ''}触发交互
   </Button>

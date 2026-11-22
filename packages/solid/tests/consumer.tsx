@@ -14,14 +14,21 @@ import {
   TextField,
 } from '@zixiao-labs/ui-kits-solid'
 import { PatternBackground } from '@zixiao-labs/ui-kits-solid/patterns'
-import { createTheme } from '@zixiao-labs/ui-kits-solid/theme'
+import { createTheme, themePresets, zixiaoDarkColors } from '@zixiao-labs/ui-kits-solid/theme'
 
 const options = [{ id: 'solid', label: 'Solid workspace' }]
 
 export function Sample() {
   const [value, setValue] = createSignal('solid')
   return (
-    <div data-zx-style="hepo" style={createTheme()}>
+    <div
+      data-zx-style="hepo"
+      style={createTheme({
+        ...themePresets.zixiao,
+        darkColors: zixiaoDarkColors,
+        fontFamily: 'system-ui',
+      })}
+    >
       <Card>
         <Button>Solid tarball consumer</Button>
       </Card>

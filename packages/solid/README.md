@@ -103,6 +103,38 @@ const css = themeToCSS(options)
 
 React 和 Solid 共享 `packages/shared/theme.ts`，不维护两套颜色算法。
 
+同一入口还导出 `themePresets` 和 `zixiaoDarkColors`。预设包括青岛蓬仙 `#47B79C` + `#8F1D22`、霓衣云君 `#F3A694` + `#2E59A7`、丹炉飞龙 `#E94829` + `#5AA4AE`：
+
+```tsx
+import { createTheme, themePresets, zixiaoDarkColors } from '@zixiao-labs/ui-kits-solid/theme'
+
+const tokens = createTheme(
+  {
+    ...themePresets.qingdaoPengxian,
+    fontFamily: '"Noto Sans SC", sans-serif',
+    displayFontFamily: '"Noto Serif SC", serif',
+  },
+  true,
+)
+// <div data-zx-style="clean" data-zx-color-mode="dark" style={tokens}>...</div>
+
+// 紫霄深色优化显式开启，浅色仍为原品牌配色。
+createTheme({ ...themePresets.zixiao, darkColors: zixiaoDarkColors }, true)
+```
+
+字体栈与 React 使用相同的校验规则，字体文件由应用加载。仅提供正文字体时标题跟随它；不提供字体时保留当前风格。配色预设不等于组件风格，不会自动切换 `data-zx-style`。
+
+Tailwind CSS v4 的可选构建时桥接也使用同一份源文件。在已配置 Tailwind 编译的 CSS 中：
+
+```css
+@import 'tailwindcss';
+@import '@zixiao-labs/ui-kits-solid/tailwind.css';
+@import '@zixiao-labs/ui-kits-solid/base.css' layer(components);
+@import '@zixiao-labs/ui-kits-solid/themes/clean.css' layer(components);
+```
+
+在 JSX 中使用 `class="bg-zx-surface text-zx-text font-zx rounded-zx"` 等语义工具类。`@theme inline` 保证嵌套作用域、动态配色和字体实时生效，无需重新编译。组件 CSS 应保持在 `components` layer，不重复导入未分层的样式；桥接不依赖 React，不含重置、字体下载或 Tailwind v3 插件。
+
 ```tsx
 import { PatternBackground } from '@zixiao-labs/ui-kits-solid/patterns'
 import '@zixiao-labs/ui-kits-solid/patterns.css'

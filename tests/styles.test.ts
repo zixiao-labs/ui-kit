@@ -2,6 +2,7 @@ import { readFileSync, readdirSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
 import { expect, test } from '@lightning-js/lightning'
+import { compile } from 'tailwindcss'
 import { createTheme } from '../packages/react/src/theme'
 
 const readStyle = (path: string) => readFileSync(`packages/react/src/${path}`, 'utf8')
@@ -141,4 +142,40 @@ test('the demo shell no longer relies on a particular design language token set'
   for (const path of ['styles.css', 'catalog.css', 'docs.css', 'theme-workbench.css']) {
     expect(readFileSync(`apps/demo/src/${path}`, 'utf8')).not.toContain('--md-')
   }
+})
+
+test('Tailwind v4 compiles the optional public bridge to scoped runtime tokens, not fixed colors', async () => {
+  const fromDemo = createRequire(resolve('apps/demo/package.json'))
+  const bridge = readFileSync(fromDemo.resolve('@zixiao-labs/ui-kits-react/tailwind.css'), 'utf8')
+  const compiler = await compile(`${bridge}\n@tailwind utilities;`)
+  const css = compiler.build([
+    'bg-zx-accent',
+    'bg-zx-surface',
+    'text-zx-on-accent',
+    'text-zx-text',
+    'border-zx-control-border',
+    'ring-zx-focus',
+    'font-zx',
+    'font-zx-display',
+    'rounded-zx',
+    'hover:bg-zx-accent-hover',
+  ])
+  for (const declaration of [
+    'background-color: var(--zx-accent)',
+    'background-color: var(--zx-surface)',
+    'color: var(--zx-on-accent)',
+    'color: var(--zx-text)',
+    'border-color: var(--zx-control-border)',
+    '--tw-ring-color: var(--zx-focus)',
+    'font-family: var(--zx-font)',
+    'font-family: var(--zx-font-display)',
+    'border-radius: var(--zx-radius)',
+    'background-color: var(--zx-accent-hover)',
+  ]) {
+    expect(css).toContain(declaration)
+  }
+  expect(css).not.toContain('@theme')
+  expect(css).not.toContain('--md-')
+  expect(readStyle('base.css')).not.toContain('@theme')
+  expect(readStyle('styles.css')).not.toContain('@theme')
 })

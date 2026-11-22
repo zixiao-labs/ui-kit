@@ -101,13 +101,19 @@ test('packs a source-free library usable through its public JS, type and CSS exp
         readFileSync(join(library, 'src', path), 'utf8'),
       )
     }
-    for (const name of ['patterns', 'liquid-glass']) {
+    for (const name of ['patterns', 'liquid-glass', 'tailwind']) {
       expect(readFileSync(fromConsumer.resolve(`${manifest.name}/${name}.css`), 'utf8')).toBe(
         readFileSync(join(library, 'src/optional', `${name}.css`), 'utf8'),
       )
       expect(
         readFileSync(fromConsumer.resolve(`${manifest.name}/styles.css`), 'utf8'),
-      ).not.toContain(name === 'patterns' ? '.zx-pattern-background' : '.zx-liquid-glass')
+      ).not.toContain(
+        name === 'patterns'
+          ? '.zx-pattern-background'
+          : name === 'tailwind'
+            ? '@theme'
+            : '.zx-liquid-glass',
+      )
     }
     for (const name of [
       'foundation',

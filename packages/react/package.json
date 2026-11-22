@@ -40,6 +40,7 @@
     "./liquid-glass.css": "./src/optional/liquid-glass.css",
     "./styles.css": "./src/styles.css",
     "./base.css": "./src/base.css",
+    "./tailwind.css": "./src/optional/tailwind.css",
     "./css/*.css": "./src/*.css",
     "./themes/*.css": "./src/themes/*.css"
   },
@@ -69,6 +70,7 @@
       "./liquid-glass.css": "./dist/liquid-glass.css",
       "./styles.css": "./dist/styles.css",
       "./base.css": "./dist/base.css",
+      "./tailwind.css": "./dist/tailwind.css",
       "./css/*.css": "./dist/css/*.css",
       "./themes/*.css": "./dist/themes/*.css"
     },

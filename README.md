@@ -198,6 +198,82 @@ Demo 参考 HeroUI docs 组织为目录、交互预览、用法代码与主题�
 
 「鹤坡·室内配色」同样只覆盖颜色，以红木 `#82503D` 和香槟色 `#D8BD88` 为种子；要一并切换字体、形状和原生明暗表面，请选择「鹤坡·室内」风格，而不是配色预设。
 
+#### 预设配色与紫霄深色优化
+
+`themePresets` 是 React、Solid 和 Demo 共用的配色来源，与 `data-zx-style` 的组件风格分开。保留紫霄、松林、海岸、朱砂、鹤坡及鹤坡·室内，新增：
+
+| 预设键名          | 配色名称 | 主色           | 辅助色           |
+| ----------------- | -------- | -------------- | ---------------- |
+| `qingdaoPengxian` | 青岛蓬仙 | `#47B79C`      | `#8F1D22`        |
+| `niyiYunjun`      | 霓衣云君 | `#F3A694`      | `#2E59A7`        |
+| `danluFeilong`    | 丹炉飞龙 | 朱砂 `#E94829` | 天水碧 `#5AA4AE` |
+
+```tsx
+import {
+  createTheme,
+  themePresets,
+  themeToCSS,
+  zixiaoDarkColors,
+} from '@zixiao-labs/ui-kits-react/theme'
+
+const preset = { ...themePresets.qingdaoPengxian, radius: 12 }
+const custom = { primary: '#3269b1', secondary: '#edb9a2', radius: 8 }
+const optimized = { ...themePresets.zixiao, darkColors: zixiaoDarkColors }
+
+createTheme(preset, true) // 预设，深色
+createTheme(custom) // 自定义，浅色
+createTheme(optimized, true) // 紫霄深色：#422256 + #D7A547
+createTheme(optimized) // 浅色仍为 #8B5CF6 + #FCD34D
+themeToCSS(optimized) // 同时导出浅色、优化深色两个作用域
+```
+
+深色优化默认关闭，不替换现有紫霄配色。`darkColors` 也可用于自定义主题，仅替换深色的主辅填色，表面、文字、焦点和容器仍由有效种子生成可读色阶。Demo 在紫霄原生 Clean 或紫霄配色下显示开关；切换其他配色不会套用紫霄优化值。
+
+#### 自定义字体
+
+```tsx
+const tokens = createTheme({
+  ...themePresets.danluFeilong,
+  fontFamily: '"Noto Sans SC", "PingFang SC", sans-serif',
+  displayFontFamily: '"Noto Serif SC", "Songti SC", serif',
+})
+```
+
+`fontFamily` 控制正文和控件，`displayFontFamily` 控制标题；只提供正文字体时，标题也跟随它。两个选项均省略时不输出字体 token，保留风格原生字体。参数是最长 512 字符的字体名称列表，不接受任意 CSS 声明、`url()` 或 `var()`；非法值抛出 `TypeError`。字体文件应由应用自行通过 `@font-face` 等方式加载，库不会请求外部字体。
+
+Demo 的「自定义字体」可分别输入两个字体栈，留空恢复相应默认值；字体可独立于自定义配色使用，并参与本地保存、CSS 导出、同风格预览和浮层同步。新的嵌套风格仍保留自己的字体，不被外层设置穿透。
+
+#### Tailwind CSS v4
+
+这是可选的**构建时**接入，不要求普通组件消费者安装 Tailwind，也不将 Tailwind 指令放进 `base.css` / `styles.css`。在已配置 Tailwind v4 编译器（例如官方 Vite 或 PostCSS 集成）的应用 CSS 中：
+
+```css
+@import 'tailwindcss';
+@import '@zixiao-labs/ui-kits-react/tailwind.css';
+@import '@zixiao-labs/ui-kits-react/base.css' layer(components);
+@import '@zixiao-labs/ui-kits-react/themes/clean.css' layer(components);
+```
+
+将基础层和风格层放入 `components` layer，使 Tailwind utilities 可以覆盖组件形状等样式；不要另外以未分层方式重复导入相同组件 CSS。桥接采用官方 `@theme inline`，工具类在当前元素读取有效的 `--zx-*`，因此预设、自定义主题、明暗切换和嵌套作用域使用同一套 token：
+
+```tsx
+<section
+  data-zx-style="clean"
+  data-zx-color-mode="dark"
+  style={createTheme({ ...themePresets.qingdaoPengxian, fontFamily: 'system-ui' }, true)}
+  className="bg-zx-surface text-zx-text font-zx rounded-zx p-6"
+>
+  <h2 className="font-zx-display">青岛蓬仙</h2>
+  <button className="bg-zx-accent text-zx-on-accent rounded-zx px-6 py-3 hover:bg-zx-accent-hover">
+    保存主题
+  </button>
+</section>
+```
+
+提供 `bg-zx-*` / `text-zx-*` / `border-zx-*` / `ring-zx-*` 等语义颜色工具类、`font-zx` / `font-zx-display`、`rounded-zx` / `rounded-zx-sm` / `rounded-zx-md` / `rounded-zx-lg`。明暗色已由 token 切换，无需再给这些颜色加 `dark:`；应用自行管理 `data-zx-color-mode`，桥接不替换 Tailwind 原生 `dark:` 的规则。不提供 Tailwind v3 插件。
+
+需要静态 CSS 时，将 `themeToCSS` 输出放在上述 imports 之后，并在对应元素设置 `data-zx-theme="custom"`。Demo 勾选「Tailwind CSS 导出」可复制当前风格、配色和字体的完整 CSS 接入片段。
+
 ### 动效
 
 共享层的动效参考 HeroUI 的生命周期实现，所有风格复用同一套行为：

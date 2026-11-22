@@ -1,2 +1,10 @@
-export { brandTheme, contrastRatio, createTheme, themeToCSS } from '../../shared/theme'
-export type { ThemeOptions } from '../../shared/theme'
+export {
+  brandTheme,
+  contrastRatio,
+  createTheme,
+  isFontFamily,
+  themePresets,
+  themeToCSS,
+  zixiaoDarkColors,
+} from '../../shared/theme'
+export type { ThemeColors, ThemeOptions } from '../../shared/theme'

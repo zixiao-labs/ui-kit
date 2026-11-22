@@ -16,6 +16,7 @@
     "./patterns": "./src/patterns.tsx",
     "./styles.css": "./styles/styles.css",
     "./base.css": "./styles/base.css",
+    "./tailwind.css": "./styles/tailwind.css",
     "./patterns.css": "./styles/patterns.css",
     "./css/*.css": "./styles/css/*.css",
     "./themes/*.css": "./styles/themes/*.css"
@@ -39,6 +40,7 @@
       },
       "./styles.css": "./dist/styles.css",
       "./base.css": "./dist/base.css",
+      "./tailwind.css": "./dist/tailwind.css",
       "./patterns.css": "./dist/patterns.css",
       "./css/*.css": "./dist/css/*.css",
       "./themes/*.css": "./dist/themes/*.css"

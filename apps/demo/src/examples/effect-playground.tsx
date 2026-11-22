@@ -7,7 +7,7 @@ import type { BackgroundPattern } from '@zixiao-labs/ui-kits-react/patterns'
 import { LiquidGlassSurface } from '@zixiao-labs/ui-kits-react/liquid-glass'
 import '@zixiao-labs/ui-kits-react/patterns.css'
 import '@zixiao-labs/ui-kits-react/liquid-glass.css'
-import { useTheme } from '../theme'
+import { getThemePreview, useTheme } from '../theme'
 
 const options = [
   { id: 'shadow', label: 'GPU 阴影', detail: '柔和投影 · 不支持时保留 CSS 阴影' },
@@ -24,7 +24,7 @@ function indentCode(code: string) {
 }
 
 export function EffectPlayground({ component }: { component: 'Button' | 'Card' | 'Surface' }) {
-  const { previewStyle, dark, sampleStyle, settings } = useTheme()
+  const { dark, sampleStyle, settings } = useTheme()
   const [effects, setEffects] = useState<SurfaceEffects>({})
   const [mode, setMode] = useState('auto')
   const [pattern, setPattern] = useState<BackgroundPattern | undefined>()
@@ -34,6 +34,11 @@ export function EffectPlayground({ component }: { component: 'Button' | 'Card' |
   const [loading, setLoading] = useState(false)
   const [copyResult, setCopyResult] = useState<{ code: string; message: string } | null>(null)
   const isDark = mode === 'auto' ? dark : mode === 'dark'
+  const themePreview = getThemePreview(settings, isDark)
+  const previewStyle =
+    settings.preview === 'inherit' || settings.preview === settings.style
+      ? themePreview.tokens
+      : undefined
   const reactGlass = effects.glass && glassEngine === 'react'
   const entries = Object.entries(effects).filter(
     ([key, value]) =>
@@ -43,7 +48,6 @@ export function EffectPlayground({ component }: { component: 'Button' | 'Card' |
   const props = entries.length
     ? ` effects={{ ${entries.map(([key, value]) => `${key}: ${typeof value === 'string' ? `'${value}'` : value}`).join(', ')} }}`
     : ''
-  const custom = settings.customized && previewStyle
   const sampleCode = `<${component}${reactGlass ? (component === 'Button' ? ' style={{ background: "transparent", color: "var(--zx-text)", borderColor: "transparent" }}' : ' style={{ background: "transparent", border: 0, padding: 0 }}') : ''}${component === 'Button' ? ' variant="outline"' : ''}${props}${component === 'Button' ? `${disabled ? ' disabled' : ''}${loading ? ' loading' : ''}` : ''}>
   ${component === 'Button' ? '添加素材' : '<h3>北岸设计</h3>\n  <p>品牌识别与数字体验 · 周五评审</p>\n  <Button variant="tonal">添加素材</Button>'}
 </${component}>`
@@ -54,9 +58,9 @@ export function EffectPlayground({ component }: { component: 'Button' | 'Card' |
     ? `<PatternBackground pattern="${pattern}" style={{ padding: 32 }}>\n${indentCode(glassCode)}\n</PatternBackground>`
     : glassCode
   const example = `import { ${component}${component === 'Button' ? '' : ', Button'} } from '@zixiao-labs/ui-kits-react'${pattern ? "\nimport { PatternBackground } from '@zixiao-labs/ui-kits-react/patterns'\nimport '@zixiao-labs/ui-kits-react/patterns.css'" : ''}${reactGlass ? "\nimport { LiquidGlassSurface } from '@zixiao-labs/ui-kits-react/liquid-glass'\nimport '@zixiao-labs/ui-kits-react/liquid-glass.css'" : ''}
-import '@zixiao-labs/ui-kits-react/styles.css'${custom ? "\nimport { createTheme } from '@zixiao-labs/ui-kits-react/theme'" : ''}
+import '@zixiao-labs/ui-kits-react/styles.css'${previewStyle ? themePreview.import : ''}
 
-<div data-zx-style="${sampleStyle.id}" data-zx-color-mode="${isDark ? 'dark' : 'light'}"${custom ? `\n  style={createTheme(${JSON.stringify({ primary: settings.primary, secondary: settings.secondary, radius: settings.radius })}, ${isDark})}` : ''}>
+<div data-zx-style="${sampleStyle.id}" data-zx-color-mode="${isDark ? 'dark' : 'light'}"${previewStyle ? `\n  style={${themePreview.expression}}` : ''}>
 ${indentCode(contentCode)}
 </div>`
 
