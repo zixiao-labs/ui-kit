@@ -26,6 +26,7 @@ pnpm add @zixiao-labs/ui-kits-react@0.2.0 react@^19 react-dom@^19
 
 - React Demo 增加配色、深色优化和字体调节，支持保存恢复、CSS 导出与嵌套主题隔离。
 - 增补主题对比度、字体输入校验、真实 Tailwind 编译、tarball 公开入口和浏览器回归测试。
+- 修正 Hepo 与 Hepo Interior 截图测试中固定为六套配色的旧断言：数量跟随共享预设，继续验证三列网格与实际行数。
 - 普通 CI 不再执行 `npm publish --dry-run`，避免已发布版本导致重复版本检查失败；继续验证实际 tarball，最终版本冲突与 OIDC 授权由发布 job 检查。
 - 增加仓库级 Merge Skill，供 Delta Merge 按钮使用；普通合并不自动触发 npm 发布。
 

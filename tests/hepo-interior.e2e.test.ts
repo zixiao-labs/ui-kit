@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { afterAll, afterEach, beforeAll, beforeEach, expect, test } from '@lightning-js/lightning'
 import { chromium } from 'playwright'
 import type { Browser, Page } from 'playwright'
-import { contrastRatio } from '../packages/react/src/theme'
+import { contrastRatio, themePresets } from '../packages/react/src/theme'
 import { styleOptions } from '../apps/demo/src/style-options'
 import { startDemo } from './dev-server'
 import { chooseDemoSelect } from './select-helpers'
@@ -257,13 +257,16 @@ test('captures interior desktop, mobile, typography, inputs, reflow and portal e
   await page.setViewportSize({ width: 390, height: 844 })
   await capture('mobile')
   await page.locator('.theme-panel').scrollIntoViewIfNeeded()
+  const presetCount = Object.keys(themePresets).length
   const presets = page.locator('.theme-presets button')
   const tops = await presets.evaluateAll((elements) =>
     elements.map((element) => element.getBoundingClientRect().top),
   )
-  expect(tops.length).toBe(6)
-  expect(new Set(tops).size).toBe(2)
-  for (const top of new Set(tops)) expect(tops.filter((row) => row === top).length).toBe(3)
+  expect(tops.length).toBe(presetCount)
+  expect(new Set(tops).size).toBe(Math.ceil(presetCount / 3))
+  for (const [index, top] of [...new Set(tops)].entries()) {
+    expect(tops.filter((row) => row === top).length).toBe(Math.min(3, presetCount - index * 3))
+  }
   await capture('mobile-theme')
   await chooseDemoSelect(page, '页面主题', 'dark')
   await select('Input')
