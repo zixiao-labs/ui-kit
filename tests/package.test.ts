@@ -1,15 +1,16 @@
-import { execFileSync } from 'node:child_process'
+import { execFileSync, spawnSync } from 'node:child_process'
 import {
   existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
   readdirSync,
+  realpathSync,
   rmSync,
   writeFileSync,
 } from 'node:fs'
 import { createRequire } from 'node:module'
-import { join, resolve } from 'node:path'
+import { join, relative, resolve, sep } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { gzipSync } from 'node:zlib'
 import { expect, test } from '@lightning-js/lightning'
@@ -18,20 +19,26 @@ import * as source from '../packages/react/src/index'
 const library = resolve('packages/react')
 const fromLibrary = createRequire(join(library, 'package.json'))
 const manifest = JSON.parse(readFileSync(join(library, 'package.json'), 'utf8'))
+const { packageManager } = JSON.parse(readFileSync('package.json', 'utf8'))
+const skillName = 'zixiao-new-chinese-design'
 const installedVersion = (name: string) =>
   JSON.parse(readFileSync(fromLibrary.resolve(`${name}/package.json`), 'utf8')).version
 
 function pnpm(args: string[], cwd: string) {
-  return execFileSync(process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm', args, {
+  const result = spawnSync(process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm', args, {
     cwd,
     shell: process.platform === 'win32',
     encoding: 'utf8',
     timeout: 90_000,
     maxBuffer: 4 * 1024 * 1024,
   })
+  if (result.error) throw result.error
+  if (result.status !== 0) {
+    throw new Error(`pnpm ${args.join(' ')} failed:\n${result.stdout}${result.stderr}`)
+  }
 }
 
-test('packs a source-free library usable through its public JS, type and CSS exports', async () => {
+test('packs a source-free library with working public exports and a pnpm-approved skill', async () => {
   mkdirSync('test-results', { recursive: true })
   const fixture = mkdtempSync(resolve('test-results/package-'))
   try {
@@ -41,13 +48,15 @@ test('packs a source-free library usable through its public JS, type and CSS exp
     // CI tests the exact archive later uploaded for publishing. Local runs also
     // exercise the real prepack lifecycle, including JS, declarations and CSS.
     if (!process.env.UI_KITS_REACT_TARBALL) pnpm(['pack', '--out', archive], library)
+    const tarball = `file:${relative(fixture, archive).split(sep).join('/')}`
     writeFileSync(
       join(fixture, 'package.json'),
       JSON.stringify({
         private: true,
         type: 'module',
+        packageManager,
         dependencies: {
-          [manifest.name]: `file:${archive}`,
+          [manifest.name]: tarball,
           react: installedVersion('react'),
           'react-dom': installedVersion('react-dom'),
         },
@@ -58,13 +67,45 @@ test('packs a source-free library usable through its public JS, type and CSS exp
         },
       }),
     )
-    pnpm(
-      ['install', '--ignore-workspace', '--ignore-scripts', '--no-lockfile', '--prefer-offline'],
-      fixture,
+    const workspace = join(fixture, 'pnpm-workspace.yaml')
+    const skillSettings = 'skills:\n  dirs:\n    - .agents/skills\n'
+    const install = ['install', '--ignore-scripts', '--no-frozen-lockfile', '--prefer-offline']
+    writeFileSync(workspace, skillSettings)
+    pnpm(install, fixture)
+    const linkedSkill = join(fixture, '.agents/skills', skillName)
+    expect(existsSync(linkedSkill)).toBe(false)
+
+    // A local tarball requires approval of its exact source, not just the npm name.
+    writeFileSync(
+      workspace,
+      `${skillSettings}permissions:\n  "${manifest.name}@${tarball}":\n    skills: [${skillName}]\n`,
     )
+    pnpm(install, fixture)
 
     const fromConsumer = createRequire(join(fixture, 'package.json'))
     const packed = join(fixture, 'node_modules', manifest.name)
+    const packedSkill = join(packed, 'skills', skillName)
+    expect(realpathSync(linkedSkill)).toBe(realpathSync(packedSkill))
+    const skill = readFileSync(join(linkedSkill, 'SKILL.md'), 'utf8')
+    expect(skill).toMatch(/^---\r?\nname: zixiao-new-chinese-design\r?\ndescription: [^\r\n]+\r?\n/)
+    expect(readFileSync(join(linkedSkill, 'references/react-ui.md'), 'utf8')).toContain(
+      'data-zx-style="hepo"',
+    )
+    const planPath = join(linkedSkill, 'assets/workspace-plan.json')
+    const planScript = join(linkedSkill, 'scripts/check-plan.mjs')
+    expect(execFileSync(process.execPath, [planScript, planPath], { encoding: 'utf8' })).toContain(
+      '仍需在真实页面',
+    )
+    const plan = JSON.parse(readFileSync(planPath, 'utf8'))
+    const changedPlan = join(fixture, 'changed-plan.json')
+    writeFileSync(changedPlan, JSON.stringify({ ...plan, taste: ['hero', 'random-palette'] }))
+    const drift = spawnSync(process.execPath, [planScript, changedPlan], { encoding: 'utf8' })
+    expect(drift.status).toBe(1)
+    expect(drift.stderr).toContain('"hero"')
+    expect(drift.stderr).toContain('"random-palette"')
+    writeFileSync(changedPlan, JSON.stringify({ ...plan, page: 'landing', taste: ['hero'] }))
+    expect(spawnSync(process.execPath, [planScript, changedPlan]).status).toBe(0)
+
     const packedManifest = JSON.parse(readFileSync(join(packed, 'package.json'), 'utf8'))
     expect(packedManifest.exports).toEqual(manifest.publishConfig.exports)
     expect(packedManifest.sideEffects).toEqual(['**/*.css'])
@@ -142,6 +183,29 @@ test('packs a source-free library usable through its public JS, type and CSS exp
       join(fixture, 'consumer.tsx'),
       readFileSync(join(library, 'tests/package-consumer.tsx'), 'utf8'),
     )
+    // Compile the actual shipped examples, each in its own module as copied by a reader.
+    // A bundler supplies CSS declarations in real apps; check CSS exports separately here.
+    const cssImports = new Set<string>()
+    const examples = ['consumer.tsx', 'css.d.ts']
+    for (const path of ['docs/usage.md', 'docs/components.md', 'docs/styles.md']) {
+      const doc = readFileSync(join(packed, path), 'utf8')
+      expect(doc).toBe(readFileSync(join(library, path), 'utf8'))
+      const snippets = [...doc.matchAll(/^```(tsx?)\r?\n([\s\S]+?)\r?\n```$/gm)]
+      if (path !== 'docs/styles.md') expect(snippets.length).toBeGreaterThan(0)
+      for (const [index, [, language, code]] of snippets.entries()) {
+        const name = `${path.slice('docs/'.length, -'.md'.length)}-${index + 1}.${language}`
+        writeFileSync(join(fixture, name), code)
+        examples.push(name)
+        for (const [, cssImport] of code.matchAll(/^import ['"]([^'"]+\.css)['"]/gm)) {
+          expect(fromConsumer.resolve(cssImport)).toContain(`${sep}dist${sep}`)
+          cssImports.add(cssImport)
+        }
+      }
+    }
+    writeFileSync(
+      join(fixture, 'css.d.ts'),
+      [...cssImports].map((name) => `declare module ${JSON.stringify(name)} {}`).join('\n'),
+    )
     const compiler = {
       target: 'ES2022',
       jsx: 'react-jsx',
@@ -158,7 +222,7 @@ test('packs a source-free library usable through its public JS, type and CSS exp
         join(fixture, 'tsconfig.json'),
         JSON.stringify({
           compilerOptions: { ...compiler, module, moduleResolution },
-          include: ['consumer.tsx'],
+          include: examples,
         }),
       )
       pnpm(['exec', 'tsc', '--project', 'tsconfig.json'], fixture)

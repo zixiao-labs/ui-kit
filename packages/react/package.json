@@ -22,7 +22,9 @@
     "directory": "packages/react"
   },
   "files": [
-    "dist"
+    "dist",
+    "docs",
+    "skills"
   ],
   "type": "module",
   "sideEffects": [

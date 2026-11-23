@@ -105,6 +105,10 @@ npm publish ./release/ui-kits-react.tgz --ignore-scripts --access public --prove
 
 首次创建 npm 包后，后续正常发版不需要 `npm login`。`npm whoami` 不支持用来检测 OIDC 授权，最终权限只能通过真实的授权发布验证。
 
+## 更新 Context7 文档索引
+
+根目录的 [`context7.json`](../context7.json) 只配置 Context7 的索引范围和公开所有权验证，不参与 npm 发布。修改[消费文档](../packages/react/docs/usage.md)或配置并合入默认分支后，维护者可在 [Context7 Admin](https://context7.com/zixiao-labs/ui-kit/admin) 完成所有权确认（首次），再刷新索引。用库 ID `/zixiao-labs/ui-kit` 查询「在同页使用 Clean 浅色与鹤坡·室内深色」等实际问题，确认返回来源指向新文档。npm 包内的文档随打包版本固定，与 Context7 的最新索引可以不同。
+
 ## 本地发布前验证
 
 ```sh

@@ -1,0 +1,8 @@
+{
+  "page": "workspace",
+  "style": "hepo",
+  "direction": "取石白展墙和黛青展签的关系：用素面承载器物目录，黛青留给主操作。",
+  "subject": "带年代、材质和馆藏编号的器物列表",
+  "action": "按年代筛选档案",
+  "taste": ["clear-copy", "real-content", "aligned-grid", "browser-qa"]
+}

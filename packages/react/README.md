@@ -10,6 +10,32 @@
 pnpm add @zixiao-labs/ui-kits-react react@^19 react-dom@^19
 ```
 
+## 文档与 Context7
+
+- [完整接入](docs/usage.md)：安装、单主题与混用、明暗作用域、自定义配色、Tailwind v4 与排查。
+- [组件用法](docs/components.md)：按钮、表单、浮层、可选传统底纹及增强。
+- [七种风格](docs/styles.md)：Clean、Endfield、鹤坡、鹤坡·室内、Minimal、Soft、Brutalist 的明暗配色、字体、形状和适用场景。
+- [Context7 文档索引](https://context7.com/zixiao-labs/ui-kit)，库 ID 为 `/zixiao-labs/ui-kit`。可询问「只加载鹤坡·室内 CSS 并在深色区域内打开 Modal」，或「`themePresets.hepoInterior` 与 `data-zx-style="hepo-interior"` 有什么区别」。索引随默认分支刷新；与所装版本不一致时，优先参照 npm 包内 `docs/` 和公开类型。
+
+## Agent Skill：新中式设计指南
+
+React 包附带 [`zixiao-new-chinese-design`](skills/zixiao-new-chinese-design/SKILL.md)，用于新中式页面设计与评审，涵盖鹤坡、鹤坡·室内、中文排版、配色及纹样，以及如何借用 Taste 的检查方法而不照搬其视觉模板。
+
+[pnpm 12.11+](https://pnpm.io/agent-skills) 可发现直接依赖携带的 Skill。安装包含此指南的版本后，运行 `pnpm approve` 并按提示批准此包的 Skill，或在消费项目的 `pnpm-workspace.yaml` 中只允许这一个 Skill，再运行 `pnpm install`：
+
+```yaml
+skills:
+  dirs:
+    - .agents/skills
+permissions:
+  '@zixiao-labs/ui-kits-react':
+    skills: [zixiao-new-chinese-design]
+```
+
+pnpm 12.18 默认以 Skill 名命名链接（同名冲突时加包名前缀）。没有 pnpm 自动链接也可以直接读取包内的 `skills/zixiao-new-chinese-design/`，或将整个目录复制到宿主支持的 Skill 目录。指南和[可选审稿脚本](skills/zixiao-new-chinese-design/references/react-ui.md#可选审稿脚本)不会被组件导入，安装和批准都不会执行审稿脚本。
+
+安装后，在支持 Skill 的 Agent 中点名 `zixiao-new-chinese-design`，或直接给出新中式任务。最好同时说明页面用途、主任务、可用素材与需保留的品牌或布局；只是评审时，注明不要改代码。可直接参考[设计任务与审稿步骤](skills/zixiao-new-chinese-design/references/react-ui.md#怎样使用这份-skill)。
+
 ## 使用
 
 ```tsx

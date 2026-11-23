@@ -65,13 +65,17 @@ pnpm release:pack
 | `@zixiao-labs/ui-kits-react/patterns.css`、`liquid-glass.css` | 独立可选功能样式                     |
 | `@zixiao-labs/ui-kits-react/themes/*.css`                     | 各独立风格适配层                     |
 
-React、React DOM 和其他运行时依赖保持 external，不复制进组件 JS；GPU 阴影仍保留为动态加载的独立 chunk。CSS 按文件保留，不自动注入 JS，`sideEffects` 标记确保应用打包时不会误删样式。包内只包含 `dist`、包元数据和 README，不依赖源码或 workspace 配置；JS source map 内嵌源码便于调试。
+React、React DOM 和其他运行时依赖保持 external，不复制进组件 JS；GPU 阴影仍保留为动态加载的独立 chunk。CSS 按文件保留，不自动注入 JS，`sideEffects` 标记确保应用打包时不会误删样式。包内包含 `dist`、包元数据、README、许可证、用法文档和 Agent Skill，不依赖源码或 workspace 配置；JS source map 内嵌源码便于调试。
+
+随 React 包发布的[新中式设计指南](packages/react/skills/zixiao-new-chinese-design/SKILL.md)与组件运行时分离。消费项目可通过 [pnpm 审批](packages/react/README.md#agent-skill新中式设计指南)启用，不需要安装 Oil UI、Taste Skill 或 UI/UX Pro Max。
 
 本地 `exports` 继续指向 `src`，Demo 开发、HMR 和源码测试不要求预先构建。`publishConfig.exports` 指向 `dist`，**必须先使用 pnpm 的 `pack` 才会替换导出表**；不要用 `npm pack` 或从源码目录直接 `npm publish`。发布工作流用 npm OIDC 发布已转换并验证的 `.tgz`；本地打包与消费验证不会执行发布。
 
-`test:package` 会临时安装 tarball 及消费端依赖（优先本地缓存，缺失时需要 registry），检查所有运行时导出和 CSS、Bundler / NodeNext 两种 TypeScript 解析、真实 Node ESM SSR，以及 GPU chunk 的延迟加载结构；临时目录在结束后清理。
+`test:package` 会临时安装 tarball 及消费端依赖（优先本地缓存，缺失时需要 registry），检查所有运行时导出和 CSS、消费示例在 Bundler / NodeNext 下的类型、真实 Node ESM SSR、GPU chunk 的延迟加载结构，以及 pnpm 审批后的 Skill 链接；临时目录在结束后清理。
 
 ## 使用组件
+
+React 消费项目请参考[完整接入](packages/react/docs/usage.md)、[组件用法](packages/react/docs/components.md)和[七种风格](packages/react/docs/styles.md)，也可以在 [Context7](https://context7.com/zixiao-labs/ui-kit) 查询 `/zixiao-labs/ui-kit`。
 
 在 workspace 内使用：
 

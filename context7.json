@@ -1,0 +1,13 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "url": "https://context7.com/zixiao-labs/ui-kit",
+  "public_key": "pk_AqlsMtJn5G0ur5mfxzqJ6",
+  "projectTitle": "Zixiao Laboratories UI Kits",
+  "description": "React 19 component library built on React Aria, with scoped light and dark styles including the contemporary Chinese Hepo and Hepo Interior themes.",
+  "folders": ["packages/react", "packages/solid"],
+  "excludeFolders": ["src", "dist", "tests", "assets", "scripts"],
+  "rules": [
+    "Import React components from @zixiao-labs/ui-kits-react. Import styles.css or base.css followed by the specific themes/<style>.css files, not both.",
+    "Set data-zx-style and data-zx-color-mode on the same scope element. Use hepo or hepo-interior for the native Hepo looks; themePresets are palette seeds, not style identifiers."
+  ]
+}
